@@ -400,8 +400,23 @@ def _execute_node(runtime: AureyRuntime, state: ReadGraphState) -> ReadGraphStat
     if parsed.operation == "list_supported_tokens":
         repo = runtime.token_resolver._repo if runtime.token_resolver is not None else None
         target = (parsed.list_supported_chain or "").strip().lower()
+        if not target and runtime.settings.uses_lifi_token_catalog():
+            return {
+                "error": GraphErrorBody(
+                    code="invalid_input",
+                    message=(
+                        "Pass ``chain`` (e.g. base, ethereum) for list_supported_tokens when a LiFi "
+                        "token catalog file is configured. Use resolve_known_address for a single ticker."
+                    ),
+                ).model_dump()
+            }
         if target:
             rows = list_on_chain(repository=repo, chain_slug=target)
+            total = len(rows)
+            cap = runtime.settings.list_supported_tokens_max_per_chain
+            truncated = total > cap
+            if truncated:
+                rows = rows[:cap]
             entries = [
                 SupportedTokenEntry(
                     symbol=r.symbol,
@@ -416,8 +431,10 @@ def _execute_node(runtime: AureyRuntime, state: ReadGraphState) -> ReadGraphStat
             out = SupportedTokensOnChainResult(
                 chain=target,
                 chain_id=chain_id_for(target),
-                token_count=len(entries),
+                token_count=total,
                 tokens=entries,
+                truncated=truncated,
+                returned_count=len(entries) if truncated else None,
             )
             return {"result": out.model_dump()}
         grouped = list_grouped_by_symbol(repository=repo)

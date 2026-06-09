@@ -9,7 +9,7 @@ from aurey.graphs.evm_tx_pipeline import Web3TxPipeline
 from aurey.runtime import AureyRuntime
 from aurey.service.adapters import HttpxJsonClient, make_evm_rpc_factory, make_shared_httpx_client
 from aurey.settings import AureySettings
-from aurey.token_registry.in_memory_repository import InMemoryTokenRegistryRepository
+from aurey.token_registry.lifi_file_repository import build_token_registry_repository
 from aurey.token_registry.resolver import TokenResolver
 from aurey.util.ttl_lru_cache import TtlLruCache
 
@@ -90,7 +90,7 @@ def bootstrap_aurey_runtime(settings: AureySettings | None = None) -> AureyRunti
             "Ethereum signing key), then restart MCP. Optional override: AUREY_DEEP_AGENT_WALLET_ADDRESS."
         )
 
-    repo = InMemoryTokenRegistryRepository()
+    repo = build_token_registry_repository(lifi_tokens_path=s.effective_lifi_tokens_path())
     token_resolver = TokenResolver(runtime=runtime, repository=repo)
     return AureyRuntime(
         settings=runtime.settings,

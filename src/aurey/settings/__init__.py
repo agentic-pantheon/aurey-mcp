@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import os
 import re
+from pathlib import Path
 from typing import Literal
 
 from pydantic import AliasChoices, Field, field_validator
@@ -353,6 +354,32 @@ class AureySettings(BaseSettings):
         default="https://li.quest",
         description="LiFi API base URL for direct quotes when no route builder is configured.",
         validation_alias=AliasChoices("AUREY_LIFI_BASE_URL"),
+    )
+    lifi_tokens_path: str | None = Field(
+        default=None,
+        description=(
+            "Override path to a LiFi ``GET /v1/tokens`` JSON export. When unset, MCP loads the "
+            "bundled ``aurey/data/li_quest_tokens.json`` unless ``bundled_lifi_tokens_enabled`` "
+            "is false."
+        ),
+        validation_alias=AliasChoices("AUREY_LIFI_TOKENS_PATH"),
+    )
+    bundled_lifi_tokens_enabled: bool = Field(
+        default=True,
+        description=(
+            "When true and ``lifi_tokens_path`` is unset, use the packaged LiFi token catalog "
+            "shipped with aurey-wallet-mcp."
+        ),
+        validation_alias=AliasChoices("AUREY_BUNDLED_LIFI_TOKENS_ENABLED"),
+    )
+    list_supported_tokens_max_per_chain: int = Field(
+        default=80,
+        ge=1,
+        le=500,
+        description=(
+            "Max token rows returned by ``list_supported_tokens`` when ``chain`` is set "
+            "(avoids huge tool payloads)."
+        ),
     )
     route_builder_url: str | None = Field(
         default=None,
@@ -720,6 +747,29 @@ class AureySettings(BaseSettings):
         """True when vault-backed signing key material must be configured."""
 
         return self.evm_signing_mode == "vault_key"
+
+    def effective_lifi_tokens_path(self) -> Path | None:
+        """Bundled LiFi export path, or explicit ``lifi_tokens_path`` override."""
+
+        override = (self.lifi_tokens_path or "").strip()
+        if override:
+            return Path(override).expanduser()
+        if not self.bundled_lifi_tokens_enabled:
+            return None
+        from aurey.token_registry.bundled_lifi_tokens import (
+            bundled_lifi_tokens_available,
+            default_bundled_lifi_tokens_catalog_path,
+        )
+
+        if bundled_lifi_tokens_available():
+            return default_bundled_lifi_tokens_catalog_path()
+        return None
+
+    def uses_lifi_token_catalog(self) -> bool:
+        path = self.effective_lifi_tokens_path()
+        if path is None:
+            return False
+        return path.is_file() or path.is_dir()
 
     def resolve_oneclaw_bootstrap_api_key(self) -> str:
         """Return the 1Claw vault API key (``ocv_…``) from env.

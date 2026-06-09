@@ -737,10 +737,10 @@ def build_aurey_subgraph_tools(runtime: AureyRuntime) -> list[BaseTool]:
 
     @tool(args_schema=ListSupportedTokensArgs)
     def list_supported_tokens(chain: str | None = None) -> dict[str, Any]:
-        """List tokens Aurey can resolve by symbol on the allowlist (bundled + market-cap index).
+        """List allowlisted tokens on one chain (pass ``chain`` when using a LiFi catalog file).
 
-        With ``chain`` (e.g. polygon): tokens on that chain only. Without ``chain``: every symbol
-        with which chains it is listed. Does not include one-off ``discovered`` address cache rows."""
+        Returns at most ``list_supported_tokens_max_per_chain`` rows per call (see truncated in
+        result). For a single ticker use ``resolve_known_address`` — do not dump the full catalog."""
         payload = ListSupportedTokensArgs(chain=chain)
         slug = (payload.chain or "").strip().lower() or None
         graph_in = ReadGraphInput(

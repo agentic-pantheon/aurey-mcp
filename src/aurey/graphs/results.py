@@ -69,6 +69,11 @@ class SupportedTokensOnChainResult(BaseModel):
     chain_id: int | None
     token_count: int
     tokens: list[SupportedTokenEntry]
+    truncated: bool = False
+    returned_count: int | None = Field(
+        default=None,
+        description="Length of ``tokens`` when ``truncated`` is true (``token_count`` is the full allowlist size).",
+    )
 
 
 class SupportedTokenChainRef(BaseModel):

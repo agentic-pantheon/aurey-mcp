@@ -54,6 +54,17 @@ Tool: **`get_agent_wallet_addresses`** (`refresh=true` after provisioning withou
 
 Optional: `AUREY_DEEP_AGENT_WALLET_ADDRESS`, `AUREY_ROUTE_BUILDER_URL`.
 
+**LiFi token catalog:** MCP ships `aurey/data/lifi_tokens/{chain_id}.json` shards (LiFi `/v1/tokens`, Aurey EVM chains). **Per-chain lazy load:** only the chain you query is read and indexed (plus small curated `known_addresses.json` at startup). No Postgres; catalog is not sent to the model. Override path: `AUREY_LIFI_TOKENS_PATH`. Disable bundled file: `AUREY_BUNDLED_LIFI_TOKENS_ENABLED=false`.
+
+Maintainers refresh the bundle:
+
+```bash
+uv run python scripts/sync_bundled_lifi_tokens.py --from-file /path/to/li_quest_tokens.json
+# or: uv run python scripts/sync_bundled_lifi_tokens.py --fetch
+```
+
+Agents: `resolve_known_address` per ticker; `list_supported_tokens` requires `chain` (capped page).
+
 ---
 
 ## Host install docs

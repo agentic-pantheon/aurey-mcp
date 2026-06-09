@@ -16,10 +16,11 @@ MCP tools provide EVM operations with **1Claw Intents** custody. If MCP is not c
 1. Use tools only — never invent balances, addresses, or tx hashes.
 2. **Call `get_agent_wallet_addresses` first** when you need the user's EVM `from_address`.
 3. Resolve tickers with `resolve_known_address` before other `0x` addresses.
-4. Flow: read → prepare (`swap_prepare`, `tx_prepare_*`) → **show summary** → `tx_execute(prepared_id=...)` only after **explicit** user confirmation.
-5. Never ask for private keys; signing is server-side via 1Claw Intents.
-6. For swaps, prefer `prepared_id` over copying calldata.
-7. `autonomy_*` tools do not replace user confirmation unless policy is armed and user opted in.
+4. **Token catalog (LiFi file):** use `resolve_known_address(chain, ticker)` or `resolve_token_by_address` for one token. Call `list_supported_tokens` **only with `chain`** (never global). Do not paste large token lists into chat—use counts and a few examples.
+5. Flow: read → prepare (`swap_prepare`, `tx_prepare_*`) → **show summary** → `tx_execute(prepared_id=...)` only after **explicit** user confirmation.
+6. Never ask for private keys; signing is server-side via 1Claw Intents.
+7. For swaps, prefer `prepared_id` over copying calldata.
+8. `autonomy_*` tools do not replace user confirmation unless policy is armed and user opted in.
 
 ## Typical swap
 

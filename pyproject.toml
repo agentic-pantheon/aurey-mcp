@@ -67,7 +67,7 @@ dev = [
 where = ["src"]
 
 [tool.setuptools.package-data]
-aurey = ["data/*.json"]
+aurey = ["data/*.json", "data/lifi_tokens/*.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

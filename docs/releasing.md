@@ -23,7 +23,8 @@
 ## Release checklist
 
 1. Update `pyproject.toml` version and changelog notes in the GitHub release body if needed.
-2. `uv run pytest` (or `pytest`) green locally.
+2. Refresh bundled LiFi tokens if the catalog changed: `uv run python scripts/sync_bundled_lifi_tokens.py --from-file …` or `--fetch`.
+3. `uv run pytest` (or `pytest`) green locally.
 3. `git tag v0.1.1 && git push origin v0.1.1`
 4. Watch **Actions → Release** for PyPI upload and GitHub Release assets.
 5. Verify:

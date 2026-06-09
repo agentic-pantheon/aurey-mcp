@@ -19,6 +19,9 @@ zerion_api_key = ""
 [routing]
 route_builder_url = ""
 # route_builder_api_key = ""
+# Optional override for bundled LiFi shards (default: package aurey/data/lifi_tokens/):
+# lifi_tokens_path = "/path/to/lifi_tokens"   # directory of {chain_id}.json, or legacy monolith file
+# bundled_lifi_tokens_enabled = false
 
 [dashboard]
 enabled = false
