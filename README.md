@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/aurey-wallet-mcp-banner.png" alt="Aurey Wallet MCP — EVM wallet MCP for AI agents (Hermes, Cursor, Claude, OpenClaw)" width="720" />
+</p>
+
 # Aurey Wallet MCP
 
 Self-hosted **Model Context Protocol** server for EVM wallet tools: balances, swaps, and prepare/execute signing through **1Claw Intents** (no private keys in chat or MCP env for Alchemy).
