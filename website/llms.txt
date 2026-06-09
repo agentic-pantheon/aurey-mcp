@@ -20,7 +20,7 @@ Manual:
   # or: uv tool install 'aurey-wallet-mcp[hermes]'
 
 Optional pin:
-  AUREY_VERSION=0.1.1 curl -fsSL https://agentic-pantheon.github.io/aurey-mcp/install.sh | bash
+  AUREY_VERSION=0.1.2 curl -fsSL https://agentic-pantheon.github.io/aurey-mcp/install.sh | bash
 
 ## Setup (user terminal)
 
