@@ -37,21 +37,47 @@ def mcp_wrapper_path() -> Path:
     return aurey_home() / "run-aurey-wallet-mcp.sh"
 
 
-def repo_root_from_arg(path: str | None) -> Path:
+INSTALL_PACKAGE_HINT = (
+    "Install aurey-wallet-mcp first: "
+    "curl -fsSL https://agentic-pantheon.github.io/aurey-mcp/install.sh | bash "
+    "or: pip install 'aurey-wallet-mcp[hermes]'"
+)
+
+
+def dev_repo_root(path: str | None) -> Path | None:
+    """Return repo root when ``path`` or cwd contains ``pyproject.toml``."""
+
+    candidates: list[Path] = []
     if path:
-        root = Path(path).expanduser().resolve()
+        candidates.append(Path(path).expanduser().resolve())
     else:
-        root = Path(__file__).resolve().parents[2]
-    if not (root / "pyproject.toml").is_file():
-        raise SystemExit(f"Not an aurey-wallet-mcp repo: {root}")
-    return root
+        candidates.append(Path.cwd().resolve())
+    for root in candidates:
+        if (root / "pyproject.toml").is_file():
+            return root
+    return None
 
 
-def mcp_binary(repo: Path) -> Path:
-    bin_path = repo / ".venv" / "bin" / "aurey-wallet-mcp"
-    if not bin_path.is_file():
-        raise SystemExit(f"Missing {bin_path}. Run: cd {repo} && uv sync --group dev")
-    return bin_path.resolve()
+def resolve_mcp_command(repo: str | None = None) -> Path:
+    """Locate ``aurey-wallet-mcp``: PATH (PyPI) then dev ``.venv`` in repo/cwd."""
+
+    found = shutil.which("aurey-wallet-mcp")
+    if found:
+        return Path(found).resolve()
+    root = dev_repo_root(repo)
+    if root is not None:
+        bin_path = root / ".venv" / "bin" / "aurey-wallet-mcp"
+        if bin_path.is_file():
+            return bin_path.resolve()
+    raise SystemExit(INSTALL_PACKAGE_HINT)
+
+
+def maybe_dev_sync(repo: str | None, *, skip_sync: bool) -> None:
+    if skip_sync:
+        return
+    root = dev_repo_root(repo)
+    if root is not None:
+        run_uv_sync(root)
 
 
 def run_uv_sync(repo: Path) -> None:

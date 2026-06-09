@@ -57,7 +57,7 @@ Hermes may retain chat in memory and logs. **Never** ask the user to paste `1ck_
    Hermes uses `venv/`, not `.venv/`.
 
 3. **1Claw account** at [1claw.xyz](https://1claw.xyz) with a **personal API key** (`1ck_…`): dashboard → API keys → create (or [Human API](https://docs.1claw.xyz/docs/human-api/authentication)).
-4. **Aurey repo** on the machine that runs Hermes (clone or workspace path).
+4. **Aurey Wallet MCP** installed on the Hermes machine (PyPI/curl—no clone required). See [install site](https://agentic-pantheon.github.io/aurey-mcp/install.html).
 5. **[Alchemy](https://www.alchemy.com/)** API key (optional at setup; needed for balances/portfolio reads).
 
 **Skills** (load in Hermes so the agent can guide you):
@@ -73,14 +73,23 @@ Index: [SKILL.md](../SKILL.md).
 
 Run in **your terminal** (not Hermes chat). Default host is Hermes; same command works for Cursor, Claude Desktop, and OpenClaw with `--host`.
 
+**Install package** (once):
+
 ```bash
-cd /path/to/aurey-wallet-mcp
-uv sync --group dev --extra hermes
-uv run aurey-setup                  # Hermes (default)
-uv run aurey-setup --host cursor    # ~/.cursor/mcp.json
-uv run aurey-setup --host claude    # Claude Desktop config
-uv run aurey-setup --host openclaw  # ~/.openclaw/openclaw.json (or OPENCLAW_CONFIG)
+curl -fsSL https://agentic-pantheon.github.io/aurey-mcp/install.sh | bash
+# or: pip install 'aurey-wallet-mcp[hermes]'
 ```
+
+**Configure** (masked prompts):
+
+```bash
+aurey-setup                  # Hermes (default)
+aurey-setup --host cursor    # ~/.cursor/mcp.json
+aurey-setup --host claude    # Claude Desktop config
+aurey-setup --host openclaw  # ~/.openclaw/openclaw.json (or OPENCLAW_CONFIG)
+```
+
+**Contributors** from a git clone: `uv sync --group dev --extra hermes` then `uv run aurey-setup …`.
 
 **Prompts (masked):**
 

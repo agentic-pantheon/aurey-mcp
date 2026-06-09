@@ -1,0 +1,51 @@
+# Aurey Wallet MCP — install spec for agents
+
+Package: aurey-wallet-mcp (PyPI, exact spelling)
+Docs: https://agentic-pantheon.github.io/aurey-mcp/install.html
+Repository: https://github.com/agentic-pantheon/aurey-mcp
+
+## Rules for agents
+
+- NEVER ask the user to paste 1ck_ (human), ocv_ (agent), Alchemy keys, or private keys in chat.
+- User runs aurey-setup in a real terminal with masked prompts.
+- Do not git clone unless the user explicitly wants contributor/dev mode.
+- After MCP works, use get_agent_wallet_addresses; do not invent 0x addresses.
+
+## Install (user terminal)
+
+curl -fsSL https://agentic-pantheon.github.io/aurey-mcp/install.sh | bash
+
+Manual:
+  pip install 'aurey-wallet-mcp[hermes]'
+  # or: uv tool install 'aurey-wallet-mcp[hermes]'
+
+Optional pin:
+  AUREY_VERSION=0.1.1 curl -fsSL https://agentic-pantheon.github.io/aurey-mcp/install.sh | bash
+
+## Setup (user terminal)
+
+aurey-setup --host hermes
+aurey-setup --host cursor
+aurey-setup --host claude
+aurey-setup --host openclaw
+
+Flags: --vault-id, --skip-alchemy, --from-env, --skip-provision, --provision-only
+
+## Verify
+
+Hermes: hermes mcp test aurey-wallet; chat /reload-mcp
+Tool: get_agent_wallet_addresses
+Read-only balance before swaps/sends.
+
+## Skills (raw on GitHub)
+
+Onboarding: https://raw.githubusercontent.com/agentic-pantheon/aurey-mcp/main/skills/aurey-wallet-onboarding/SKILL.md
+Trading: https://raw.githubusercontent.com/agentic-pantheon/aurey-mcp/main/skills/aurey-wallet/SKILL.md
+Hermes doc: https://raw.githubusercontent.com/agentic-pantheon/aurey-mcp/main/install/hermes.md
+
+## Credentials location
+
+~/.aurey/mcp.env (chmod 600)
+~/.aurey/run-aurey-wallet-mcp.sh (MCP command in host configs)
+Hermes: ~/.hermes/config.yaml + ~/.hermes/.env
+Alchemy: 1Claw vault path api-keys/alchemy (not MCP env)

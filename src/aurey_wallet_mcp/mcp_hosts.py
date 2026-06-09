@@ -14,10 +14,9 @@ from aurey_wallet_mcp.install_common import (
     ensure_aurey_toml_alchemy_path,
     host_reload_hint,
     load_json_object,
-    mcp_binary,
+    maybe_dev_sync,
     missing_required,
-    repo_root_from_arg,
-    run_uv_sync,
+    resolve_mcp_command,
     save_json_object,
     smoke_test,
     write_mcp_env,
@@ -102,11 +101,8 @@ def run_host_install(
 
     from aurey_wallet_mcp.hermes_install import run_install as run_hermes_install
 
-    repo_path = repo_root_from_arg(repo)
-    if not skip_sync:
-        run_uv_sync(repo_path)
-
-    binary = mcp_binary(repo_path)
+    maybe_dev_sync(repo, skip_sync=skip_sync)
+    binary = resolve_mcp_command(repo)
     env_file = write_mcp_env(secrets)
     wrapper = write_mcp_wrapper(binary=binary, env_path=env_file)
     aurey_toml = Path.home() / ".aurey" / "config.toml"
@@ -121,7 +117,7 @@ def run_host_install(
 
     if host == "hermes":
         run_hermes_install(
-            repo=str(repo_path),
+            repo=repo,
             skip_sync=True,
             vault_id=secrets.get("AUREY_ONECLAW_VAULT_ID"),
             agent_id=secrets.get("AUREY_ONECLAW_AGENT_ID"),
@@ -132,10 +128,11 @@ def run_host_install(
             from_env=False,
             prompt_secrets=False,
             quiet=True,
+            mcp_command=str(wrapper),
         )
+        print("✓ Hermes MCP command → wrapper (sources ~/.aurey/mcp.env)")
         print("✓ Hermes config ~/.hermes/config.yaml + ~/.hermes/.env")
         print(f"✓ Shared credentials {env_file}")
-        print(f"✓ MCP wrapper {wrapper} (used by Cursor/Claude/OpenClaw)")
     elif host == "cursor":
         cfg = Path(config_path).expanduser() if config_path else default_cursor_mcp_path(
             project=Path(cursor_project).resolve() if cursor_project else None

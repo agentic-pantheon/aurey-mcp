@@ -15,11 +15,13 @@ from aurey_wallet_mcp.install_common import (
     SERVER_NAME,
     VAULT_API_KEY_ENV,
     ensure_aurey_toml_alchemy_path,
-    mcp_binary,
-    repo_root_from_arg,
-    run_uv_sync,
+    maybe_dev_sync,
+    mcp_wrapper_path,
+    resolve_mcp_command,
     smoke_test,
     upsert_dotenv,
+    write_mcp_env,
+    write_mcp_wrapper,
 )
 
 MCP_ENV_TEMPLATE: dict[str, str] = {
@@ -126,6 +128,7 @@ def run_install(
     from_env: bool = False,
     prompt_secrets: bool = False,
     quiet: bool = False,
+    mcp_command: str | None = None,
 ) -> dict[str, str]:
     """Wire Hermes MCP config and ~/.hermes/.env; return secrets written."""
 
@@ -137,11 +140,8 @@ def run_install(
     env_path = home / ".env"
     aurey_toml = Path.home() / ".aurey" / "config.toml"
 
-    repo_path = repo_root_from_arg(repo)
-    if not skip_sync:
-        run_uv_sync(repo_path)
-
-    binary = mcp_binary(repo_path)
+    maybe_dev_sync(repo, skip_sync=skip_sync)
+    binary = resolve_mcp_command(repo)
     secrets = collect_secrets(
         vault_id=vault_id,
         agent_id=agent_id,
@@ -169,11 +169,17 @@ def run_install(
     written = upsert_dotenv(
         env_path, secrets, comment="Aurey Wallet MCP (aurey-hermes-install)"
     )
-    patch_hermes_mcp_config(config_path, command=str(binary))
+    if secrets.get(VAULT_API_KEY_ENV, "").strip():
+        env_file = write_mcp_env(secrets)
+        wrapper = write_mcp_wrapper(binary=binary, env_path=env_file)
+        launch = mcp_command or str(wrapper)
+    else:
+        launch = mcp_command or str(mcp_wrapper_path() if mcp_wrapper_path().is_file() else binary)
+    patch_hermes_mcp_config(config_path, command=launch)
     ensure_aurey_toml_alchemy_path(aurey_toml, secret_path=alchemy_vault_path.strip())
 
     if not quiet:
-        print(f"✓ MCP server '{SERVER_NAME}' → {binary}")
+        print(f"✓ MCP server '{SERVER_NAME}' → {launch}")
         print(f"✓ Updated {config_path}")
         print(f"✓ Wrote {', '.join(written) or '(no .env changes)'} in {env_path}")
         print(f"✓ Alchemy via 1Claw vault path {alchemy_vault_path!r} in {aurey_toml}")

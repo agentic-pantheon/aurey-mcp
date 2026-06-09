@@ -10,10 +10,21 @@ Works with [Hermes Agent](https://hermes-agent.org/), [Cursor](https://cursor.co
 
 One **1Claw human** API key (`1ck_…` from [1claw.xyz](https://1claw.xyz)) in **your terminal only**—never in LLM chat.
 
+**Install without a git clone** ([full guide](https://agentic-pantheon.github.io/aurey-mcp/install.html)):
+
 ```bash
-git clone <this-repo> aurey-wallet-mcp
-cd aurey-wallet-mcp
-uv sync --group dev
+curl -fsSL https://agentic-pantheon.github.io/aurey-mcp/install.sh | bash
+aurey-setup --host hermes
+```
+
+Manual: `pip install 'aurey-wallet-mcp[hermes]'` or `uv tool install 'aurey-wallet-mcp[hermes]'`, then `aurey-setup --host hermes`.
+
+**Contributors** (develop from source):
+
+```bash
+git clone https://github.com/agentic-pantheon/aurey-mcp.git
+cd aurey-mcp
+uv sync --group dev --extra hermes
 uv run aurey-setup --host hermes
 ```
 
@@ -29,10 +40,12 @@ uv run aurey-setup --host hermes
 | `openclaw` | Restart the OpenClaw gateway |
 
 ```bash
-uv run aurey-setup --host cursor
-uv run aurey-setup --host claude
-uv run aurey-setup --host openclaw
+aurey-setup --host cursor
+aurey-setup --host claude
+aurey-setup --host openclaw
 ```
+
+(From a dev clone, prefix with `uv run`.)
 
 Host-specific notes: [install/hermes.md](install/hermes.md) · [cursor](install/cursor.md) · [claude](install/claude.md) · [openclaw](install/openclaw.md).
 
@@ -119,6 +132,7 @@ Manual 1Claw steps: [docs/1claw-onboarding-guide.md](docs/1claw-onboarding-guide
 | [docs/setup.md](docs/setup.md) | Env vars, route builder, dashboard |
 | [docs/1claw-onboarding-guide.md](docs/1claw-onboarding-guide.md) | 1Claw + agent coaching |
 | [ONBOARDING_1CLAW.md](ONBOARDING_1CLAW.md) | One-page agent playbook |
+| [docs/releasing.md](docs/releasing.md) | PyPI + GitHub Pages releases (maintainers) |
 | [SKILL.md](SKILL.md) | Load `skills/aurey-wallet-onboarding` + `skills/aurey-wallet` |
 
 ---

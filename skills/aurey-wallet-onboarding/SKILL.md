@@ -12,6 +12,8 @@ You help the user connect **Aurey Wallet MCP** with **1Claw Intents** custody. Y
 
 | Doc | Use |
 |-----|-----|
+| [Install site](https://agentic-pantheon.github.io/aurey-mcp/install.html) | curl / PyPI flow (default for users) |
+| [llms.txt](https://agentic-pantheon.github.io/aurey-mcp/llms.txt) | Machine-oriented install spec |
 | [install/hermes.md](../../install/hermes.md) | Hermes + **`aurey-setup`** (primary) |
 | [docs/1claw-onboarding-guide.md](../../docs/1claw-onboarding-guide.md) | All hosts, manual 1Claw, troubleshooting |
 | [ONBOARDING_1CLAW.md](../../ONBOARDING_1CLAW.md) | One-page reminder |
@@ -24,10 +26,11 @@ After MCP works, hand off to **[skills/aurey-wallet/SKILL.md](../aurey-wallet/SK
 
 1. **Never** ask in chat: private keys, mnemonics, **`1ck_`** (human), **`ocv_`** (agent), Alchemy.
 2. **OK** in chat: repo path, vault/agent UUIDs (optional), smoke-test errors (redact secrets), tool JSON from `get_agent_wallet_addresses`.
-3. **Hermes:** user runs **`uv run aurey-setup`** in a **real terminal**—do not paste that command’s input from chat.
-4. Alchemy lives in **1Claw vault** `api-keys/alchemy` (see `~/.aurey/config.toml`); not Hermes MCP `env`.
-5. Never invent **`0x`** — use **`get_agent_wallet_addresses`** after MCP is connected.
-6. No **`tx_execute`** during onboarding; verification is **read-only** only.
+3. **Hermes:** user runs **`aurey-setup`** (or `uv run aurey-setup` from a dev clone) in a **real terminal**—do not paste that command’s input from chat.
+4. Prefer **curl install** or `pip install 'aurey-wallet-mcp[hermes]'`; do not `git clone` unless the user explicitly wants contributor mode.
+5. Alchemy lives in **1Claw vault** `api-keys/alchemy` (see `~/.aurey/config.toml`); not Hermes MCP `env`.
+6. Never invent **`0x`** — use **`get_agent_wallet_addresses`** after MCP is connected.
+7. No **`tx_execute`** during onboarding; verification is **read-only** only.
 
 ---
 
@@ -35,10 +38,11 @@ After MCP works, hand off to **[skills/aurey-wallet/SKILL.md](../aurey-wallet/SK
 
 | Host | Command |
 |------|---------|
-| **Hermes** | `uv run aurey-setup` (default) — [install/hermes.md](../../install/hermes.md) |
-| **Cursor** | `uv run aurey-setup --host cursor` — [install/cursor.md](../../install/cursor.md) |
-| **Claude Desktop** | `uv run aurey-setup --host claude` — [install/claude.md](../../install/claude.md) |
-| **OpenClaw** | `uv run aurey-setup --host openclaw` — [install/openclaw.md](../../install/openclaw.md) |
+| **Install** | User terminal: `curl -fsSL https://agentic-pantheon.github.io/aurey-mcp/install.sh \| bash` |
+| **Hermes** | `aurey-setup` (default) — [install/hermes.md](../../install/hermes.md) |
+| **Cursor** | `aurey-setup --host cursor` — [install/cursor.md](../../install/cursor.md) |
+| **Claude Desktop** | `aurey-setup --host claude` — [install/claude.md](../../install/claude.md) |
+| **OpenClaw** | `aurey-setup --host openclaw` — [install/openclaw.md](../../install/openclaw.md) |
 
 All hosts: same `1ck_…` + optional Alchemy prompts; credentials in `~/.aurey/mcp.env` (never chat).
 
@@ -56,7 +60,7 @@ Personal install = **one agent per MCP**. Multi-tenant Platform products → [Pl
 2. Hermes MCP extra: `cd ~/.hermes/hermes-agent && source venv/bin/activate && uv pip install -e ".[mcp]"`.
 3. [1claw.xyz](https://1claw.xyz) account.
 4. **Personal API key** `1ck_…` from 1Claw dashboard (API keys).
-5. Clone or path to **aurey-wallet-mcp** on the Hermes machine.
+5. Package installed (`install.sh` or pip) on the Hermes machine—not required to clone the repo.
 6. Optional: [Alchemy](https://www.alchemy.com/) key for balances.
 
 ### Checklist (tick in chat)
@@ -64,7 +68,7 @@ Personal install = **one agent per MCP**. Multi-tenant Platform products → [Pl
 ```
 Hermes + Aurey setup:
 - [ ] User has 1ck_… ready (not pasted in chat)
-- [ ] User ran: cd <repo> && uv sync --group dev && uv run aurey-setup --host <host>
+- [ ] User ran install.sh or pip install, then aurey-setup --host <host> in terminal
 - [ ] User reloaded MCP (Hermes: mcp test + /reload-mcp; Cursor/Claude: restart; OpenClaw: restart gateway)
 - [ ] get_agent_wallet_addresses → ethereum + evm_source oneclaw_signing_keys
 - [ ] Read-only balance on ethereum
