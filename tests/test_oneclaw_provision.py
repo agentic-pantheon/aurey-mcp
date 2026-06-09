@@ -62,14 +62,19 @@ def test_resolve_vault_id_uses_existing_single_vault() -> None:
 
 def test_provision_for_aurey_happy_path(monkeypatch: pytest.MonkeyPatch) -> None:
     calls: list[str] = []
+    agent_create_body: dict | None = None
 
     def handler(request: httpx.Request) -> httpx.Response:
+        nonlocal agent_create_body
         calls.append(f"{request.method} {request.url.path}")
         if request.url.path == "/v1/auth/api-key-token":
             return httpx.Response(200, json={"access_token": "jwt-human"})
         if request.url.path == "/v1/vaults" and request.method == "GET":
             return httpx.Response(200, json={"vaults": [{"id": "v-uuid", "name": "aurey-wallet"}]})
         if request.url.path == "/v1/agents" and request.method == "POST":
+            import json
+
+            agent_create_body = json.loads(request.content.decode())
             return httpx.Response(
                 201,
                 json={
@@ -112,6 +117,8 @@ def test_provision_for_aurey_happy_path(monkeypatch: pytest.MonkeyPatch) -> None
     assert result.ethereum_address == "0xabc"
     assert result.alchemy_secret_path == "api-keys/alchemy"
     assert any("POST /v1/agents" in c for c in calls)
+    assert agent_create_body is not None
+    assert "scopes" not in agent_create_body
 
 
 def test_provision_raises_on_agent_failure(monkeypatch: pytest.MonkeyPatch) -> None:

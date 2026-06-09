@@ -282,6 +282,7 @@ Optional: `AUREY_ROUTE_BUILDER_URL` in MCP `env` for hosted swap quotes — see 
 | MCP: *no EVM wallet on agent* | No Ethereum signing key | Re-run provisioning or dashboard: signing keys → ethereum; then `get_agent_wallet_addresses(refresh=true)` |
 | MCP: *Bootstrap API key unavailable* | `.env` not loaded | Check `~/.hermes/.env` and `${VAR}` in `config.yaml` |
 | `hermes mcp test` connection closed | Bad `ocv_` or agent id | Rotate agent key in 1Claw; update `.env` via `aurey-hermes-install --prompt-secrets` |
+| Balances fail / *scopes do not cover this secret path* | Vault policy OK but agent JWT scopes too narrow (`vaults:read` only) | In 1Claw: edit agent → clear fixed scopes (use policy-derived scopes) or create a new agent via latest `aurey-setup`; policy `api-keys/**` read |
 | Balances fail | No Alchemy at `api-keys/alchemy` | Add secret in 1Claw; policy `api-keys/**` read |
 | Swaps fail routing | No LiFi / route builder | `AUREY_ROUTE_BUILDER_URL` or LiFi key per [setup.md](../docs/setup.md) |
 | Agent invents `0x` | Skipped wallet tool | Enforce `get_agent_wallet_addresses` |

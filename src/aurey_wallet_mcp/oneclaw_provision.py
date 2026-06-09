@@ -164,11 +164,12 @@ class OneClawHumanClient:
         description: str,
         intents_api_enabled: bool = True,
     ) -> tuple[str, str]:
+        # Omit ``scopes`` so 1Claw derives JWT scopes from vault policies (see Agent API auth docs).
+        # Hard-coded scopes (e.g. vaults:read only) block secret reads despite correct policies.
         body: dict[str, Any] = {
             "name": name.strip(),
             "description": description.strip(),
             "intents_api_enabled": intents_api_enabled,
-            "scopes": ["vaults:read"],
         }
         resp = self._client.post("/v1/agents", json=body)
         if resp.status_code not in (200, 201):
