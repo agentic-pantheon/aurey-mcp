@@ -1,0 +1,30 @@
+# Aurey wallet MCP — minimal standalone config (see docs/setup.md)
+# Hermes: prefer `uv run aurey-setup` — writes ~/.hermes/.env and sets alchemy_secret_path below.
+
+[oneclaw]
+vault_id = ""
+# Agent API key (ocv_…): AUREY_ONECLAW_VAULT_API_KEY in MCP host env (Hermes ~/.hermes/.env).
+agent_id = ""
+
+[wallet]
+# evm_signing_mode defaults to oneclaw_intents in aurey-wallet-mcp (no env required).
+
+[providers]
+# Preferred: store Alchemy in 1Claw at this path (agent policy must allow read).
+alchemy_secret_path = "api-keys/alchemy"
+# Optional plaintext override (not recommended for Hermes MCP env):
+# alchemy_api_key = ""
+zerion_api_key = ""
+
+[routing]
+route_builder_url = ""
+# route_builder_api_key = ""
+
+[dashboard]
+enabled = false
+port = 8765
+# auth_token = ""
+
+[autonomy]
+# policy_path = "~/.aurey/autonomy_policy.json"
+# x402_url = "http://127.0.0.1:8092"

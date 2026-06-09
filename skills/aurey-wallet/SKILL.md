@@ -1,0 +1,45 @@
+---
+name: aurey-wallet
+description: >-
+  Operates Aurey Wallet MCP tools for EVM reads, swaps, and 1Claw Intents
+  prepare/execute. Use when the user checks balances, swaps, sends tokens, or
+  uses wallet tools after MCP is configured. For first-time setup, use
+  aurey-wallet-onboarding instead.
+---
+
+# Aurey Wallet — operations (agent skill)
+
+MCP tools provide EVM operations with **1Claw Intents** custody. If MCP is not configured yet, switch to **[skills/aurey-wallet-onboarding/SKILL.md](../aurey-wallet-onboarding/SKILL.md)**.
+
+## Rules
+
+1. Use tools only — never invent balances, addresses, or tx hashes.
+2. **Call `get_agent_wallet_addresses` first** when you need the user's EVM `from_address`.
+3. Resolve tickers with `resolve_known_address` before other `0x` addresses.
+4. Flow: read → prepare (`swap_prepare`, `tx_prepare_*`) → **show summary** → `tx_execute(prepared_id=...)` only after **explicit** user confirmation.
+5. Never ask for private keys; signing is server-side via 1Claw Intents.
+6. For swaps, prefer `prepared_id` over copying calldata.
+7. `autonomy_*` tools do not replace user confirmation unless policy is armed and user opted in.
+
+## Typical swap
+
+1. `get_agent_wallet_addresses` → `ethereum` as `from_address`
+2. `evm_get_erc20_balance` / portfolio reads as needed
+3. `swap_prepare` → note `prepared_id` and fees
+4. Optional `tx_prepare_erc20_approval` if indicated
+5. `tx_prepare_lifi` with `prepared_id`
+6. User confirms
+7. `tx_execute(prepared_id=...)`
+8. Cross-chain: `lifi_get_status`
+
+## Operator env (reference)
+
+Hermes install writes `~/.hermes/.env`:
+
+- `AUREY_ONECLAW_VAULT_ID`, `AUREY_ONECLAW_AGENT_ID`, `AUREY_ONECLAW_VAULT_API_KEY` (`ocv_…`)
+
+Defaults in package: `oneclaw_intents`, standalone mode. **Alchemy:** 1Claw path `api-keys/alchemy` (`~/.aurey/config.toml`), not MCP env on Hermes.
+
+No manual wallet address unless `AUREY_DEEP_AGENT_WALLET_ADDRESS`.
+
+**Setup:** [install/hermes.md](../../install/hermes.md) (`aurey-setup`) · [docs/setup.md](../../docs/setup.md)
