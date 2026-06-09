@@ -43,7 +43,7 @@ Shared artifacts: `~/.aurey/mcp.env`, `~/.aurey/run-aurey-wallet-mcp.sh`, `~/.au
 
 1. Create a [1Claw](https://1claw.xyz) account if needed.
 2. Create a **personal API key** (`1ck_…`) in the dashboard.
-3. At prompts: paste `1ck_…`; optionally Alchemy.
+3. At prompts: paste `1ck_…`; optionally Alchemy; optionally **LiFi API key** (Enter to skip).
 
 **Provisioner behavior:**
 
@@ -51,6 +51,9 @@ Shared artifacts: `~/.aurey/mcp.env`, `~/.aurey/run-aurey-wallet-mcp.sh`, `~/.au
 - **Agent:** new Intents agent **Aurey Wallet MCP** + `ocv_…` (stored in `~/.hermes/.env`).
 - **Policy:** agent read on `api-keys/**`.
 - **Signing key:** Ethereum on that agent.
+- **LiFi (optional):** stores API key at `api-keys/lifi` and sets `lifi_api_secret_path` in `~/.aurey/config.toml` when provided.
+
+**LiFi key — what it is for (optional):** LiFi **Earn** vault discovery (`earn_list_vaults`, APY/TVL, Composer-supported vaults) and higher-rate LiFi swap/Composer quotes. Swaps may work without a key; the Earn Data API at `earn.li.fi` requires the `x-lifi-api-key` header. **How to get one:** follow [LiFi Earn quickstart](https://docs.li.fi/earn/quickstart) — sign up at [portal.li.fi/signup](https://portal.li.fi/signup), create an API key, paste at the `aurey-setup` prompt (terminal only, not chat). Add later with `PUT` to the same vault path or re-run `aurey-setup` with `--lifi-key`.
 
 Then reload MCP for your host (Hermes: `hermes mcp test aurey-wallet` + `/reload-mcp`; Cursor/Claude: restart app; OpenClaw: restart gateway) → `get_agent_wallet_addresses`.
 
@@ -89,6 +92,16 @@ Provision **ethereum** signing key on that agent (dashboard or `POST /v1/agents/
 Preferred: store in vault at **`api-keys/alchemy`**; set `alchemy_secret_path` in `~/.aurey/config.toml`. Grant agent **read** policy on `api-keys/**`.
 
 Optional: `AUREY_ALCHEMY_API_KEY` in env (not recommended on Hermes).
+
+### Step 6b — LiFi API key (optional)
+
+**For:** LiFi Earn vault discovery and portfolio reads (`earn_list_vaults`, etc.) and higher LiFi quote rate limits. **Not required** for basic onboarding or read-only wallet checks; **required** for Earn API calls (see [Earn quickstart](https://docs.li.fi/earn/quickstart)).
+
+Preferred: store in vault at **`api-keys/lifi`**; set `lifi_api_secret_path = "api-keys/lifi"` under `[providers]` in `~/.aurey/config.toml` ( `aurey-setup` does this when you enter a key). Same `api-keys/**` read policy as Alchemy.
+
+Get a key: [portal.li.fi/signup](https://portal.li.fi/signup) → API keys (documented in [Earn quickstart](https://docs.li.fi/earn/quickstart)).
+
+Optional env alternative: `AUREY_LIFI_API_KEY` (avoid on shared hosts; vault path is preferred).
 
 ### Step 7 — Aurey MCP on host
 
@@ -136,7 +149,7 @@ When the user asks to **set up Aurey**, **connect 1Claw**, or **install wallet M
 
 ### Safety
 
-- **Never** ask for private keys, mnemonics, `1ck_`, `ocv_`, or Alchemy in chat.
+- **Never** ask for private keys, mnemonics, `1ck_`, `ocv_`, Alchemy, or LiFi API keys in chat.
 - UUIDs and tool output in chat are fine.
 - Never invent `0x` addresses.
 

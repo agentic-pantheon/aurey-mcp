@@ -23,9 +23,10 @@ Using a **human** API key (`1ck_…`, terminal only):
 3. **Agent** — `Aurey Wallet MCP`, Intents enabled, returns **`ocv_…`** (written to `~/.hermes/.env` on Hermes).
 4. **Policy** — agent read on `api-keys/**`.
 5. **Alchemy** — optional store at `api-keys/alchemy`.
-6. **Signing key** — Ethereum on the agent.
-7. **Host MCP config** — Hermes `~/.hermes/*`; Cursor `mcp.json`; Claude desktop config; OpenClaw `openclaw.json`.
-8. **Shared** — `~/.aurey/mcp.env`, wrapper `~/.aurey/run-aurey-wallet-mcp.sh`, `~/.aurey/config.toml`.
+6. **LiFi** — optional store at `api-keys/lifi` (Earn vault discovery; see [Earn quickstart](https://docs.li.fi/earn/quickstart)).
+7. **Signing key** — Ethereum on the agent.
+8. **Host MCP config** — Hermes `~/.hermes/*`; Cursor `mcp.json`; Claude desktop config; OpenClaw `openclaw.json`.
+9. **Shared** — `~/.aurey/mcp.env`, wrapper `~/.aurey/run-aurey-wallet-mcp.sh`, `~/.aurey/config.toml`.
 
 CLI: `aurey-setup` · Provision-only module: `oneclaw_provision.py`.
 
@@ -44,6 +45,8 @@ Required in MCP host env (or `~/.hermes/.env` on Hermes):
 **Defaults in this package** (no env needed): `hosted_platform_enabled=false`, `evm_signing_mode=oneclaw_intents`.
 
 **Alchemy (preferred):** `alchemy_secret_path = "api-keys/alchemy"` in `~/.aurey/config.toml` with key in 1Claw vault. Optional plaintext: `AUREY_ALCHEMY_API_KEY` (avoid on Hermes).
+
+**LiFi (optional):** `lifi_api_secret_path = "api-keys/lifi"` when you use Earn vault tools; get a key via [Earn quickstart](https://docs.li.fi/earn/quickstart). Optional plaintext: `AUREY_LIFI_API_KEY`.
 
 On MCP start, the plugin loads the agent’s Ethereum address from signing-keys. Failure → finish 1Claw ETH key provisioning.
 

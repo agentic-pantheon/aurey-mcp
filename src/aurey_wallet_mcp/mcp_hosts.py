@@ -12,6 +12,7 @@ from aurey_wallet_mcp.install_common import (
     SERVER_NAME,
     McpHost,
     ensure_aurey_toml_alchemy_path,
+    ensure_aurey_toml_lifi_path,
     host_reload_hint,
     load_json_object,
     maybe_dev_sync,
@@ -92,6 +93,7 @@ def run_host_install(
     skip_sync: bool = False,
     secrets: dict[str, str],
     alchemy_vault_path: str = DEFAULT_ALCHEMY_VAULT_PATH,
+    lifi_vault_path: str | None = None,
     skip_smoke_test: bool = False,
     hermes_home: str | None = None,
     cursor_project: str | None = None,
@@ -107,6 +109,8 @@ def run_host_install(
     wrapper = write_mcp_wrapper(binary=binary, env_path=env_file)
     aurey_toml = Path.home() / ".aurey" / "config.toml"
     ensure_aurey_toml_alchemy_path(aurey_toml, secret_path=alchemy_vault_path.strip())
+    if lifi_vault_path and str(lifi_vault_path).strip():
+        ensure_aurey_toml_lifi_path(aurey_toml, secret_path=str(lifi_vault_path).strip())
 
     missing = missing_required(secrets)
     if missing:

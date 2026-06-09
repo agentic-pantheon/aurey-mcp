@@ -26,6 +26,7 @@ class ProvisionResult:
     agent_api_key: str
     ethereum_address: str | None
     alchemy_secret_path: str | None
+    lifi_secret_path: str | None
 
 
 def _problem_detail(resp: httpx.Response) -> str:
@@ -294,13 +295,16 @@ def provision_for_aurey(
     agent_description: str = DEFAULT_AGENT_DESCRIPTION,
     alchemy_api_key: str | None = None,
     alchemy_secret_path: str = "api-keys/alchemy",
+    lifi_api_key: str | None = None,
+    lifi_secret_path: str = "api-keys/lifi",
 ) -> ProvisionResult:
-    """Create (or reuse) vault, agent, policies, optional Alchemy secret, Ethereum signing key."""
+    """Create (or reuse) vault, agent, policies, optional API secrets, Ethereum signing key."""
 
     bearer = OneClawHumanClient.human_bearer_from_personal_api_key(
         human_api_key, base_url=base_url
     )
     alchemy_path: str | None = None
+    lifi_path: str | None = None
     with OneClawHumanClient(base_url=base_url, bearer_token=bearer) as client:
         vid = resolve_vault_id(client, vault_id=vault_id, vault_name=vault_name)
         agent_id, ocv = client.create_agent(
@@ -317,6 +321,10 @@ def provision_for_aurey(
             path = alchemy_secret_path.strip() or "api-keys/alchemy"
             client.put_secret(vault_id=vid, path=path, value=alchemy_api_key.strip())
             alchemy_path = path
+        if lifi_api_key and lifi_api_key.strip():
+            lpath = lifi_secret_path.strip() or "api-keys/lifi"
+            client.put_secret(vault_id=vid, path=lpath, value=lifi_api_key.strip())
+            lifi_path = lpath
         eth_address = client.provision_signing_key(agent_id=agent_id, chain="ethereum")
 
     return ProvisionResult(
@@ -325,6 +333,7 @@ def provision_for_aurey(
         agent_api_key=ocv,
         ethereum_address=eth_address,
         alchemy_secret_path=alchemy_path,
+        lifi_secret_path=lifi_path,
     )
 
 

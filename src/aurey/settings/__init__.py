@@ -298,8 +298,9 @@ class AureySettings(BaseSettings):
     lifi_api_secret_path: str | None = Field(
         default=None,
         description=(
-            "Optional 1Claw vault path for LiFi API key. If unset, swap quotes use "
-            "unauthenticated LiFi (lower rate limits)."
+            "Optional 1Claw vault path for LiFi API key (``x-lifi-api-key``). Required for "
+            "LiFi Earn Data API (vault discovery); swap quotes may run without a key at lower "
+            "rate limits."
         ),
     )
     lifi_api_key: str | None = Field(

@@ -24,13 +24,14 @@ After MCP works, hand off to **[skills/aurey-wallet/SKILL.md](../aurey-wallet/SK
 
 ## Non-negotiables
 
-1. **Never** ask in chat: private keys, mnemonics, **`1ck_`** (human), **`ocv_`** (agent), Alchemy.
+1. **Never** ask in chat: private keys, mnemonics, **`1ck_`** (human), **`ocv_`** (agent), Alchemy, LiFi API keys.
 2. **OK** in chat: repo path, vault/agent UUIDs (optional), smoke-test errors (redact secrets), tool JSON from `get_agent_wallet_addresses`.
 3. **Hermes:** user runs **`aurey-setup`** (or `uv run aurey-setup` from a dev clone) in a **real terminal**—do not paste that command’s input from chat.
 4. Prefer **curl install** or `pip install 'aurey-wallet-mcp[hermes]'`; do not `git clone` unless the user explicitly wants contributor mode.
 5. Alchemy lives in **1Claw vault** `api-keys/alchemy` (see `~/.aurey/config.toml`); not Hermes MCP `env`.
-6. Never invent **`0x`** — use **`get_agent_wallet_addresses`** after MCP is connected.
-7. No **`tx_execute`** during onboarding; verification is **read-only** only.
+6. **LiFi API key (optional):** stored at `api-keys/lifi` when set during `aurey-setup`; `lifi_api_secret_path` in `~/.aurey/config.toml`. Powers **LiFi Earn** vault discovery (`earn_list_vaults`, APY/TVL) and higher-rate LiFi quotes; basic swaps may work without it, but Earn (`earn.li.fi`) requires the key. User gets one via [LiFi Earn quickstart](https://docs.li.fi/earn/quickstart) ([Partner Portal signup](https://portal.li.fi/signup) → API key). User runs setup in terminal—do not ask for the key in chat.
+7. Never invent **`0x`** — use **`get_agent_wallet_addresses`** after MCP is connected.
+8. No **`tx_execute`** during onboarding; verification is **read-only** only.
 
 ---
 
@@ -44,7 +45,7 @@ After MCP works, hand off to **[skills/aurey-wallet/SKILL.md](../aurey-wallet/SK
 | **Claude Desktop** | `aurey-setup --host claude` — [install/claude.md](../../install/claude.md) |
 | **OpenClaw** | `aurey-setup --host openclaw` — [install/openclaw.md](../../install/openclaw.md) |
 
-All hosts: same `1ck_…` + optional Alchemy prompts; credentials in `~/.aurey/mcp.env` (never chat).
+All hosts: same `1ck_…` + optional Alchemy + optional LiFi prompts; credentials in `~/.aurey/mcp.env` (never chat).
 
 Re-wire MCP without re-provisioning: `aurey-setup --host <h> --skip-provision`.
 
@@ -62,6 +63,7 @@ Personal install = **one agent per MCP**. Multi-tenant Platform products → [Pl
 4. **Personal API key** `1ck_…` from 1Claw dashboard (API keys).
 5. Package installed (`install.sh` or pip) on the Hermes machine—not required to clone the repo.
 6. Optional: [Alchemy](https://www.alchemy.com/) key for balances.
+7. Optional: [LiFi API key](https://docs.li.fi/earn/quickstart) for Earn vault discovery (and higher LiFi quote limits); Enter to skip at setup.
 
 ### Checklist (tick in chat)
 
@@ -77,9 +79,9 @@ Hermes + Aurey setup:
 
 ### What `aurey-setup` does (explain briefly)
 
-Uses Human API with `1ck_…` to: pick or **create vault** (`aurey-wallet` if empty account), create **Intents agent**, policy on `api-keys/**`, optional Alchemy secret, **Ethereum signing key**, write `~/.hermes/.env` + `config.yaml`, set Alchemy path in `~/.aurey/config.toml`.
+Uses Human API with `1ck_…` to: pick or **create vault** (`aurey-wallet` if empty account), create **Intents agent**, policy on `api-keys/**`, optional Alchemy + optional LiFi secrets, **Ethereum signing key**, write `~/.hermes/.env` + `config.yaml`, set provider paths in `~/.aurey/config.toml`.
 
-Flags user may need: `--vault-id`, `--skip-alchemy`, `--from-env` (`AUREY_ONECLAW_HUMAN_API_KEY`).
+Flags user may need: `--vault-id`, `--skip-alchemy`, `--skip-lifi`, `--from-env` (`AUREY_ONECLAW_HUMAN_API_KEY`).
 
 ### Your role in chat
 
@@ -94,7 +96,7 @@ Flags user may need: `--vault-id`, `--skip-alchemy`, `--from-env` (`AUREY_ONECLA
 ```text
 Help me install Aurey Wallet MCP on Hermes.
 Repo: /path/to/aurey-wallet-mcp
-I'll run aurey-setup in my terminal for 1ck_ and Alchemy—I won't paste those keys here.
+I'll run aurey-setup in my terminal for 1ck_, Alchemy, and optional LiFi—I won't paste those keys here.
 ```
 
 ---
@@ -109,8 +111,9 @@ Walk [docs/1claw-onboarding-guide.md](../../docs/1claw-onboarding-guide.md) Path
 4. `ocv_…` → host MCP env (`AUREY_ONECLAW_VAULT_API_KEY`) — user sets in UI/file, not chat  
 5. **Ethereum** signing key (**blocker** if missing)  
 6. Alchemy in vault `api-keys/alchemy` + read policy  
-7. MCP snippet from `install/openclaw.md` or `install/cursor.md`  
-8. `get_agent_wallet_addresses`  
+7. Optional LiFi in vault `api-keys/lifi` + `lifi_api_secret_path` in `~/.aurey/config.toml` ([Earn quickstart](https://docs.li.fi/earn/quickstart))  
+8. MCP snippet from `install/openclaw.md` or `install/cursor.md`  
+9. `get_agent_wallet_addresses`  
 
 **Hermes manual:** `uv run aurey-hermes-install --prompt-secrets` instead of dashboard-heavy path if user already has UUIDs.
 
@@ -135,6 +138,7 @@ Walk [docs/1claw-onboarding-guide.md](../../docs/1claw-onboarding-guide.md) Path
 | *Bootstrap API key unavailable* | Fix `~/.hermes/.env` / MCP `env` |
 | `aurey-setup` auth failed | New `1ck_` in dashboard |
 | Balances fail | Alchemy at `api-keys/alchemy` + policy |
+| `earn_list_vaults` HTTP 401 | Optional LiFi key at `api-keys/lifi` + `lifi_api_secret_path`; see [Earn quickstart](https://docs.li.fi/earn/quickstart) |
 | `hermes mcp test` fails | [install/hermes.md](../../install/hermes.md) troubleshooting table |
 
 ---

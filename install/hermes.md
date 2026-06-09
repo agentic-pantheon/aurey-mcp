@@ -95,6 +95,7 @@ aurey-setup --host openclaw  # ~/.openclaw/openclaw.json (or OPENCLAW_CONFIG)
 
 1. **1Claw human API key** (`1ck_…`)
 2. **Alchemy API key** (Enter to skip; stored in 1Claw if provided)
+3. **LiFi API key** (optional; Enter to skip) — Earn vault discovery + higher LiFi quote limits; see [Earn quickstart](https://docs.li.fi/earn/quickstart) / [portal.li.fi/signup](https://portal.li.fi/signup)
 
 **What `aurey-setup` does automatically:**
 
@@ -105,11 +106,12 @@ aurey-setup --host openclaw  # ~/.openclaw/openclaw.json (or OPENCLAW_CONFIG)
 | Agent | Creates **Aurey Wallet MCP** agent with `intents_api_enabled: true`; returns one-time `ocv_…` |
 | Policy | Grants agent **read** on `api-keys/**` |
 | Alchemy | `PUT` secret at `api-keys/alchemy` when you entered a key |
+| LiFi | `PUT` secret at `api-keys/lifi` when you entered a key; sets `lifi_api_secret_path` in `~/.aurey/config.toml` |
 | Signing key | Provisions **Ethereum** signing key on the agent |
 | Hermes | Writes `~/.hermes/.env`, patches `~/.hermes/config.yaml` |
 | All hosts | Writes `~/.aurey/mcp.env` (chmod 600) + wrapper `~/.aurey/run-aurey-wallet-mcp.sh` |
 | Cursor / Claude / OpenClaw | MCP config points at the **wrapper** (secrets stay out of JSON) |
-| `~/.aurey/config.toml` | `alchemy_secret_path` |
+| `~/.aurey/config.toml` | `alchemy_secret_path`; `lifi_api_secret_path` when LiFi key provided |
 | Verify | Optional MCP bootstrap smoke test |
 
 **Useful flags:**
@@ -117,6 +119,7 @@ aurey-setup --host openclaw  # ~/.openclaw/openclaw.json (or OPENCLAW_CONFIG)
 ```bash
 uv run aurey-setup --vault-id '<existing-vault-uuid>'   # do not create/pick another vault
 uv run aurey-setup --skip-alchemy                     # add Alchemy in dashboard later
+uv run aurey-setup --skip-lifi                        # skip LiFi prompt (Earn vault list needs key later)
 uv run aurey-setup --from-env                         # human key in AUREY_ONECLAW_HUMAN_API_KEY
 uv run aurey-setup --provision-only                   # 1Claw + ~/.aurey/mcp.env only
 uv run aurey-setup --host cursor --skip-provision     # Re-wire MCP using saved mcp.env

@@ -7,10 +7,16 @@ import getpass
 import os
 import sys
 
+from pathlib import Path
+
 from aurey_wallet_mcp.install_common import (
     DEFAULT_ALCHEMY_VAULT_PATH,
+    DEFAULT_LIFI_VAULT_PATH,
     HUMAN_API_KEY_ENV,
+    LIFI_EARN_QUICKSTART_URL,
+    LIFI_SETUP_HINT,
     McpHost,
+    ensure_aurey_toml_lifi_path,
     load_mcp_env,
     secrets_from_ids,
 )
@@ -57,6 +63,25 @@ def _pick_alchemy(cli: str | None, *, prompt: bool, skip: bool) -> str | None:
     return val or None
 
 
+def _pick_lifi(cli: str | None, *, prompt: bool, skip: bool) -> str | None:
+    if skip:
+        return None
+    if cli is not None:
+        return cli.strip() or None
+    if not prompt:
+        return None
+    print(LIFI_SETUP_HINT, file=sys.stderr)
+    try:
+        val = getpass.getpass(
+            f"LiFi API key (Enter to skip; stored in 1Claw at {DEFAULT_LIFI_VAULT_PATH}): "
+        ).strip()
+    except Exception:
+        val = input(
+            f"LiFi API key (Enter to skip; stored in 1Claw at {DEFAULT_LIFI_VAULT_PATH}): "
+        ).strip()
+    return val or None
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         description="Provision 1Claw (human 1ck_ key) and install Aurey Wallet MCP for your host.",
@@ -87,6 +112,9 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--alchemy-key", help="Alchemy key to store in 1Claw vault")
     p.add_argument("--skip-alchemy", action="store_true")
     p.add_argument("--alchemy-vault-path", default=DEFAULT_ALCHEMY_VAULT_PATH)
+    p.add_argument("--lifi-key", help="LiFi API key to store in 1Claw vault (Earn + quote rate limits)")
+    p.add_argument("--skip-lifi", action="store_true", help="Do not prompt for LiFi API key")
+    p.add_argument("--lifi-vault-path", default=DEFAULT_LIFI_VAULT_PATH)
     p.add_argument(
         "--skip-provision",
         action="store_true",
@@ -112,6 +140,7 @@ def main(argv: list[str] | None = None) -> None:
         raise SystemExit("Use only one of --skip-provision or --provision-only.")
 
     secrets: dict[str, str] = {}
+    lifi_configured_path: str | None = None
 
     if args.skip_provision:
         secrets = load_mcp_env()
@@ -132,6 +161,11 @@ def main(argv: list[str] | None = None) -> None:
             prompt=args.prompt_secrets,
             skip=args.skip_alchemy,
         )
+        lifi = _pick_lifi(
+            args.lifi_key,
+            prompt=args.prompt_secrets,
+            skip=args.skip_lifi,
+        )
         print("Provisioning 1Claw (vault, Intents agent, policy, Ethereum signing key)…")
         try:
             result = provision_for_aurey(
@@ -140,6 +174,8 @@ def main(argv: list[str] | None = None) -> None:
                 vault_id=args.vault_id,
                 alchemy_api_key=alchemy,
                 alchemy_secret_path=args.alchemy_vault_path.strip(),
+                lifi_api_key=lifi,
+                lifi_secret_path=args.lifi_vault_path.strip(),
             )
         except OneClawProvisionError as exc:
             raise SystemExit(str(exc)) from exc
@@ -166,11 +202,22 @@ def main(argv: list[str] | None = None) -> None:
                 f"  Add Alchemy later at 1Claw path {args.alchemy_vault_path!r}.",
                 file=sys.stderr,
             )
+        lifi_configured_path = result.lifi_secret_path
+        if result.lifi_secret_path:
+            print(f"✓ LiFi API key stored in 1Claw at {result.lifi_secret_path!r}")
+        elif not args.skip_lifi:
+            print(
+                f"  LiFi optional: add later for Earn vault discovery — {LIFI_EARN_QUICKSTART_URL}",
+                file=sys.stderr,
+            )
 
         if args.provision_only:
             from aurey_wallet_mcp.install_common import write_mcp_env
 
             path = write_mcp_env(secrets)
+            aurey_toml = Path.home() / ".aurey" / "config.toml"
+            if lifi_configured_path:
+                ensure_aurey_toml_lifi_path(aurey_toml, secret_path=lifi_configured_path)
             print(f"✓ Credentials written to {path}")
             print(f"  Install MCP later: uv run aurey-setup --host {host} --skip-provision")
             return
@@ -184,6 +231,7 @@ def main(argv: list[str] | None = None) -> None:
         skip_sync=args.skip_sync,
         secrets=secrets,
         alchemy_vault_path=args.alchemy_vault_path.strip(),
+        lifi_vault_path=lifi_configured_path,
         skip_smoke_test=args.skip_smoke_test,
         hermes_home=args.hermes_home,
         cursor_project=args.cursor_project,
