@@ -1,6 +1,8 @@
 # Cursor — Aurey Wallet MCP
 
-Same **one-command** flow as Hermes: provision 1Claw with a human `1ck_…` key, then patch Cursor MCP config.
+Shared install: [index.md](index.md). Troubleshooting: [docs/troubleshooting.md](../docs/troubleshooting.md).
+
+Same **one-command** flow as other hosts: provision 1Claw with a human `1ck_…` key, then patch Cursor MCP config.
 
 ## Setup (terminal only)
 
@@ -37,7 +39,7 @@ Then **restart Cursor** or reload MCP from Settings.
 
 ## Verify in chat
 
-Load skills ([SKILL.md](../SKILL.md)). Ask the agent to call **`get_agent_wallet_addresses`**, then a read-only balance. Never paste `1ck_`/`ocv_` in chat.
+Ask the agent to call **`get_agent_wallet_addresses`**, then a read-only balance. Load [SKILL.md](../SKILL.md).
 
 ## Re-install MCP only
 

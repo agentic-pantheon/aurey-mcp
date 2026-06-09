@@ -1,6 +1,8 @@
 # Claude Desktop — Aurey Wallet MCP
 
-Use the same **`aurey-setup`** command as Hermes and Cursor.
+Shared install: [index.md](index.md). Troubleshooting: [docs/troubleshooting.md](../docs/troubleshooting.md).
+
+Use the same **`aurey-setup`** command as other hosts.
 
 ## Setup (terminal only)
 

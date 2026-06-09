@@ -18,18 +18,20 @@ One **1Claw human** API key (`1ck_…` from [1claw.xyz](https://1claw.xyz)) in *
 
 ```bash
 curl -fsSL https://agentic-pantheon.github.io/aurey-mcp/install.sh | bash
-aurey-setup --host hermes
+aurey-setup --host cursor   # or: hermes | claude | openclaw
 ```
 
-Manual: `pip install 'aurey-wallet-mcp[hermes]'` or `uv tool install 'aurey-wallet-mcp[hermes]'`, then `aurey-setup --host hermes`.
+Manual: `pip install 'aurey-wallet-mcp[hermes]'` (or `pip install aurey-wallet-mcp` for non-Hermes hosts), then `aurey-setup --host <host>`.
+
+Host guides on GitHub Pages: [Cursor](https://agentic-pantheon.github.io/aurey-mcp/install/cursor.html) · [Hermes](https://agentic-pantheon.github.io/aurey-mcp/install/hermes.html) · [Claude](https://agentic-pantheon.github.io/aurey-mcp/install/claude.html) · [OpenClaw](https://agentic-pantheon.github.io/aurey-mcp/install/openclaw.html).
 
 **Contributors** (develop from source):
 
 ```bash
 git clone https://github.com/agentic-pantheon/aurey-mcp.git
 cd aurey-mcp
-uv sync --group dev --extra hermes
-uv run aurey-setup --host hermes
+uv sync --group dev
+uv run aurey-setup --host cursor
 ```
 
 **Masked prompts:** `1ck_…`, then optional [Alchemy](https://www.alchemy.com/) key (stored in 1Claw, not MCP `env`).
@@ -129,10 +131,12 @@ Manual 1Claw steps: [docs/1claw-onboarding-guide.md](docs/1claw-onboarding-guide
 
 | Doc | Audience |
 |-----|----------|
-| [install/hermes.md](install/hermes.md) | Full `aurey-setup` reference + Hermes |
+| [install/index.md](install/index.md) | Shared install (all hosts) |
+| [install/hermes.md](install/hermes.md) | Hermes-specific reference |
 | [install/cursor.md](install/cursor.md) | Cursor |
 | [install/claude.md](install/claude.md) | Claude Desktop |
 | [install/openclaw.md](install/openclaw.md) | OpenClaw |
+| [docs/troubleshooting.md](docs/troubleshooting.md) | Common install/MCP fixes |
 | [docs/setup.md](docs/setup.md) | Env vars, route builder, dashboard |
 | [docs/1claw-onboarding-guide.md](docs/1claw-onboarding-guide.md) | 1Claw + agent coaching |
 | [ONBOARDING_1CLAW.md](ONBOARDING_1CLAW.md) | One-page agent playbook |

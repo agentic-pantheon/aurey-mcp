@@ -53,7 +53,8 @@ def mcp_wrapper_path() -> Path:
 INSTALL_PACKAGE_HINT = (
     "Install aurey-wallet-mcp first: "
     "curl -fsSL https://agentic-pantheon.github.io/aurey-mcp/install.sh | bash "
-    "or: pip install 'aurey-wallet-mcp[hermes]'"
+    "or: pip install aurey-wallet-mcp "
+    "(add [hermes] for Hermes YAML tooling only)"
 )
 
 

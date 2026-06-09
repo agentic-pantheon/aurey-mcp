@@ -59,6 +59,7 @@ aurey-setup = "aurey_wallet_mcp.setup:main"
 [dependency-groups]
 dev = [
     "fastapi>=0.115",
+    "markdown>=3.7",
     "pytest>=8",
     "ruff>=0.8",
 ]

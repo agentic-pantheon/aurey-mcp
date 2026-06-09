@@ -17,31 +17,36 @@
   <p>Self-hosted MCP server for EVM wallet tools via <strong>1Claw Intents</strong>—balances, swaps, and signing without private keys in chat.</p>
   <nav>
     <a href="install.html">Install</a>
+    <a href="install/cursor.html">Cursor</a>
+    <a href="install/hermes.html">Hermes</a>
+    <a href="install/claude.html">Claude</a>
+    <a href="install/openclaw.html">OpenClaw</a>
     <a href="llms.txt">llms.txt</a>
     <a href="https://github.com/agentic-pantheon/aurey-mcp">GitHub</a>
   </nav>
 
   <h2>Quick install</h2>
   <pre><code>curl -fsSL https://agentic-pantheon.github.io/aurey-mcp/install.sh | bash
-aurey-setup --host hermes</code></pre>
+aurey-setup --host cursor   # or: hermes | claude | openclaw</code></pre>
   <p>Run <code>aurey-setup</code> in your terminal. Never paste <code>1ck_</code> or <code>ocv_</code> keys into LLM chat.</p>
 
-  <h2>Choose your host</h2>
+  <h2 id="hosts">Choose your host</h2>
   <div class="tab">
-    <h3>Hermes</h3>
+    <h3><a href="install/hermes.html">Hermes</a></h3>
     <pre><code>aurey-setup --host hermes
 hermes mcp test aurey-wallet</code></pre>
   </div>
   <div class="tab">
-    <h3>Cursor</h3>
+    <h3><a href="install/cursor.html">Cursor</a></h3>
     <pre><code>aurey-setup --host cursor</code></pre>
+    <p>Restart Cursor or reload MCP in Settings.</p>
   </div>
   <div class="tab">
-    <h3>Claude Desktop</h3>
+    <h3><a href="install/claude.html">Claude Desktop</a></h3>
     <pre><code>aurey-setup --host claude</code></pre>
   </div>
   <div class="tab">
-    <h3>OpenClaw</h3>
+    <h3><a href="install/openclaw.html">OpenClaw</a></h3>
     <pre><code>aurey-setup --host openclaw</code></pre>
   </div>
 

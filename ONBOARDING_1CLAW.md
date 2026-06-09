@@ -2,9 +2,9 @@
 
 **Load in the agent:** [skills/aurey-wallet-onboarding/SKILL.md](skills/aurey-wallet-onboarding/SKILL.md) (full steps).
 
-**All hosts:** `uv run aurey-setup --host <hermes|cursor|claude|openclaw>` — [install/hermes.md](install/hermes.md).
+**Shared install:** [install/index.md](install/index.md) · [GitHub Pages](https://agentic-pantheon.github.io/aurey-mcp/install.html).
 
-**Humans / all hosts:** [docs/1claw-onboarding-guide.md](docs/1claw-onboarding-guide.md).
+**Humans / all hosts:** [docs/1claw-onboarding-guide.md](docs/1claw-onboarding-guide.md) · [docs/troubleshooting.md](docs/troubleshooting.md).
 
 ---
 
@@ -17,15 +17,27 @@
 
 ---
 
-## Hermes fast path (default)
+## Pick your MCP host
 
-**User terminal:**
+Ask which host the user runs **before** suggesting commands.
+
+| Host | Setup | Verify |
+|------|--------|--------|
+| **Hermes** | `aurey-setup --host hermes` — [install/hermes.md](install/hermes.md) | `hermes mcp test aurey-wallet` → `/reload-mcp` |
+| **Cursor** | `aurey-setup --host cursor` — [install/cursor.md](install/cursor.md) | Restart or reload MCP in Settings |
+| **Claude** | `aurey-setup --host claude` — [install/claude.md](install/claude.md) | Quit and reopen app |
+| **OpenClaw** | `aurey-setup --host openclaw` — [install/openclaw.md](install/openclaw.md) | Restart gateway |
+
+**User terminal (PyPI install, any host):**
 
 ```bash
-cd /path/to/aurey-wallet-mcp && uv sync --group dev && uv run aurey-setup --host hermes
+curl -fsSL https://agentic-pantheon.github.io/aurey-mcp/install.sh | bash
+aurey-setup --host cursor   # match user's host
 ```
 
-**Agent chat:** coach prerequisites (1Claw account, `1ck_` from dashboard) → user runs command → `hermes mcp test aurey-wallet` → `/reload-mcp` → **`get_agent_wallet_addresses`** → read-only balance.
+**Dev clone:** `uv sync --group dev && uv run aurey-setup --host <host>`.
+
+Then **`get_agent_wallet_addresses`** → read-only balance.
 
 ---
 
@@ -37,7 +49,7 @@ cd /path/to/aurey-wallet-mcp && uv sync --group dev && uv run aurey-setup --host
 4. `ocv_…` → `AUREY_ONECLAW_VAULT_API_KEY` (host env, not chat)  
 5. **Ethereum** signing key on agent  
 6. Alchemy in vault `api-keys/alchemy` + policy  
-7. MCP install: `aurey-hermes-install` or host snippet (`install/openclaw.md`, `install/cursor.md`)  
+7. MCP install: `aurey-setup --host <host>` or host doc above  
 8. Verify: `get_agent_wallet_addresses`  
 
 ---
@@ -52,4 +64,4 @@ Load [skills/aurey-wallet/SKILL.md](skills/aurey-wallet/SKILL.md).
 
 ## MCP startup failures
 
-User fixes **host env** (e.g. `~/.hermes/.env`): missing ids, bad `ocv_`, or **no Ethereum signing key** on agent.
+See [docs/troubleshooting.md](docs/troubleshooting.md). Common: missing ids in `~/.aurey/mcp.env`, bad `ocv_`, or **no Ethereum signing key** on agent.

@@ -8,6 +8,7 @@ Repository: https://github.com/agentic-pantheon/aurey-mcp
 
 - NEVER ask the user to paste 1ck_ (human), ocv_ (agent), Alchemy keys, or private keys in chat.
 - User runs aurey-setup in a real terminal with masked prompts.
+- Match the user's MCP host: use the corresponding --host and host doc below.
 - Do not git clone unless the user explicitly wants contributor/dev mode.
 - After MCP works, use get_agent_wallet_addresses; do not invent 0x addresses.
 
@@ -18,6 +19,7 @@ curl -fsSL https://agentic-pantheon.github.io/aurey-mcp/install.sh | bash
 Manual:
   pip install 'aurey-wallet-mcp[hermes]'
   # or: uv tool install 'aurey-wallet-mcp[hermes]'
+  # Cursor/Claude/OpenClaw only (no Hermes YAML extra): pip install aurey-wallet-mcp
 
 Optional pin:
   AUREY_VERSION=0.1.2 curl -fsSL https://agentic-pantheon.github.io/aurey-mcp/install.sh | bash
@@ -29,23 +31,44 @@ aurey-setup --host cursor
 aurey-setup --host claude
 aurey-setup --host openclaw
 
-Flags: --vault-id, --skip-alchemy, --from-env, --skip-provision, --provision-only
+Flags: --vault-id, --skip-alchemy, --from-env, --skip-provision, --provision-only, --cursor-project
 
-## Verify
+## Verify (by host)
 
 Hermes: hermes mcp test aurey-wallet; chat /reload-mcp
-Tool: get_agent_wallet_addresses
-Read-only balance before swaps/sends.
+Cursor: restart app or reload MCP in Settings
+Claude Desktop: quit and reopen app
+OpenClaw: restart gateway
+All: tool get_agent_wallet_addresses; read-only balance before swaps/sends
+
+## Host docs (GitHub markdown)
+
+https://raw.githubusercontent.com/agentic-pantheon/aurey-mcp/main/install/index.md
+https://raw.githubusercontent.com/agentic-pantheon/aurey-mcp/main/install/hermes.md
+https://raw.githubusercontent.com/agentic-pantheon/aurey-mcp/main/install/cursor.md
+https://raw.githubusercontent.com/agentic-pantheon/aurey-mcp/main/install/claude.md
+https://raw.githubusercontent.com/agentic-pantheon/aurey-mcp/main/install/openclaw.md
+
+## Host docs (GitHub Pages HTML)
+
+https://agentic-pantheon.github.io/aurey-mcp/install/cursor.html
+https://agentic-pantheon.github.io/aurey-mcp/install/hermes.html
+https://agentic-pantheon.github.io/aurey-mcp/install/claude.html
+https://agentic-pantheon.github.io/aurey-mcp/install/openclaw.html
+
+## Troubleshooting
+
+https://raw.githubusercontent.com/agentic-pantheon/aurey-mcp/main/docs/troubleshooting.md
 
 ## Skills (raw on GitHub)
 
 Onboarding: https://raw.githubusercontent.com/agentic-pantheon/aurey-mcp/main/skills/aurey-wallet-onboarding/SKILL.md
 Trading: https://raw.githubusercontent.com/agentic-pantheon/aurey-mcp/main/skills/aurey-wallet/SKILL.md
-Hermes doc: https://raw.githubusercontent.com/agentic-pantheon/aurey-mcp/main/install/hermes.md
 
 ## Credentials location
 
 ~/.aurey/mcp.env (chmod 600)
 ~/.aurey/run-aurey-wallet-mcp.sh (MCP command in host configs)
 Hermes: ~/.hermes/config.yaml + ~/.hermes/.env
+Cursor: ~/.cursor/mcp.json or project .cursor/mcp.json
 Alchemy: 1Claw vault path api-keys/alchemy (not MCP env)

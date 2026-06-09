@@ -1,5 +1,7 @@
 # Hermes Agent — Aurey Wallet MCP
 
+Shared install: [index.md](index.md). Troubleshooting: [docs/troubleshooting.md](../docs/troubleshooting.md).
+
 Install **Aurey Wallet MCP** on [Hermes](https://hermes-agent.nousresearch.com/docs/) so your agent can read EVM balances, prepare swaps, and sign via **1Claw Intents** (no private keys in chat or MCP env).
 
 **How this doc is used:** humans follow the steps; **agents** load [skills/aurey-wallet-onboarding/SKILL.md](../skills/aurey-wallet-onboarding/SKILL.md) and use this file as the Hermes-specific reference.

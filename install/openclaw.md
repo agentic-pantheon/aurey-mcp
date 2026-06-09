@@ -1,5 +1,7 @@
 # OpenClaw — Aurey Wallet MCP
 
+Shared install: [index.md](index.md). Troubleshooting: [docs/troubleshooting.md](../docs/troubleshooting.md).
+
 Same **one-command** flow: `aurey-setup` provisions 1Claw and patches OpenClaw MCP config.
 
 ## Setup (terminal only)
