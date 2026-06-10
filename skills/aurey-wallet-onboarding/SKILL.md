@@ -24,15 +24,39 @@ After MCP works, hand off to **[skills/aurey-wallet/SKILL.md](../aurey-wallet/SK
 
 ## Non-negotiables
 
-1. **Never** ask in chat: private keys, mnemonics, **`1ck_`** (human), **`ocv_`** (agent), Alchemy, LiFi, or Zerion API keys.
-2. **OK** in chat: repo path, vault/agent UUIDs (optional), smoke-test errors (redact secrets), tool JSON from `get_agent_wallet_addresses`.
-3. **Hermes:** user runs **`aurey-setup`** (or `uv run aurey-setup` from a dev clone) in a **real terminal**—do not paste that command’s input from chat.
-4. Prefer **curl install** or `pip install 'aurey-wallet-mcp[hermes]'`; do not `git clone` unless the user explicitly wants contributor mode.
-5. Alchemy lives in **1Claw vault** `api-keys/alchemy` (see `~/.aurey/config.toml`); not Hermes MCP `env`.
-6. **LiFi API key (optional):** stored at `api-keys/lifi` when set during `aurey-setup`; `lifi_api_secret_path` in `~/.aurey/config.toml`. Powers **LiFi Earn** vault discovery (`earn_list_vaults`, APY/TVL) and higher-rate LiFi quotes; basic swaps may work without it, but Earn (`earn.li.fi`) requires the key. User gets one via [LiFi Earn quickstart](https://docs.li.fi/earn/quickstart) ([Partner Portal signup](https://portal.li.fi/signup) → API key). User runs setup in terminal—do not ask for the key in chat.
-7. **Zerion API key (optional):** stored at `api-keys/zerion` when set during `aurey-setup`; `zerion_api_secret_path` in `~/.aurey/config.toml`. Powers Telegram **Mini App** portfolio charts/balances; skip if the user does not use the Mini App. Get a key at [developers.zerion.io](https://developers.zerion.io/)—terminal only, not chat.
-8. Never invent **`0x`** — use **`get_agent_wallet_addresses`** after MCP is connected.
-9. No **`tx_execute`** during onboarding; verification is **read-only** only.
+1. **Never** ask for—or offer to receive—in chat: private keys, mnemonics, **`1ck_`** (human), **`ocv_`** (agent), Alchemy, LiFi, or Zerion API keys. Do not say “send me the key and I’ll continue”; there is no safe way for the user to give you a secret in chat.
+2. **Say it upfront, unprompted.** Your **first** setup message must (a) state that keys must never be pasted in this chat, and (b) give the exact terminal commands to run **on the machine where this agent/MCP host is running**. Do not wait for the user to ask whether chat is safe. Use the **First message template** below.
+3. **If the user pastes a secret in chat anyway:** tell them it may be retained in logs/context, instruct them to **rotate it immediately** in the issuing dashboard (1Claw / Alchemy / LiFi / Zerion), and continue with the terminal flow using the new key. Never echo the pasted value back.
+4. **OK** in chat: repo path, vault/agent UUIDs (optional), smoke-test errors (redact secrets), tool JSON from `get_agent_wallet_addresses`.
+5. **Hermes:** user runs **`aurey-setup`** (or `uv run aurey-setup` from a dev clone) in a **real terminal on the same machine where Hermes runs**—`aurey-setup` prompts for keys with masked input there; never pipe chat text into it.
+6. Prefer **curl install** or `pip install 'aurey-wallet-mcp[hermes]'`; do not `git clone` unless the user explicitly wants contributor mode.
+7. Alchemy lives in **1Claw vault** `api-keys/alchemy` (see `~/.aurey/config.toml`); not Hermes MCP `env`.
+8. **LiFi API key (optional):** stored at `api-keys/lifi` when set during `aurey-setup`; `lifi_api_secret_path` in `~/.aurey/config.toml`. Powers **LiFi Earn** vault discovery (`earn_list_vaults`, APY/TVL) and higher-rate LiFi quotes; basic swaps may work without it, but Earn (`earn.li.fi`) requires the key. User gets one via [LiFi Earn quickstart](https://docs.li.fi/earn/quickstart) ([Partner Portal signup](https://portal.li.fi/signup) → API key). User runs setup in terminal—do not ask for the key in chat.
+9. **Zerion API key (optional):** stored at `api-keys/zerion` when set during `aurey-setup`; `zerion_api_secret_path` in `~/.aurey/config.toml`. Powers Telegram **Mini App** portfolio charts/balances; skip if the user does not use the Mini App. Get a key at [developers.zerion.io](https://developers.zerion.io/)—terminal only, not chat.
+10. Never invent **`0x`** — use **`get_agent_wallet_addresses`** after MCP is connected.
+11. No **`tx_execute`** during onboarding; verification is **read-only** only.
+
+---
+
+## First message template (adapt, keep both parts)
+
+When the user asks to set up Aurey, open with something like:
+
+```text
+Before anything else: never paste API keys in this chat — not 1ck_, ocv_, Alchemy,
+LiFi, or Zerion. I will never ask for them; chat may be logged and I would see them.
+
+Setup runs in a terminal ON THE MACHINE WHERE I (the MCP host) RUN. Open a terminal
+there and run:
+
+  curl -fsSL https://agentic-pantheon.github.io/aurey-mcp/install.sh | bash
+  aurey-setup --host <hermes|cursor|claude|openclaw>
+
+aurey-setup will prompt for your 1Claw key (1ck_…) with masked input — type it
+there, not here. Press Enter to skip the optional Alchemy/LiFi/Zerion prompts.
+
+When it finishes, tell me and I'll verify the connection (read-only).
+```
 
 ---
 

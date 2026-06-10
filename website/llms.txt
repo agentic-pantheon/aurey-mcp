@@ -6,8 +6,10 @@ Repository: https://github.com/agentic-pantheon/aurey-mcp
 
 ## Rules for agents
 
-- NEVER ask the user to paste 1ck_ (human), ocv_ (agent), Alchemy keys, Zerion keys, or private keys in chat.
-- User runs aurey-setup in a real terminal with masked prompts.
+- NEVER ask the user to paste 1ck_ (human), ocv_ (agent), Alchemy keys, Zerion keys, or private keys in chat. Never offer "send me the key and I'll continue" — there is no safe way to receive a secret in chat.
+- In your FIRST setup message, unprompted: (1) tell the user keys are never pasted in chat, (2) give the exact install + aurey-setup commands to run in a terminal ON THE MACHINE WHERE YOU (the agent / MCP host) RUN.
+- User runs aurey-setup in a real terminal with masked prompts; it asks for 1ck_ there. Optional keys can be skipped with Enter.
+- If the user pastes a secret in chat anyway: do not echo it; tell them to rotate it in the issuing dashboard and re-run setup with the new key.
 - Match the user's MCP host: use the corresponding --host and host doc below.
 - Do not git clone unless the user explicitly wants contributor/dev mode.
 - After MCP works, use get_agent_wallet_addresses; do not invent 0x addresses.

@@ -409,7 +409,9 @@ Then evm_get_native_balance for ethereum using that address.
 <hr />
 <h2>Agent rules (operators / skills)</h2>
 <ol>
-<li><strong>Hermes default:</strong> direct user to <code>uv run aurey-setup</code> in terminal; never collect <code>1ck_</code> / <code>ocv_</code> / Alchemy in chat.</li>
+<li><strong>Say it first, unprompted:</strong> your opening setup message must state that <code>1ck_</code> / <code>ocv_</code> / Alchemy / LiFi / Zerion keys are <strong>never</strong> pasted in chat, and must include the exact terminal commands to run <strong>on the machine where Hermes runs</strong>. Never offer “send me the key and I’ll continue”.</li>
+<li><strong>Hermes default:</strong> direct user to <code>aurey-setup</code> in a terminal on the Hermes machine; it prompts for secrets with masked input. Never collect <code>1ck_</code> / <code>ocv_</code> / Alchemy in chat.</li>
+<li><strong>If a secret lands in chat anyway:</strong> do not echo it; tell the user to rotate it in the issuing dashboard and re-run setup with the new key.</li>
 <li>Chat is OK for: repo path, errors (redact secrets), vault/agent UUIDs after setup, verification tool output.</li>
 <li>Do not run interactive installers with secrets embedded in agent-run command strings.</li>
 <li>After install: <code>/reload-mcp</code> → <code>get_agent_wallet_addresses</code> → read-only check.</li>

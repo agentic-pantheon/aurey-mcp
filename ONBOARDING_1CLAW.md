@@ -10,7 +10,9 @@
 
 ## Non-negotiables
 
-- Never ask in chat: private keys, mnemonics, **`1ck_`**, **`ocv_`**, Alchemy.
+- Never ask for—or offer to receive—in chat: private keys, mnemonics, **`1ck_`**, **`ocv_`**, Alchemy.
+- **First setup message, unprompted:** say keys are never pasted in chat + give the terminal commands to run **on the machine where the agent runs** (`aurey-setup` prompts for keys there, masked).
+- If a secret is pasted in chat anyway: don’t echo it; have the user **rotate it** and redo setup in the terminal.
 - OK in chat: vault/agent UUIDs (after setup), repo path, tool results, errors (redacted).
 - Never invent `0x` — use **`get_agent_wallet_addresses`**.
 - No **`tx_execute`** until user confirms a **prepare** summary.

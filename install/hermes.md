@@ -300,11 +300,13 @@ Optional: `AUREY_ROUTE_BUILDER_URL` in MCP `env` for hosted swap quotes — see 
 
 ## Agent rules (operators / skills)
 
-1. **Hermes default:** direct user to `uv run aurey-setup` in terminal; never collect `1ck_` / `ocv_` / Alchemy in chat.
-2. Chat is OK for: repo path, errors (redact secrets), vault/agent UUIDs after setup, verification tool output.
-3. Do not run interactive installers with secrets embedded in agent-run command strings.
-4. After install: `/reload-mcp` → `get_agent_wallet_addresses` → read-only check.
-5. Load **both** onboarding and operations skills ([SKILL.md](../SKILL.md)).
+1. **Say it first, unprompted:** your opening setup message must state that `1ck_` / `ocv_` / Alchemy / LiFi / Zerion keys are **never** pasted in chat, and must include the exact terminal commands to run **on the machine where Hermes runs**. Never offer “send me the key and I’ll continue”.
+2. **Hermes default:** direct user to `aurey-setup` in a terminal on the Hermes machine; it prompts for secrets with masked input. Never collect `1ck_` / `ocv_` / Alchemy in chat.
+3. **If a secret lands in chat anyway:** do not echo it; tell the user to rotate it in the issuing dashboard and re-run setup with the new key.
+4. Chat is OK for: repo path, errors (redact secrets), vault/agent UUIDs after setup, verification tool output.
+5. Do not run interactive installers with secrets embedded in agent-run command strings.
+6. After install: `/reload-mcp` → `get_agent_wallet_addresses` → read-only check.
+7. Load **both** onboarding and operations skills ([SKILL.md](../SKILL.md)).
 
 ---
 
