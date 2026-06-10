@@ -1,7 +1,7 @@
 """Application settings (paths-only secret references, 1Claw connection config).
 
-Optional plaintext ``AUREY_*`` keys for Alchemy, LiFi, and Telegram may be set for hosted
-deployments; when non-empty they take precedence over vault ``*_secret_path`` resolution.
+Optional plaintext ``AUREY_*`` keys for Alchemy, LiFi, Zerion, and Telegram may be set for
+hosted deployments; when non-empty they take precedence over vault ``*_secret_path`` resolution.
 Note: Configuration lives in this package intentionally; do not add a sibling
 ``aurey/settings.py`` module, which would conflict with this package name.
 """
@@ -188,7 +188,10 @@ class AureySettings(BaseSettings):
     )
     hosted_smtp_host: str = Field(
         default="",
-        description="SMTP hostname for hosted onboarding mail; empty skips sending (verification fails closed when required).",
+        description=(
+            "SMTP hostname for hosted onboarding mail; empty skips sending "
+            "(verification fails closed when required)."
+        ),
     )
     hosted_smtp_port: int = Field(default=587, ge=1, le=65535)
     hosted_smtp_user: str = Field(
@@ -312,11 +315,19 @@ class AureySettings(BaseSettings):
         ),
         validation_alias=AliasChoices("AUREY_LIFI_API_KEY"),
     )
+    zerion_api_secret_path: str | None = Field(
+        default="api-keys/zerion",
+        description=(
+            "1Claw vault path for Zerion API key (portfolio UI). Set empty env "
+            "``AUREY_ZERION_API_SECRET_PATH=`` to disable vault lookup."
+        ),
+        validation_alias=AliasChoices("AUREY_ZERION_API_SECRET_PATH"),
+    )
     zerion_api_key: str | None = Field(
         default=None,
         description=(
-            "Zerion API key for Telegram Mini App portfolio reads (``AUREY_ZERION_API_KEY``). "
-            "Required when ``telegram_miniapp_enabled`` serves live portfolio data."
+            "Optional plaintext Zerion API key (``AUREY_ZERION_API_KEY``). When set, used instead "
+            "of ``zerion_api_secret_path``. Required for live Mini App portfolio when unset."
         ),
         validation_alias=AliasChoices("AUREY_ZERION_API_KEY"),
     )
@@ -347,7 +358,8 @@ class AureySettings(BaseSettings):
         default="aurey",
         description=(
             "Sent as LiFi ``integrator`` query param on ``GET /v1/quote`` (tracking / routing). "
-            "Set empty to omit. Ignored when ``route_builder_url`` is set (integrator lives server-side)."
+            "Set empty to omit. Ignored when ``route_builder_url`` is set "
+            "(integrator lives server-side)."
         ),
     )
     lifi_base_url: str = Field(
@@ -485,7 +497,8 @@ class AureySettings(BaseSettings):
     telegram_miniapp_enabled: bool = Field(
         default=False,
         description=(
-            "Expose ``/v1/miniapp/*`` and static ``/miniapp/`` when true. Requires hosted platform, "
+            "Expose ``/v1/miniapp/*`` and static ``/miniapp/`` when true. "
+            "Requires hosted platform, "
             "database, and Telegram bot token for ``initData`` validation."
         ),
     )
@@ -588,8 +601,16 @@ class AureySettings(BaseSettings):
         ),
         validation_alias=AliasChoices("AUREY_DATABASE_URL", "DATABASE_URL"),
     )
-    db_pool_min_size: int = Field(default=1, ge=1, description="LangGraph Postgres pool min connections.")
-    db_pool_max_size: int = Field(default=10, ge=1, description="LangGraph Postgres pool max connections.")
+    db_pool_min_size: int = Field(
+        default=1,
+        ge=1,
+        description="LangGraph Postgres pool min connections.",
+    )
+    db_pool_max_size: int = Field(
+        default=10,
+        ge=1,
+        description="LangGraph Postgres pool max connections.",
+    )
     secret_cache_ttl_seconds: float = Field(
         default=300.0,
         ge=0.0,

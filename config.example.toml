@@ -14,7 +14,9 @@ agent_id = ""
 alchemy_secret_path = "api-keys/alchemy"
 # Optional plaintext override (not recommended for Hermes MCP env):
 # alchemy_api_key = ""
-zerion_api_key = ""
+# Optional: Zerion in 1Claw at api-keys/zerion (Mini App portfolio; aurey-setup sets this when provided):
+# zerion_api_secret_path = "api-keys/zerion"
+# zerion_api_key = ""
 
 [routing]
 route_builder_url = ""
@@ -24,9 +26,13 @@ route_builder_url = ""
 # bundled_lifi_tokens_enabled = false
 
 [dashboard]
-enabled = false
+# Local portfolio UI at http://127.0.0.1:8765/ while MCP runs (aurey-setup enables by default).
+enabled = true
+host = "127.0.0.1"
+# host = "0.0.0.0"  # LAN / other devices on your network — set auth_token when not on loopback
 port = 8765
 # auth_token = ""
+# Live portfolio charts need optional Zerion: api-keys/zerion + zerion_api_secret_path in [providers].
 
 [autonomy]
 # policy_path = "~/.aurey/autonomy_policy.json"

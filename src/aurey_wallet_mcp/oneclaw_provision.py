@@ -27,6 +27,7 @@ class ProvisionResult:
     ethereum_address: str | None
     alchemy_secret_path: str | None
     lifi_secret_path: str | None
+    zerion_secret_path: str | None
 
 
 def _problem_detail(resp: httpx.Response) -> str:
@@ -187,7 +188,8 @@ class OneClawHumanClient:
             raise OneClawProvisionError("Create agent response missing agent id.")
         if not isinstance(api_key, str) or not api_key.strip():
             raise OneClawProvisionError(
-                "Create agent response missing api_key (ocv_…). Rotate key in 1Claw if reusing an agent."
+                "Create agent response missing api_key (ocv_…). "
+                "Rotate key in 1Claw if reusing an agent."
             )
         return agent_id.strip(), api_key.strip()
 
@@ -297,6 +299,8 @@ def provision_for_aurey(
     alchemy_secret_path: str = "api-keys/alchemy",
     lifi_api_key: str | None = None,
     lifi_secret_path: str = "api-keys/lifi",
+    zerion_api_key: str | None = None,
+    zerion_secret_path: str = "api-keys/zerion",
 ) -> ProvisionResult:
     """Create (or reuse) vault, agent, policies, optional API secrets, Ethereum signing key."""
 
@@ -305,6 +309,7 @@ def provision_for_aurey(
     )
     alchemy_path: str | None = None
     lifi_path: str | None = None
+    zerion_path: str | None = None
     with OneClawHumanClient(base_url=base_url, bearer_token=bearer) as client:
         vid = resolve_vault_id(client, vault_id=vault_id, vault_name=vault_name)
         agent_id, ocv = client.create_agent(
@@ -325,6 +330,10 @@ def provision_for_aurey(
             lpath = lifi_secret_path.strip() or "api-keys/lifi"
             client.put_secret(vault_id=vid, path=lpath, value=lifi_api_key.strip())
             lifi_path = lpath
+        if zerion_api_key and zerion_api_key.strip():
+            zpath = zerion_secret_path.strip() or "api-keys/zerion"
+            client.put_secret(vault_id=vid, path=zpath, value=zerion_api_key.strip())
+            zerion_path = zpath
         eth_address = client.provision_signing_key(agent_id=agent_id, chain="ethereum")
 
     return ProvisionResult(
@@ -334,6 +343,7 @@ def provision_for_aurey(
         ethereum_address=eth_address,
         alchemy_secret_path=alchemy_path,
         lifi_secret_path=lifi_path,
+        zerion_secret_path=zerion_path,
     )
 
 

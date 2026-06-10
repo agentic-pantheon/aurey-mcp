@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Claude — Aurey Wallet MCP</title>
+  <style>
+    :root { font-family: system-ui, sans-serif; line-height: 1.55; color: #111; max-width: 46rem; margin: 2rem auto; padding: 0 1rem; }
+    code, pre { background: #f4f4f5; padding: 0.15rem 0.35rem; border-radius: 4px; font-size: 0.9em; }
+    pre { padding: 1rem; overflow-x: auto; }
+    pre code { background: none; padding: 0; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #ddd; padding: 0.5rem; text-align: left; }
+    blockquote { background: #fff8e6; padding: 0.75rem 1rem; border-radius: 6px; margin: 1rem 0; border-left: none; }
+    nav.site { margin: 1rem 0 1.5rem; }
+    nav.site a { margin-right: 1rem; }
+</style>
+</head>
+<body>
+  <p><a href="../index.html">← Home</a></p>
+
+  <nav class="site">
+    <a href="../index.html">Home</a>
+    <a href="../install.html">Install</a>
+    <a href="cursor.html">Cursor</a>
+    <a href="hermes.html">Hermes</a>
+    <a href="claude.html">Claude</a>
+    <a href="openclaw.html">OpenClaw</a>
+    <a href="../llms.txt">llms.txt</a>
+    <a href="https://github.com/agentic-pantheon/aurey-mcp">GitHub</a>
+  </nav>
+
+  <main>
+<h1>Claude Desktop — Aurey Wallet MCP</h1>
+<p>Use the same <strong><code>aurey-setup</code></strong> command as Hermes and Cursor.</p>
+<h2>Setup (terminal only)</h2>
+<pre><code class="language-bash">cd /path/to/aurey-wallet-mcp
+uv sync --group dev
+uv run aurey-setup --host claude
+</code></pre>
+<p><strong>Prompts (masked):</strong> 1Claw human <code>1ck_…</code>, optional Alchemy.</p>
+<p><strong>Writes:</strong></p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>~/.aurey/mcp.env</code></td>
+<td>Vault id, agent id, <code>ocv_…</code></td>
+</tr>
+<tr>
+<td><code>~/.aurey/run-aurey-wallet-mcp.sh</code></td>
+<td>Wrapper script</td>
+</tr>
+<tr>
+<td>Claude Desktop config</td>
+<td><code>mcpServers.aurey-wallet</code> → wrapper</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Default Claude config paths:</strong></p>
+<ul>
+<li>macOS: <code>~/Library/Application Support/Claude/claude_desktop_config.json</code></li>
+<li>Linux: <code>~/.config/Claude/claude_desktop_config.json</code></li>
+<li>Windows: <code>%APPDATA%\Claude\claude_desktop_config.json</code></li>
+</ul>
+<p>Override:</p>
+<pre><code class="language-bash">uv run aurey-setup --host claude --config &quot;/path/to/claude_desktop_config.json&quot;
+</code></pre>
+<p><strong>Quit and reopen Claude Desktop</strong> so MCP reloads.</p>
+<h2>Verify</h2>
+<p>In Claude chat (with Aurey MCP connected): ask for <strong><code>get_agent_wallet_addresses</code></strong>, then a read-only balance. Load <a href="https://github.com/agentic-pantheon/aurey-mcp/blob/main/SKILL.md">skills</a>.</p>
+<h2>Re-install MCP only</h2>
+<pre><code class="language-bash">uv run aurey-setup --host claude --skip-provision
+</code></pre>
+<p>See <a href="hermes.html">install/hermes.md</a> for flags and troubleshooting.</p>
+<hr />
+<p>Shared install: <a href="https://github.com/agentic-pantheon/aurey-mcp/blob/main/install.html">install guide</a>. Troubleshooting: <a href="https://github.com/agentic-pantheon/aurey-mcp/blob/main/docs/troubleshooting.md">docs/troubleshooting.md</a>.</p>
+  </main>
+</body>
+</html>

@@ -7,6 +7,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from decimal import Decimal
 from typing import Any
 
+from aurey.graphs.api_key_resolution import effective_zerion_api_key
 from aurey.graphs.ports import HttpJsonRequestError
 from aurey.miniapp.curated import is_curated_portfolio_token
 from aurey.miniapp.schemas import (
@@ -39,9 +40,21 @@ _log = logging.getLogger(__name__)
 _WALLET_POSITION_TYPES = frozenset({"wallet"})
 
 
-def _resolve_zerion_api_key(runtime: AureyRuntime) -> str | None:
-    key = (runtime.settings.zerion_api_key or "").strip()
-    return key if key else None
+def _resolve_zerion_api_key(
+    runtime: AureyRuntime,
+) -> tuple[str | None, PortfolioFetchError | None]:
+    key, err = effective_zerion_api_key(runtime.settings, runtime.secret_store)
+    if err is not None:
+        _log.debug("zerion api key resolution failed: %s", err.get("message"))
+        return None, PortfolioFetchError(
+            source="zerion",
+            chain=None,
+            code=str(err.get("code") or "zerion_error"),
+            message=str(err.get("message") or "Zerion API key could not be resolved."),
+        )
+    if key:
+        return key, None
+    return None, None
 
 
 def _curated_token_row(
@@ -72,16 +85,22 @@ def aggregate_portfolio_snapshot(
 
     period = normalize_chart_period(chart_period)
     errors: list[PortfolioFetchError] = []
-    api_key = _resolve_zerion_api_key(runtime)
+    api_key, zerion_resolve_err = _resolve_zerion_api_key(runtime)
+    if zerion_resolve_err is not None:
+        errors.append(zerion_resolve_err)
     if not api_key:
-        errors.append(
-            PortfolioFetchError(
-                source="zerion",
-                chain=None,
-                code="missing_api_key",
-                message="Set AUREY_ZERION_API_KEY for portfolio visualization.",
+        if zerion_resolve_err is None:
+            errors.append(
+                PortfolioFetchError(
+                    source="zerion",
+                    chain=None,
+                    code="missing_api_key",
+                    message=(
+                        "Set AUREY_ZERION_API_KEY or store a key in 1Claw at api-keys/zerion "
+                        "(see zerion_api_secret_path in ~/.aurey/config.toml)."
+                    ),
+                )
             )
-        )
         return PortfolioSnapshot(
             wallet_address=wallet_address,
             updated_at=utc_now_iso(),

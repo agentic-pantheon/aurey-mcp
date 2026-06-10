@@ -7,7 +7,13 @@ import {
   readPortfolioCache,
   writePortfolioCache,
 } from "./portfolioCache";
-import { fetchPortfolioSnapshot, zerionWalletUrl, type ChartPeriod } from "./portfolioFetch";
+import {
+  fetchDashboardPortfolioSnapshot,
+  fetchPortfolioSnapshot,
+  resolvePortfolioFetchMode,
+  zerionWalletUrl,
+  type ChartPeriod,
+} from "./portfolioFetch";
 import { applyAppTheme } from "./theme";
 import { TokenIcon } from "./TokenIcon";
 import { usePullToRefresh } from "./usePullToRefresh";
@@ -200,7 +206,9 @@ export default function App(): JSX.Element {
         setDetailCode(null);
         const at = Date.now();
         setFetchedAt(at);
-        writePortfolioCache(telegramUserId(), period, result.snapshot, at);
+        const cacheUid =
+          resolvePortfolioFetchMode() === "telegram" ? telegramUserId() : undefined;
+        writePortfolioCache(cacheUid, period, result.snapshot, at);
         return;
       }
       setFatal(result.fatal);
@@ -210,6 +218,12 @@ export default function App(): JSX.Element {
   );
 
   const refreshFromNetwork = useCallback(async () => {
+    const mode = resolvePortfolioFetchMode();
+    if (mode === "local") {
+      const result = await fetchDashboardPortfolioSnapshot<PortfolioSnap>(chartPeriod);
+      applyFetchResult(result, chartPeriod);
+      return;
+    }
     const init = initDataRef.current;
     if (!init) return;
     const result = await fetchPortfolioSnapshot<PortfolioSnap>(init, chartPeriod);
@@ -232,17 +246,8 @@ export default function App(): JSX.Element {
       const init =
         typeof window.Telegram !== "undefined" ? window.Telegram.WebApp.initData || "" : "";
       initDataRef.current = init;
-      if (!init) {
-        if (!cancelled) {
-          setFatal(
-            "Open this App from Aurey Telegram (portfolio menu or /portfolio); local browser has no Telegram context.",
-          );
-          setLoading(false);
-        }
-        return;
-      }
-
-      const uid = telegramUserId();
+      const mode = resolvePortfolioFetchMode();
+      const uid = mode === "telegram" ? telegramUserId() : undefined;
       const cached = readPortfolioCache<PortfolioSnap>(uid, chartPeriod);
       const cacheFresh = cached !== null && isPortfolioCacheFresh(cached.fetchedAt);
 
@@ -253,7 +258,10 @@ export default function App(): JSX.Element {
       }
 
       try {
-        const result = await fetchPortfolioSnapshot<PortfolioSnap>(init, chartPeriod);
+        const result =
+          mode === "local"
+            ? await fetchDashboardPortfolioSnapshot<PortfolioSnap>(chartPeriod)
+            : await fetchPortfolioSnapshot<PortfolioSnap>(init, chartPeriod);
         if (cancelled) return;
         if (!result.ok) {
           if (cacheFresh && cached !== null && !cancelled) {
@@ -519,14 +527,33 @@ export default function App(): JSX.Element {
     );
   }
 
+  function zerionSetupBanner(): JSX.Element | null {
+    const missing = snapshot?.errors?.some(
+      (e) => e.source === "zerion" && e.code === "missing_api_key",
+    );
+    if (!missing) return null;
+    return (
+      <div className="warning">
+        You need a <strong>free Zerion API key</strong> to use the portfolio UI. Get one at{" "}
+        <a href="https://developers.zerion.io/" target="_blank" rel="noreferrer">
+          developers.zerion.io
+        </a>
+        , then re-run <code>aurey-setup</code> (optional Zerion prompt) or add{" "}
+        <code>api-keys/zerion</code> in 1Claw and <code>zerion_api_secret_path</code> in{" "}
+        <code>~/.aurey/config.toml</code>.
+      </div>
+    );
+  }
+
   function errorBanner(): JSX.Element | null {
-    if (!snapshot?.errors?.length) return null;
+    const other = snapshot?.errors?.filter(
+      (e) => e.source !== "zerion" || e.code !== "missing_api_key",
+    );
+    if (!other?.length) return null;
     return (
       <div className="warning">
         Some data providers failed partially:{" "}
-        {snapshot.errors.map((e) => [e.chain, e.code].filter(Boolean).join(" ") || e.source).join(
-          "; ",
-        )}
+        {other.map((e) => [e.chain, e.code].filter(Boolean).join(" ") || e.source).join("; ")}
       </div>
     );
   }
@@ -575,6 +602,7 @@ export default function App(): JSX.Element {
             {fetchedAt !== null ? ` · Updated ${formatFetchedAt(fetchedAt)}` : ""}
           </div>
         </header>
+        {zerionSetupBanner()}
         {errorBanner()}
         <div className="tabs">
           {tabsList.map((t) => (

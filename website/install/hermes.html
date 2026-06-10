@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hermes — Aurey Wallet MCP</title>
+  <style>
+    :root { font-family: system-ui, sans-serif; line-height: 1.55; color: #111; max-width: 46rem; margin: 2rem auto; padding: 0 1rem; }
+    code, pre { background: #f4f4f5; padding: 0.15rem 0.35rem; border-radius: 4px; font-size: 0.9em; }
+    pre { padding: 1rem; overflow-x: auto; }
+    pre code { background: none; padding: 0; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #ddd; padding: 0.5rem; text-align: left; }
+    blockquote { background: #fff8e6; padding: 0.75rem 1rem; border-radius: 6px; margin: 1rem 0; border-left: none; }
+    nav.site { margin: 1rem 0 1.5rem; }
+    nav.site a { margin-right: 1rem; }
+</style>
+</head>
+<body>
+  <p><a href="../index.html">← Home</a></p>
+
+  <nav class="site">
+    <a href="../index.html">Home</a>
+    <a href="../install.html">Install</a>
+    <a href="cursor.html">Cursor</a>
+    <a href="hermes.html">Hermes</a>
+    <a href="claude.html">Claude</a>
+    <a href="openclaw.html">OpenClaw</a>
+    <a href="../llms.txt">llms.txt</a>
+    <a href="https://github.com/agentic-pantheon/aurey-mcp">GitHub</a>
+  </nav>
+
+  <main>
+<h1>Hermes Agent — Aurey Wallet MCP</h1>
+<p>Install <strong>Aurey Wallet MCP</strong> on <a href="https://hermes-agent.nousresearch.com/docs/">Hermes</a> so your agent can read EVM balances, prepare swaps, and sign via <strong>1Claw Intents</strong> (no private keys in chat or MCP env).</p>
+<p><strong>How this doc is used:</strong> humans follow the steps; <strong>agents</strong> load <a href="https://github.com/agentic-pantheon/aurey-mcp/blob/main/skills/aurey-wallet-onboarding/SKILL.md">skills/aurey-wallet-onboarding/SKILL.md</a> and use this file as the Hermes-specific reference.</p>
+<hr />
+<h2>What you are building</h2>
+<pre><code class="language-text">You (human)          1Claw                    Hermes + Aurey MCP
+    │                  │                              │
+    │  1ck_… (once)    │  vault + agent + ocv_…       │
+    ├─────────────────►│  Intents + ETH signing key   │
+    │  (terminal)      │  Alchemy in vault (optional)   │
+    │                  │                              │
+    │                  │◄──── agent JWT + Intents ──────┤ wallet tools
+    │                  │                              │
+</code></pre>
+<ul>
+<li><strong>Human key (<code>1ck_…</code>)</strong> — creates/configures 1Claw (one-time, terminal only).</li>
+<li><strong>Agent key (<code>ocv_…</code>)</strong> — what Aurey MCP uses at runtime (written to <code>~/.hermes/.env</code>, never chat).</li>
+<li><strong>Wallet address</strong> — comes from 1Claw signing keys; fetch with <code>get_agent_wallet_addresses</code>, do not type <code>0x</code> manually.</li>
+</ul>
+<p>Official 1Claw docs: <a href="https://docs.1claw.xyz">docs.1claw.xyz</a>.</p>
+<hr />
+<h2>Secrets: what goes where</h2>
+<table>
+<thead>
+<tr>
+<th>Secret / ID</th>
+<th>Paste in Hermes chat?</th>
+<th>Where it lives</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1Claw <strong>human</strong> API key (<code>1ck_…</code>)</td>
+<td><strong>No</strong></td>
+<td><code>aurey-setup</code> terminal prompt only</td>
+</tr>
+<tr>
+<td>Vault UUID</td>
+<td><strong>Yes</strong> (optional)</td>
+<td><code>~/.hermes/.env</code> → <code>AUREY_ONECLAW_VAULT_ID</code></td>
+</tr>
+<tr>
+<td>Agent UUID</td>
+<td><strong>Yes</strong> (optional)</td>
+<td><code>~/.hermes/.env</code> → <code>AUREY_ONECLAW_AGENT_ID</code></td>
+</tr>
+<tr>
+<td>Agent API key (<code>ocv_…</code>)</td>
+<td><strong>No</strong></td>
+<td><code>~/.hermes/.env</code> → <code>AUREY_ONECLAW_VAULT_API_KEY</code></td>
+</tr>
+<tr>
+<td>Alchemy API key</td>
+<td><strong>No</strong></td>
+<td>1Claw vault path <code>api-keys/alchemy</code> (not MCP <code>env</code>)</td>
+</tr>
+</tbody>
+</table>
+<p>Hermes may retain chat in memory and logs. <strong>Never</strong> ask the user to paste <code>1ck_</code>, <code>ocv_</code>, or Alchemy in chat. <strong>Never</strong> pipe chat text into <code>aurey-setup</code> or <code>aurey-hermes-install --prompt-secrets</code>.</p>
+<p><strong>Naming:</strong> <code>AUREY_ONECLAW_VAULT_API_KEY</code> is the per-agent <strong><code>ocv_…</code></strong> key (agent-token + vault reads). Legacy alias: <code>AUREY_ONECLAW_BOOTSTRAP_API_KEY</code>. Not <code>plt_</code> (Platform).</p>
+<p><strong>Built-in defaults</strong> (omit from MCP <code>env</code>): <code>AUREY_HOSTED_PLATFORM_ENABLED=false</code>, <code>AUREY_EVM_SIGNING_MODE=oneclaw_intents</code>.</p>
+<hr />
+<h2>Prerequisites</h2>
+<ol>
+<li><strong>Hermes</strong> installed and a model configured (<code>hermes setup</code> / <code>hermes model</code>).</li>
+<li><strong>Hermes MCP extra</strong> (once):</li>
+</ol>
+<p><code>bash
+   cd ~/.hermes/hermes-agent &amp;&amp; source venv/bin/activate &amp;&amp; uv pip install -e ".[mcp]"</code></p>
+<p>Hermes uses <code>venv/</code>, not <code>.venv/</code>.</p>
+<ol>
+<li><strong>1Claw account</strong> at <a href="https://1claw.xyz">1claw.xyz</a> with a <strong>personal API key</strong> (<code>1ck_…</code>): dashboard → API keys → create (or <a href="https://docs.1claw.xyz/docs/human-api/authentication">Human API</a>).</li>
+<li><strong>Aurey Wallet MCP</strong> installed on the Hermes machine (PyPI/curl—no clone required). See <a href="https://agentic-pantheon.github.io/aurey-mcp/install.html">install site</a>.</li>
+<li><strong><a href="https://www.alchemy.com/">Alchemy</a></strong> API key (optional at setup; needed for balances/portfolio reads).</li>
+</ol>
+<p><strong>Skills</strong> (load in Hermes so the agent can guide you):</p>
+<ul>
+<li><code>skills/aurey-wallet-onboarding/SKILL.md</code> — setup</li>
+<li><code>skills/aurey-wallet/SKILL.md</code> — swaps/sends after MCP is live</li>
+</ul>
+<p>Index: <a href="https://github.com/agentic-pantheon/aurey-mcp/blob/main/SKILL.md">SKILL.md</a>.</p>
+<hr />
+<h2>Recommended: one-command setup (<code>aurey-setup</code>)</h2>
+<p>Run in <strong>your terminal</strong> (not Hermes chat). Default host is Hermes; same command works for Cursor, Claude Desktop, and OpenClaw with <code>--host</code>.</p>
+<p><strong>Install package</strong> (once):</p>
+<pre><code class="language-bash">curl -fsSL https://agentic-pantheon.github.io/aurey-mcp/install.sh | bash
+# or: pip install 'aurey-wallet-mcp[hermes]'
+</code></pre>
+<p><strong>Configure</strong> (masked prompts):</p>
+<pre><code class="language-bash">aurey-setup                  # Hermes (default)
+aurey-setup --host cursor    # ~/.cursor/mcp.json
+aurey-setup --host claude    # Claude Desktop config
+aurey-setup --host openclaw  # ~/.openclaw/openclaw.json (or OPENCLAW_CONFIG)
+</code></pre>
+<p><strong>Contributors</strong> from a git clone: <code>uv sync --group dev --extra hermes</code> then <code>uv run aurey-setup …</code>.</p>
+<p><strong>Prompts (masked):</strong></p>
+<ol>
+<li><strong>1Claw human API key</strong> (<code>1ck_…</code>)</li>
+<li><strong>Alchemy API key</strong> (Enter to skip; stored in 1Claw if provided)</li>
+<li><strong>LiFi API key</strong> (optional; Enter to skip) — Earn vault discovery + higher LiFi quote limits; see <a href="https://docs.li.fi/earn/quickstart">Earn quickstart</a> / <a href="https://portal.li.fi/signup">portal.li.fi/signup</a></li>
+</ol>
+<p><strong>What <code>aurey-setup</code> does automatically:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>1Claw / local action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Auth</td>
+<td>Human API with your <code>1ck_…</code></td>
+</tr>
+<tr>
+<td>Vault</td>
+<td>Uses <code>--vault-id</code> if set; else picks existing vault (prefers name <code>aurey-wallet</code>, or your only vault); <strong>creates</strong> vault <code>aurey-wallet</code> if you have none</td>
+</tr>
+<tr>
+<td>Agent</td>
+<td>Creates <strong>Aurey Wallet MCP</strong> agent with <code>intents_api_enabled: true</code>; returns one-time <code>ocv_…</code></td>
+</tr>
+<tr>
+<td>Policy</td>
+<td>Grants agent <strong>read</strong> on <code>api-keys/**</code></td>
+</tr>
+<tr>
+<td>Alchemy</td>
+<td><code>PUT</code> secret at <code>api-keys/alchemy</code> when you entered a key</td>
+</tr>
+<tr>
+<td>LiFi</td>
+<td><code>PUT</code> secret at <code>api-keys/lifi</code> when you entered a key; sets <code>lifi_api_secret_path</code> in <code>~/.aurey/config.toml</code></td>
+</tr>
+<tr>
+<td>Signing key</td>
+<td>Provisions <strong>Ethereum</strong> signing key on the agent</td>
+</tr>
+<tr>
+<td>Hermes</td>
+<td>Writes <code>~/.hermes/.env</code>, patches <code>~/.hermes/config.yaml</code></td>
+</tr>
+<tr>
+<td>All hosts</td>
+<td>Writes <code>~/.aurey/mcp.env</code> (chmod 600) + wrapper <code>~/.aurey/run-aurey-wallet-mcp.sh</code></td>
+</tr>
+<tr>
+<td>Cursor / Claude / OpenClaw</td>
+<td>MCP config points at the <strong>wrapper</strong> (secrets stay out of JSON)</td>
+</tr>
+<tr>
+<td><code>~/.aurey/config.toml</code></td>
+<td><code>alchemy_secret_path</code>; <code>lifi_api_secret_path</code> when LiFi key provided</td>
+</tr>
+<tr>
+<td>Verify</td>
+<td>Optional MCP bootstrap smoke test</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Useful flags:</strong></p>
+<pre><code class="language-bash">uv run aurey-setup --vault-id '&lt;existing-vault-uuid&gt;'   # do not create/pick another vault
+uv run aurey-setup --skip-alchemy                     # add Alchemy in dashboard later
+uv run aurey-setup --skip-lifi                        # skip LiFi prompt (Earn vault list needs key later)
+uv run aurey-setup --from-env                         # human key in AUREY_ONECLAW_HUMAN_API_KEY
+uv run aurey-setup --provision-only                   # 1Claw + ~/.aurey/mcp.env only
+uv run aurey-setup --host cursor --skip-provision     # Re-wire MCP using saved mcp.env
+uv run aurey-setup --host cursor --cursor-project .   # Project .cursor/mcp.json
+uv run aurey-setup --config /path/to/mcp.json         # Override config file path
+</code></pre>
+<p>After success:</p>
+<pre><code class="language-bash">hermes mcp test aurey-wallet
+</code></pre>
+<p>In Hermes chat: <code>/reload-mcp</code>, then ask the agent to call <code>get_agent_wallet_addresses</code>.</p>
+<hr />
+<h2>Agent-guided flow (chat + terminal)</h2>
+<p>Use this when the user starts in Hermes chat and you (the agent) coach them.</p>
+<h3>1 — Open with a safe prompt (user)</h3>
+<pre><code class="language-text">Help me install Aurey Wallet MCP on Hermes.
+Repo: /path/to/aurey-wallet-mcp
+I will run aurey-setup in my terminal for 1ck_ and Alchemy.
+I will NOT paste 1ck_, ocv_, or Alchemy in this chat.
+</code></pre>
+<h3>2 — Agent checklist (copy in chat)</h3>
+<pre><code class="language-text">Setup:
+- [ ] Hermes + MCP extra installed
+- [ ] 1Claw account + human API key (1ck_…) ready
+- [ ] User ran: uv sync --group dev --extra hermes &amp;&amp; uv run aurey-setup
+- [ ] hermes mcp test aurey-wallet OK
+- [ ] /reload-mcp
+- [ ] get_agent_wallet_addresses → ethereum + evm_source oneclaw_signing_keys
+- [ ] Read-only balance test (no tx_execute yet)
+- [ ] User loaded skills/aurey-wallet/SKILL.md
+</code></pre>
+<h3>3 — What the agent does in chat</h3>
+<ul>
+<li>Explain <strong>one terminal command</strong> (<code>aurey-setup</code>); do not request secrets.</li>
+<li>Answer questions about 1Claw (vault, Intents, signing keys) using <a href="https://github.com/agentic-pantheon/aurey-mcp/blob/main/docs/1claw-onboarding-guide.md">docs/1claw-onboarding-guide.md</a>.</li>
+<li>After MCP is up: call <strong><code>get_agent_wallet_addresses</code></strong>; read back <code>ethereum</code> and <code>evm_source</code>.</li>
+<li>First live action: <strong>read-only</strong> (e.g. native balance on <code>ethereum</code>).</li>
+<li><strong>No <code>tx_execute</code></strong> during onboarding.</li>
+</ul>
+<h3>4 — What the user does in terminal only</h3>
+<ul>
+<li><code>uv run aurey-setup</code> (or manual path below).</li>
+<li><code>hermes mcp test aurey-wallet</code></li>
+<li>Fix <code>~/.hermes/.env</code> if smoke test fails (never paste fixes into chat).</li>
+</ul>
+<hr />
+<h2>Manual path (dashboard 1Claw + <code>aurey-hermes-install</code>)</h2>
+<p>Use if you already created vault/agent in the <a href="https://1claw.xyz">1Claw dashboard</a> or need fine-grained control.</p>
+<p><strong>1Claw (dashboard):</strong></p>
+<ol>
+<li>Vault → copy vault UUID.</li>
+<li>Agent with <strong>Intents API</strong> enabled → copy agent UUID.</li>
+<li>Create / rotate agent API key → <code>ocv_…</code> (shown once).</li>
+<li>Provision <strong>Ethereum</strong> signing key on that agent.</li>
+<li>Store <strong>Alchemy</strong> at <code>api-keys/alchemy</code>; policy allowing agent read on <code>api-keys/**</code>.</li>
+</ol>
+<p><strong>Hermes (terminal):</strong></p>
+<pre><code class="language-bash">cd /path/to/aurey-wallet-mcp
+uv sync --group dev --extra hermes
+uv run aurey-hermes-install --repo &quot;$(pwd)&quot; --prompt-secrets
+</code></pre>
+<p>Type vault UUID, agent UUID, and masked <code>ocv_</code> in the terminal.</p>
+<p>Or UUIDs from chat + secrets in shell:</p>
+<pre><code class="language-bash">export AUREY_ONECLAW_VAULT_API_KEY='ocv_...'
+uv run aurey-hermes-install --repo &quot;$(pwd)&quot; \
+  --vault-id '&lt;vault-uuid&gt;' \
+  --agent-id '&lt;agent-uuid&gt;' \
+  --from-env
+</code></pre>
+<hr />
+<h2>What gets written on disk</h2>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>~/.hermes/config.yaml</code></td>
+<td><code>mcp_servers.aurey-wallet</code> → <code>&lt;repo&gt;/.venv/bin/aurey-wallet-mcp</code> with <code>${AUREY_*}</code> env</td>
+</tr>
+<tr>
+<td><code>~/.hermes/.env</code></td>
+<td><code>AUREY_ONECLAW_VAULT_ID</code>, <code>AUREY_ONECLAW_AGENT_ID</code>, <code>AUREY_ONECLAW_VAULT_API_KEY</code></td>
+</tr>
+<tr>
+<td><code>~/.aurey/config.toml</code></td>
+<td><code>[providers] alchemy_secret_path = "api-keys/alchemy"</code></td>
+</tr>
+</tbody>
+</table>
+<p>Do <strong>not</strong> use <code>hermes mcp add</code> with <code>uv run --directory …</code> — Hermes CLI misparses <code>--directory</code>. The installer uses the venv binary path.</p>
+<p><strong>Manual <code>config.yaml</code> snippet:</strong></p>
+<pre><code class="language-yaml">mcp_servers:
+  aurey-wallet:
+    enabled: true
+    command: /path/to/aurey-wallet-mcp/.venv/bin/aurey-wallet-mcp
+    env:
+      AUREY_ONECLAW_VAULT_ID: ${AUREY_ONECLAW_VAULT_ID}
+      AUREY_ONECLAW_VAULT_API_KEY: ${AUREY_ONECLAW_VAULT_API_KEY}
+      AUREY_ONECLAW_AGENT_ID: ${AUREY_ONECLAW_AGENT_ID}
+</code></pre>
+<hr />
+<h2>Verify and first use</h2>
+<p><strong>Terminal:</strong></p>
+<pre><code class="language-bash">hermes mcp test aurey-wallet
+</code></pre>
+<p><strong>Chat:</strong></p>
+<pre><code class="language-text">/reload-mcp
+</code></pre>
+<pre><code class="language-text">Call get_agent_wallet_addresses and show my ethereum address and evm_source.
+Then evm_get_native_balance for ethereum using that address.
+</code></pre>
+<p>When the user wants to swap or send, follow <a href="https://github.com/agentic-pantheon/aurey-mcp/blob/main/skills/aurey-wallet/SKILL.md">skills/aurey-wallet/SKILL.md</a>: <strong>prepare → show summary → explicit confirm → <code>tx_execute(prepared_id=…)</code></strong>.</p>
+<hr />
+<h2>Using Aurey after setup</h2>
+<table>
+<thead>
+<tr>
+<th>User intent</th>
+<th>Agent flow</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Wallet address</td>
+<td><code>get_agent_wallet_addresses</code> ( <code>refresh: true</code> if just finished 1Claw )</td>
+</tr>
+<tr>
+<td>Balance / portfolio</td>
+<td>Address from above → read tools (<code>evm_get_native_balance</code>, portfolio tools)</td>
+</tr>
+<tr>
+<td>Swap</td>
+<td><code>get_agent_wallet_addresses</code> → <code>swap_prepare</code> → confirm → <code>tx_prepare_lifi</code> → confirm → <code>tx_execute</code></td>
+</tr>
+<tr>
+<td>Send ERC-20</td>
+<td>Prepare transfer tools → confirm → <code>tx_execute</code></td>
+</tr>
+</tbody>
+</table>
+<p>Signing stays in <strong>1Claw Intents</strong>; the model never sees the private key.</p>
+<p>Optional: <code>AUREY_ROUTE_BUILDER_URL</code> in MCP <code>env</code> for hosted swap quotes — see <a href="https://github.com/agentic-pantheon/aurey-mcp/blob/main/docs/setup.md">docs/setup.md</a>.</p>
+<hr />
+<h2>Troubleshooting</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Likely cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>aurey-setup</code>: auth / exchange failed</td>
+<td>Wrong or expired <code>1ck_</code></td>
+<td>New personal API key in 1Claw dashboard</td>
+</tr>
+<tr>
+<td>MCP: <em>no EVM wallet on agent</em></td>
+<td>No Ethereum signing key</td>
+<td>Re-run provisioning or dashboard: signing keys → ethereum; then <code>get_agent_wallet_addresses(refresh=true)</code></td>
+</tr>
+<tr>
+<td>MCP: <em>Bootstrap API key unavailable</em></td>
+<td><code>.env</code> not loaded</td>
+<td>Check <code>~/.hermes/.env</code> and <code>${VAR}</code> in <code>config.yaml</code></td>
+</tr>
+<tr>
+<td><code>hermes mcp test</code> connection closed</td>
+<td>Bad <code>ocv_</code> or agent id</td>
+<td>Rotate agent key in 1Claw; update <code>.env</code> via <code>aurey-hermes-install --prompt-secrets</code></td>
+</tr>
+<tr>
+<td>Balances fail / <em>scopes do not cover this secret path</em></td>
+<td>Vault policy OK but agent JWT scopes too narrow (<code>vaults:read</code> only)</td>
+<td>In 1Claw: edit agent → clear fixed scopes (use policy-derived scopes) or create a new agent via latest <code>aurey-setup</code>; policy <code>api-keys/**</code> read</td>
+</tr>
+<tr>
+<td>Balances fail</td>
+<td>No Alchemy at <code>api-keys/alchemy</code></td>
+<td>Add secret in 1Claw; policy <code>api-keys/**</code> read</td>
+</tr>
+<tr>
+<td>Swaps fail routing</td>
+<td>No LiFi / route builder</td>
+<td><code>AUREY_ROUTE_BUILDER_URL</code> or LiFi key per <a href="https://github.com/agentic-pantheon/aurey-mcp/blob/main/docs/setup.md">setup.md</a></td>
+</tr>
+<tr>
+<td>Agent invents <code>0x</code></td>
+<td>Skipped wallet tool</td>
+<td>Enforce <code>get_agent_wallet_addresses</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Agent rules (operators / skills)</h2>
+<ol>
+<li><strong>Hermes default:</strong> direct user to <code>uv run aurey-setup</code> in terminal; never collect <code>1ck_</code> / <code>ocv_</code> / Alchemy in chat.</li>
+<li>Chat is OK for: repo path, errors (redact secrets), vault/agent UUIDs after setup, verification tool output.</li>
+<li>Do not run interactive installers with secrets embedded in agent-run command strings.</li>
+<li>After install: <code>/reload-mcp</code> → <code>get_agent_wallet_addresses</code> → read-only check.</li>
+<li>Load <strong>both</strong> onboarding and operations skills (<a href="https://github.com/agentic-pantheon/aurey-mcp/blob/main/SKILL.md">SKILL.md</a>).</li>
+</ol>
+<hr />
+<h2>Related</h2>
+<ul>
+<li><a href="https://github.com/agentic-pantheon/aurey-mcp/blob/main/docs/1claw-onboarding-guide.md">docs/1claw-onboarding-guide.md</a> — all hosts, manual 1Claw, Platform note</li>
+<li><a href="https://github.com/agentic-pantheon/aurey-mcp/blob/main/docs/setup.md">docs/setup.md</a> — route builder, dashboard, autonomy</li>
+<li><a href="openclaw.html">install/openclaw.md</a> / <a href="cursor.html">install/cursor.md</a> — non-Hermes MCP hosts</li>
+<li><a href="https://github.com/agentic-pantheon/aurey-mcp/blob/main/ONBOARDING_1CLAW.md">ONBOARDING_1CLAW.md</a> — one-page agent playbook</li>
+</ul>
+<p>Telegram/Discord/Slack use the Hermes gateway; Aurey only adds wallet MCP tools on the machine running Hermes.</p>
+<hr />
+<p>Shared install: <a href="https://github.com/agentic-pantheon/aurey-mcp/blob/main/install.html">install guide</a>. Troubleshooting: <a href="https://github.com/agentic-pantheon/aurey-mcp/blob/main/docs/troubleshooting.md">docs/troubleshooting.md</a>.</p>
+  </main>
+</body>
+</html>
