@@ -32,6 +32,7 @@ from aurey.miniapp.zerion_client import (
     zerion_chain_id_to_slug,
     zerion_http_error_message,
 )
+from aurey.graphs.api_key_resolution import effective_zerion_api_key
 from aurey.runtime import AureyRuntime
 
 _log = logging.getLogger(__name__)
@@ -40,7 +41,10 @@ _WALLET_POSITION_TYPES = frozenset({"wallet"})
 
 
 def _resolve_zerion_api_key(runtime: AureyRuntime) -> str | None:
-    key = (runtime.settings.zerion_api_key or "").strip()
+    key, err = effective_zerion_api_key(runtime.settings, runtime.secret_store)
+    if err is not None:
+        _log.debug("zerion api key resolution failed: %s", err.get("message"))
+        return None
     return key if key else None
 
 
@@ -79,7 +83,10 @@ def aggregate_portfolio_snapshot(
                 source="zerion",
                 chain=None,
                 code="missing_api_key",
-                message="Set AUREY_ZERION_API_KEY for portfolio visualization.",
+                message=(
+                    "Set AUREY_ZERION_API_KEY or zerion_api_secret_path in ~/.aurey/config.toml "
+                    "for portfolio visualization."
+                ),
             )
         )
         return PortfolioSnapshot(

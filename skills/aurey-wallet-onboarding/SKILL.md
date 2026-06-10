@@ -24,14 +24,15 @@ After MCP works, hand off to **[skills/aurey-wallet/SKILL.md](../aurey-wallet/SK
 
 ## Non-negotiables
 
-1. **Never** ask in chat: private keys, mnemonics, **`1ck_`** (human), **`ocv_`** (agent), Alchemy, LiFi API keys.
+1. **Never** ask in chat: private keys, mnemonics, **`1ck_`** (human), **`ocv_`** (agent), Alchemy, LiFi, or Zerion API keys.
 2. **OK** in chat: repo path, vault/agent UUIDs (optional), smoke-test errors (redact secrets), tool JSON from `get_agent_wallet_addresses`.
 3. **Hermes:** user runs **`aurey-setup`** (or `uv run aurey-setup` from a dev clone) in a **real terminal**—do not paste that command’s input from chat.
 4. Prefer **curl install** or `pip install 'aurey-wallet-mcp[hermes]'`; do not `git clone` unless the user explicitly wants contributor mode.
 5. Alchemy lives in **1Claw vault** `api-keys/alchemy` (see `~/.aurey/config.toml`); not Hermes MCP `env`.
 6. **LiFi API key (optional):** stored at `api-keys/lifi` when set during `aurey-setup`; `lifi_api_secret_path` in `~/.aurey/config.toml`. Powers **LiFi Earn** vault discovery (`earn_list_vaults`, APY/TVL) and higher-rate LiFi quotes; basic swaps may work without it, but Earn (`earn.li.fi`) requires the key. User gets one via [LiFi Earn quickstart](https://docs.li.fi/earn/quickstart) ([Partner Portal signup](https://portal.li.fi/signup) → API key). User runs setup in terminal—do not ask for the key in chat.
-7. Never invent **`0x`** — use **`get_agent_wallet_addresses`** after MCP is connected.
-8. No **`tx_execute`** during onboarding; verification is **read-only** only.
+7. **Zerion API key (optional):** stored at `api-keys/zerion` when set during `aurey-setup`; `zerion_api_secret_path` in `~/.aurey/config.toml`. Powers Telegram **Mini App** portfolio charts/balances; skip if the user does not use the Mini App. Get a key at [developers.zerion.io](https://developers.zerion.io/)—terminal only, not chat.
+8. Never invent **`0x`** — use **`get_agent_wallet_addresses`** after MCP is connected.
+9. No **`tx_execute`** during onboarding; verification is **read-only** only.
 
 ---
 

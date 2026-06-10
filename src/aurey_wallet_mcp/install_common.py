@@ -15,7 +15,9 @@ VAULT_API_KEY_ENV = "AUREY_ONECLAW_VAULT_API_KEY"
 LEGACY_VAULT_API_KEY_ENV = "AUREY_ONECLAW_BOOTSTRAP_API_KEY"
 DEFAULT_ALCHEMY_VAULT_PATH = "api-keys/alchemy"
 DEFAULT_LIFI_VAULT_PATH = "api-keys/lifi"
+DEFAULT_ZERION_VAULT_PATH = "api-keys/zerion"
 LIFI_EARN_QUICKSTART_URL = "https://docs.li.fi/earn/quickstart"
+ZERION_DEVELOPERS_URL = "https://developers.zerion.io/"
 HUMAN_API_KEY_ENV = "AUREY_ONECLAW_HUMAN_API_KEY"
 
 LIFI_SETUP_HINT = (
@@ -27,6 +29,13 @@ LIFI_SETUP_HINT = (
     f"  • Get a key: {LIFI_EARN_QUICKSTART_URL} "
     "(sign up at https://portal.li.fi/signup → create an API key).\n"
     f"  • When provided, stored in your 1Claw vault at {DEFAULT_LIFI_VAULT_PATH!r}."
+)
+
+ZERION_SETUP_HINT = (
+    "Zerion API key (optional — Enter to skip):\n"
+    "  • Powers Telegram Mini App portfolio charts and token balances (read-only).\n"
+    f"  • Get a key: {ZERION_DEVELOPERS_URL}\n"
+    f"  • When provided, stored in your 1Claw vault at {DEFAULT_ZERION_VAULT_PATH!r}."
 )
 
 REQUIRED_MCP_ENV_KEYS = (
@@ -233,6 +242,26 @@ def ensure_aurey_toml_lifi_path(
     marker = "[providers]"
     line = f'lifi_api_secret_path = "{secret_path}"'
     if "lifi_api_secret_path" in body:
+        return
+    if marker in body:
+        new_body = body.replace(marker, f"{marker}\n{line}", 1)
+    else:
+        new_body = (body.rstrip() + "\n\n" if body.strip() else "") + f"{marker}\n{line}\n"
+    config_path.write_text(new_body, encoding="utf-8")
+
+
+def ensure_aurey_toml_zerion_path(
+    config_path: Path,
+    *,
+    secret_path: str = DEFAULT_ZERION_VAULT_PATH,
+) -> None:
+    config_path.parent.mkdir(parents=True, exist_ok=True)
+    body = ""
+    if config_path.is_file():
+        body = config_path.read_text(encoding="utf-8")
+    marker = "[providers]"
+    line = f'zerion_api_secret_path = "{secret_path}"'
+    if "zerion_api_secret_path" in body:
         return
     if marker in body:
         new_body = body.replace(marker, f"{marker}\n{line}", 1)
