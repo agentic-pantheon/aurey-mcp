@@ -87,9 +87,14 @@
 <td><strong>No</strong></td>
 <td>1Claw vault path <code>api-keys/alchemy</code> (not MCP <code>env</code>)</td>
 </tr>
+<tr>
+<td>Zerion API key (optional)</td>
+<td><strong>No</strong></td>
+<td>1Claw vault path <code>api-keys/zerion</code> (portfolio UI / Mini App)</td>
+</tr>
 </tbody>
 </table>
-<p>Hermes may retain chat in memory and logs. <strong>Never</strong> ask the user to paste <code>1ck_</code>, <code>ocv_</code>, or Alchemy in chat. <strong>Never</strong> pipe chat text into <code>aurey-setup</code> or <code>aurey-hermes-install --prompt-secrets</code>.</p>
+<p>Hermes may retain chat in memory and logs. <strong>Never</strong> ask the user to paste <code>1ck_</code>, <code>ocv_</code>, Alchemy, or Zerion keys in chat. <strong>Never</strong> pipe chat text into <code>aurey-setup</code> or <code>aurey-hermes-install --prompt-secrets</code>.</p>
 <p><strong>Naming:</strong> <code>AUREY_ONECLAW_VAULT_API_KEY</code> is the per-agent <strong><code>ocv_…</code></strong> key (agent-token + vault reads). Legacy alias: <code>AUREY_ONECLAW_BOOTSTRAP_API_KEY</code>. Not <code>plt_</code> (Platform).</p>
 <p><strong>Built-in defaults</strong> (omit from MCP <code>env</code>): <code>AUREY_HOSTED_PLATFORM_ENABLED=false</code>, <code>AUREY_EVM_SIGNING_MODE=oneclaw_intents</code>.</p>
 <hr />
@@ -131,6 +136,7 @@ aurey-setup --host openclaw  # ~/.openclaw/openclaw.json (or OPENCLAW_CONFIG)
 <li><strong>1Claw human API key</strong> (<code>1ck_…</code>)</li>
 <li><strong>Alchemy API key</strong> (Enter to skip; stored in 1Claw if provided)</li>
 <li><strong>LiFi API key</strong> (optional; Enter to skip) — Earn vault discovery + higher LiFi quote limits; see <a href="https://docs.li.fi/earn/quickstart">Earn quickstart</a> / <a href="https://portal.li.fi/signup">portal.li.fi/signup</a></li>
+<li><strong>Zerion API key</strong> (optional; Enter to skip) — local portfolio UI at <code>http://127.0.0.1:8765/</code> and Telegram Mini App live data; see <a href="https://developers.zerion.io/">developers.zerion.io</a></li>
 </ol>
 <p><strong>What <code>aurey-setup</code> does automatically:</strong></p>
 <table>
@@ -166,6 +172,10 @@ aurey-setup --host openclaw  # ~/.openclaw/openclaw.json (or OPENCLAW_CONFIG)
 <td><code>PUT</code> secret at <code>api-keys/lifi</code> when you entered a key; sets <code>lifi_api_secret_path</code> in <code>~/.aurey/config.toml</code></td>
 </tr>
 <tr>
+<td>Zerion</td>
+<td><code>PUT</code> secret at <code>api-keys/zerion</code> when you entered a key; sets <code>zerion_api_secret_path</code> in <code>~/.aurey/config.toml</code></td>
+</tr>
+<tr>
 <td>Signing key</td>
 <td>Provisions <strong>Ethereum</strong> signing key on the agent</td>
 </tr>
@@ -183,7 +193,7 @@ aurey-setup --host openclaw  # ~/.openclaw/openclaw.json (or OPENCLAW_CONFIG)
 </tr>
 <tr>
 <td><code>~/.aurey/config.toml</code></td>
-<td><code>alchemy_secret_path</code>; <code>lifi_api_secret_path</code> when LiFi key provided</td>
+<td><code>alchemy_secret_path</code>; <code>lifi_api_secret_path</code> / <code>zerion_api_secret_path</code> when keys provided</td>
 </tr>
 <tr>
 <td>Verify</td>
@@ -195,6 +205,9 @@ aurey-setup --host openclaw  # ~/.openclaw/openclaw.json (or OPENCLAW_CONFIG)
 <pre><code class="language-bash">uv run aurey-setup --vault-id '&lt;existing-vault-uuid&gt;'   # do not create/pick another vault
 uv run aurey-setup --skip-alchemy                     # add Alchemy in dashboard later
 uv run aurey-setup --skip-lifi                        # skip LiFi prompt (Earn vault list needs key later)
+uv run aurey-setup --skip-zerion                      # skip Zerion prompt (portfolio UI needs key later)
+uv run aurey-setup --zerion-key '&lt;key&gt;'               # non-interactive Zerion key
+uv run aurey-setup --zerion-vault-path api-keys/zerion  # custom 1Claw vault path
 uv run aurey-setup --from-env                         # human key in AUREY_ONECLAW_HUMAN_API_KEY
 uv run aurey-setup --provision-only                   # 1Claw + ~/.aurey/mcp.env only
 uv run aurey-setup --host cursor --skip-provision     # Re-wire MCP using saved mcp.env
@@ -411,8 +424,6 @@ Then evm_get_native_balance for ethereum using that address.
 <li><a href="https://github.com/agentic-pantheon/aurey-mcp/blob/main/ONBOARDING_1CLAW.md">ONBOARDING_1CLAW.md</a> — one-page agent playbook</li>
 </ul>
 <p>Telegram/Discord/Slack use the Hermes gateway; Aurey only adds wallet MCP tools on the machine running Hermes.</p>
-<hr />
-<p>Shared install: <a href="https://github.com/agentic-pantheon/aurey-mcp/blob/main/install.html">install guide</a>. Troubleshooting: <a href="https://github.com/agentic-pantheon/aurey-mcp/blob/main/docs/troubleshooting.md">docs/troubleshooting.md</a>.</p>
   </main>
 </body>
 </html>

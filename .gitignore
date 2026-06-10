@@ -9,3 +9,7 @@ miniapp/node_modules/
 miniapp/dist/
 .pytest_cache/
 .ruff_cache/
+
+# Generated on deploy / `uv run python scripts/build_website_docs.py`
+website/install.html
+website/install/
