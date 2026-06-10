@@ -170,19 +170,17 @@ version = "0.1.2"
 source = { editable = "." }
 dependencies = [
     { name = "cryptography" },
+    { name = "fastapi" },
     { name = "httpx" },
     { name = "langchain-core" },
     { name = "langgraph" },
     { name = "mcp" },
     { name = "pydantic-settings" },
+    { name = "uvicorn", extra = ["standard"] },
     { name = "web3" },
 ]
 
 [package.optional-dependencies]
-dashboard = [
-    { name = "fastapi" },
-    { name = "uvicorn", extra = ["standard"] },
-]
 hermes = [
     { name = "pyyaml" },
 ]
@@ -201,7 +199,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "cryptography", specifier = ">=42" },
-    { name = "fastapi", marker = "extra == 'dashboard'", specifier = ">=0.115" },
+    { name = "fastapi", specifier = ">=0.115" },
     { name = "fastapi", marker = "extra == 'route-builder'", specifier = ">=0.115" },
     { name = "httpx", specifier = ">=0.27" },
     { name = "langchain-core", specifier = ">=0.3" },
@@ -210,7 +208,7 @@ requires-dist = [
     { name = "pydantic-settings", specifier = ">=2" },
     { name = "pyyaml", marker = "extra == 'hermes'", specifier = ">=6" },
     { name = "tomli", marker = "python_full_version < '3.11'", specifier = ">=2" },
-    { name = "uvicorn", extras = ["standard"], marker = "extra == 'dashboard'", specifier = ">=0.30" },
+    { name = "uvicorn", extras = ["standard"], specifier = ">=0.30" },
     { name = "uvicorn", extras = ["standard"], marker = "extra == 'route-builder'", specifier = ">=0.30" },
     { name = "web3", specifier = ">=6.11.0" },
 ]

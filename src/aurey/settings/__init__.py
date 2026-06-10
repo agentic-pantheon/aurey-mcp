@@ -188,7 +188,10 @@ class AureySettings(BaseSettings):
     )
     hosted_smtp_host: str = Field(
         default="",
-        description="SMTP hostname for hosted onboarding mail; empty skips sending (verification fails closed when required).",
+        description=(
+            "SMTP hostname for hosted onboarding mail; empty skips sending "
+            "(verification fails closed when required)."
+        ),
     )
     hosted_smtp_port: int = Field(default=587, ge=1, le=65535)
     hosted_smtp_user: str = Field(
@@ -313,9 +316,10 @@ class AureySettings(BaseSettings):
         validation_alias=AliasChoices("AUREY_LIFI_API_KEY"),
     )
     zerion_api_secret_path: str | None = Field(
-        default=None,
+        default="api-keys/zerion",
         description=(
-            "Optional 1Claw vault path for Zerion API key (Telegram Mini App portfolio reads)."
+            "1Claw vault path for Zerion API key (portfolio UI). Set empty env "
+            "``AUREY_ZERION_API_SECRET_PATH=`` to disable vault lookup."
         ),
         validation_alias=AliasChoices("AUREY_ZERION_API_SECRET_PATH"),
     )
@@ -354,7 +358,8 @@ class AureySettings(BaseSettings):
         default="aurey",
         description=(
             "Sent as LiFi ``integrator`` query param on ``GET /v1/quote`` (tracking / routing). "
-            "Set empty to omit. Ignored when ``route_builder_url`` is set (integrator lives server-side)."
+            "Set empty to omit. Ignored when ``route_builder_url`` is set "
+            "(integrator lives server-side)."
         ),
     )
     lifi_base_url: str = Field(
@@ -492,7 +497,8 @@ class AureySettings(BaseSettings):
     telegram_miniapp_enabled: bool = Field(
         default=False,
         description=(
-            "Expose ``/v1/miniapp/*`` and static ``/miniapp/`` when true. Requires hosted platform, "
+            "Expose ``/v1/miniapp/*`` and static ``/miniapp/`` when true. "
+            "Requires hosted platform, "
             "database, and Telegram bot token for ``initData`` validation."
         ),
     )
@@ -595,8 +601,16 @@ class AureySettings(BaseSettings):
         ),
         validation_alias=AliasChoices("AUREY_DATABASE_URL", "DATABASE_URL"),
     )
-    db_pool_min_size: int = Field(default=1, ge=1, description="LangGraph Postgres pool min connections.")
-    db_pool_max_size: int = Field(default=10, ge=1, description="LangGraph Postgres pool max connections.")
+    db_pool_min_size: int = Field(
+        default=1,
+        ge=1,
+        description="LangGraph Postgres pool min connections.",
+    )
+    db_pool_max_size: int = Field(
+        default=10,
+        ge=1,
+        description="LangGraph Postgres pool max connections.",
+    )
     secret_cache_ttl_seconds: float = Field(
         default=300.0,
         ge=0.0,

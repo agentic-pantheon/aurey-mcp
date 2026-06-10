@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cursor — Aurey Wallet MCP</title>
+  <style>
+    :root { font-family: system-ui, sans-serif; line-height: 1.55; color: #111; max-width: 46rem; margin: 2rem auto; padding: 0 1rem; }
+    code, pre { background: #f4f4f5; padding: 0.15rem 0.35rem; border-radius: 4px; font-size: 0.9em; }
+    pre { padding: 1rem; overflow-x: auto; }
+    pre code { background: none; padding: 0; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #ddd; padding: 0.5rem; text-align: left; }
+    blockquote { background: #fff8e6; padding: 0.75rem 1rem; border-radius: 6px; margin: 1rem 0; border-left: none; }
+    nav.site { margin: 1rem 0 1.5rem; }
+    nav.site a { margin-right: 1rem; }
+</style>
+</head>
+<body>
+  <p><a href="../index.html">← Home</a></p>
+
+  <nav class="site">
+    <a href="../index.html">Home</a>
+    <a href="../install.html">Install</a>
+    <a href="cursor.html">Cursor</a>
+    <a href="hermes.html">Hermes</a>
+    <a href="claude.html">Claude</a>
+    <a href="openclaw.html">OpenClaw</a>
+    <a href="../llms.txt">llms.txt</a>
+    <a href="https://github.com/agentic-pantheon/aurey-mcp">GitHub</a>
+  </nav>
+
+  <main>
+<h1>Cursor — Aurey Wallet MCP</h1>
+<p>Same <strong>one-command</strong> flow as Hermes: provision 1Claw with a human <code>1ck_…</code> key, then patch Cursor MCP config.</p>
+<h2>Setup (terminal only)</h2>
+<pre><code class="language-bash">cd /path/to/aurey-wallet-mcp
+uv sync --group dev
+uv run aurey-setup --host cursor
+</code></pre>
+<p><strong>Prompts (masked):</strong> 1Claw human <code>1ck_…</code>, optional Alchemy.</p>
+<p><strong>Writes:</strong></p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>~/.aurey/mcp.env</code></td>
+<td>Vault id, agent id, <code>ocv_…</code> (mode 600)</td>
+</tr>
+<tr>
+<td><code>~/.aurey/run-aurey-wallet-mcp.sh</code></td>
+<td>Sources <code>mcp.env</code>, runs MCP binary</td>
+</tr>
+<tr>
+<td><code>~/.cursor/mcp.json</code></td>
+<td>Adds <code>mcpServers.aurey-wallet</code> → wrapper script</td>
+</tr>
+<tr>
+<td><code>~/.aurey/config.toml</code></td>
+<td><code>alchemy_secret_path = "api-keys/alchemy"</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Project-scoped MCP</strong> (this repo only):</p>
+<pre><code class="language-bash">uv run aurey-setup --host cursor --cursor-project /path/to/your/project
+</code></pre>
+<p><strong>Custom config path:</strong></p>
+<pre><code class="language-bash">uv run aurey-setup --host cursor --config ~/.cursor/mcp.json
+</code></pre>
+<p>Then <strong>restart Cursor</strong> or reload MCP from Settings.</p>
+<h2>Verify in chat</h2>
+<p>Load skills (<a href="https://github.com/agentic-pantheon/aurey-mcp/blob/main/SKILL.md">SKILL.md</a>). Ask the agent to call <strong><code>get_agent_wallet_addresses</code></strong>, then a read-only balance. Never paste <code>1ck_</code>/<code>ocv_</code> in chat.</p>
+<h2>Re-install MCP only</h2>
+<p>If 1Claw is already provisioned:</p>
+<pre><code class="language-bash">uv run aurey-setup --host cursor --skip-provision
+</code></pre>
+<h2>Manual fallback</h2>
+<p>See <a href="https://github.com/agentic-pantheon/aurey-mcp/blob/main/docs/1claw-onboarding-guide.md">docs/1claw-onboarding-guide.md</a> Path B.</p>
+<p>Hermes reference: <a href="hermes.html">install/hermes.md</a>.</p>
+<hr />
+<p>Shared install: <a href="https://github.com/agentic-pantheon/aurey-mcp/blob/main/install.html">install guide</a>. Troubleshooting: <a href="https://github.com/agentic-pantheon/aurey-mcp/blob/main/docs/troubleshooting.md">docs/troubleshooting.md</a>.</p>
+  </main>
+</body>
+</html>

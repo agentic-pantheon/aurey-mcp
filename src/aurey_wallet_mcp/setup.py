@@ -6,7 +6,6 @@ import argparse
 import getpass
 import os
 import sys
-
 from pathlib import Path
 
 from aurey_wallet_mcp.install_common import (
@@ -19,6 +18,7 @@ from aurey_wallet_mcp.install_common import (
     ZERION_DEVELOPERS_URL,
     ZERION_SETUP_HINT,
     McpHost,
+    ensure_aurey_toml_dashboard_enabled,
     ensure_aurey_toml_lifi_path,
     ensure_aurey_toml_zerion_path,
     load_mcp_env,
@@ -135,7 +135,10 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--alchemy-key", help="Alchemy key to store in 1Claw vault")
     p.add_argument("--skip-alchemy", action="store_true")
     p.add_argument("--alchemy-vault-path", default=DEFAULT_ALCHEMY_VAULT_PATH)
-    p.add_argument("--lifi-key", help="LiFi API key to store in 1Claw vault (Earn + quote rate limits)")
+    p.add_argument(
+        "--lifi-key",
+        help="LiFi API key to store in 1Claw vault (Earn + quote rate limits)",
+    )
     p.add_argument("--skip-lifi", action="store_true", help="Do not prompt for LiFi API key")
     p.add_argument("--lifi-vault-path", default=DEFAULT_LIFI_VAULT_PATH)
     p.add_argument(
@@ -144,6 +147,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p.add_argument("--skip-zerion", action="store_true", help="Do not prompt for Zerion API key")
     p.add_argument("--zerion-vault-path", default=DEFAULT_ZERION_VAULT_PATH)
+    p.add_argument(
+        "--skip-portfolio-ui",
+        action="store_true",
+        help="Do not enable local portfolio UI (dashboard) in ~/.aurey/config.toml",
+    )
     p.add_argument(
         "--skip-provision",
         action="store_true",
@@ -265,12 +273,18 @@ def main(argv: list[str] | None = None) -> None:
                 ensure_aurey_toml_lifi_path(aurey_toml, secret_path=lifi_configured_path)
             if zerion_configured_path:
                 ensure_aurey_toml_zerion_path(aurey_toml, secret_path=zerion_configured_path)
+            if not args.skip_portfolio_ui:
+                ensure_aurey_toml_dashboard_enabled(aurey_toml, enabled=True)
             print(f"✓ Credentials written to {path}")
             print(f"  Install MCP later: uv run aurey-setup --host {host} --skip-provision")
             return
 
     if args.provision_only:
         return
+
+    zerion_skipped = args.skip_zerion and not zerion_configured_path
+    if args.skip_provision:
+        zerion_skipped = args.skip_zerion
 
     run_host_install(
         host,
@@ -280,6 +294,8 @@ def main(argv: list[str] | None = None) -> None:
         alchemy_vault_path=args.alchemy_vault_path.strip(),
         lifi_vault_path=lifi_configured_path,
         zerion_vault_path=zerion_configured_path,
+        skip_portfolio_ui=args.skip_portfolio_ui,
+        zerion_skipped=zerion_skipped,
         skip_smoke_test=args.skip_smoke_test,
         hermes_home=args.hermes_home,
         cursor_project=args.cursor_project,

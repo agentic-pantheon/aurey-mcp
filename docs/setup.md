@@ -93,16 +93,28 @@ export AUREY_ROUTE_BUILDER_API_KEY=...
 
 ---
 
-## Local dashboard
+## Local portfolio UI (agent, no Telegram)
+
+`aurey-setup` sets `[dashboard] enabled = true` in `~/.aurey/config.toml` by default (`--skip-portfolio-ui` to opt out). While MCP runs:
+
+- Open **http://127.0.0.1:8765/** (also logged at MCP startup).
+- MCP tool **`get_local_portfolio_url`** returns the same URL and readiness flags.
+- Optional **`AUREY_DASHBOARD_AUTH_TOKEN`** — if set, open `http://127.0.0.1:8765/?token=…` once.
+
+**Zerion (optional):** live charts need `zerion_api_secret_path` / vault `api-keys/zerion` or `AUREY_ZERION_API_KEY`. Without it, the UI loads but shows a setup banner.
+
+PyPI wheels ship prebuilt static assets. Dev clone: `uv run python scripts/build_portfolio_static.py`.
+
+**Test without Hermes:** the UI listens only while MCP is running. For a dedicated server:
 
 ```bash
-export AUREY_DASHBOARD_ENABLED=true
-export AUREY_DASHBOARD_AUTH_TOKEN=...
-uv sync --extra dashboard
-uv run aurey-wallet-mcp
+set -a && source ~/.aurey/mcp.env && set +a
+uv run aurey-portfolio-serve
 ```
 
-Open `http://127.0.0.1:8765/` (build `miniapp/` first: `cd miniapp && npm install && npm run build`).
+Then `curl http://127.0.0.1:8765/health` and open http://127.0.0.1:8765/.
+
+**LAN / another device:** set `host = "0.0.0.0"` under `[dashboard]` in `~/.aurey/config.toml`, reload MCP, open `http://<your-machine-ip>:8765/`. Use `auth_token` when not on loopback.
 
 ---
 

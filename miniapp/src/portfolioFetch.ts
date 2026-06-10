@@ -1,4 +1,6 @@
-const API_JSON = "/v1/miniapp/portfolio";
+const MINIAPP_API = "/v1/miniapp/portfolio";
+const DASHBOARD_API = "/v1/dashboard/portfolio";
+const DASHBOARD_TOKEN_KEY = "aurey_dashboard_token";
 
 export type ChartPeriod = "day" | "week" | "month" | "year" | "max";
 
@@ -15,15 +17,34 @@ export type PortfolioFetchSuccess<T> = {
 
 export type PortfolioFetchResult<T> = PortfolioFetchSuccess<T> | PortfolioFetchFailure;
 
-export async function fetchPortfolioSnapshot<T>(
-  initData: string,
-  chartPeriod: ChartPeriod = "month",
-): Promise<PortfolioFetchResult<T>> {
-  const res = await fetch(API_JSON, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ init_data: initData, chart_period: chartPeriod }),
-  });
+export type PortfolioFetchMode = "telegram" | "local";
+
+export function resolvePortfolioFetchMode(): PortfolioFetchMode {
+  if (typeof window === "undefined") return "local";
+  const init = window.Telegram?.WebApp?.initData?.trim() ?? "";
+  return init.length > 0 ? "telegram" : "local";
+}
+
+function readDashboardAuthToken(): string | null {
+  const params = new URLSearchParams(window.location.search);
+  const fromQuery = params.get("token")?.trim();
+  if (fromQuery) {
+    try {
+      sessionStorage.setItem(DASHBOARD_TOKEN_KEY, fromQuery);
+    } catch {
+      /* ignore */
+    }
+    return fromQuery;
+  }
+  try {
+    const stored = sessionStorage.getItem(DASHBOARD_TOKEN_KEY)?.trim();
+    return stored || null;
+  } catch {
+    return null;
+  }
+}
+
+async function parsePortfolioResponse<T>(res: Response): Promise<PortfolioFetchResult<T>> {
   const ct = res.headers.get("content-type") || "";
   let body: Record<string, unknown> = {};
   if (ct.includes("application/json")) {
@@ -42,6 +63,34 @@ export async function fetchPortfolioSnapshot<T>(
     };
   }
   return { ok: true, snapshot: body as T };
+}
+
+export async function fetchPortfolioSnapshot<T>(
+  initData: string,
+  chartPeriod: ChartPeriod = "month",
+): Promise<PortfolioFetchResult<T>> {
+  const res = await fetch(MINIAPP_API, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ init_data: initData, chart_period: chartPeriod }),
+  });
+  return parsePortfolioResponse<T>(res);
+}
+
+export async function fetchDashboardPortfolioSnapshot<T>(
+  chartPeriod: ChartPeriod = "month",
+): Promise<PortfolioFetchResult<T>> {
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  const token = readDashboardAuthToken();
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+  const res = await fetch(DASHBOARD_API, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ chart_period: chartPeriod }),
+  });
+  return parsePortfolioResponse<T>(res);
 }
 
 export function zerionWalletUrl(walletAddress: string): string {

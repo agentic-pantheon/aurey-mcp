@@ -250,6 +250,34 @@ def ensure_aurey_toml_lifi_path(
     config_path.write_text(new_body, encoding="utf-8")
 
 
+def ensure_aurey_toml_dashboard_enabled(
+    config_path: Path,
+    *,
+    enabled: bool = True,
+) -> None:
+    """Set ``[dashboard] enabled = true`` when not already configured."""
+
+    if not enabled:
+        return
+    config_path.parent.mkdir(parents=True, exist_ok=True)
+    body = ""
+    if config_path.is_file():
+        body = config_path.read_text(encoding="utf-8")
+    marker = "[dashboard]"
+    if marker in body:
+        after = body.split(marker, 1)[1]
+        next_bracket = after.find("\n[")
+        section = after[:next_bracket] if next_bracket >= 0 else after
+        if "enabled" in section:
+            return
+        line = "enabled = true"
+        new_body = body.replace(marker, f"{marker}\n{line}", 1)
+    else:
+        line = "enabled = true"
+        new_body = (body.rstrip() + "\n\n" if body.strip() else "") + f"{marker}\n{line}\n"
+    config_path.write_text(new_body, encoding="utf-8")
+
+
 def ensure_aurey_toml_zerion_path(
     config_path: Path,
     *,
@@ -273,7 +301,11 @@ def ensure_aurey_toml_zerion_path(
 def smoke_test(binary: Path, env: dict[str, str]) -> None:
     proc = subprocess.run(
         [str(binary)],
-        env={**os.environ, **{k: v for k, v in env.items() if v}},
+        env={
+            **os.environ,
+            **{k: v for k, v in env.items() if v},
+            "AUREY_DASHBOARD_ENABLED": "false",
+        },
         capture_output=True,
         text=True,
         timeout=8,

@@ -89,6 +89,7 @@ Flags user may need: `--vault-id`, `--skip-alchemy`, `--skip-lifi`, `--from-env`
 - Give the **exact terminal commands** from [install/hermes.md](../../install/hermes.md).
 - Do **not** run interactive installers with secrets in the command line.
 - After MCP is live: call **`get_agent_wallet_addresses`**; read `ethereum` and `evm_source` aloud.
+- Portfolio UI: **`get_local_portfolio_url`** → user opens `url` at **http://127.0.0.1:8765/** (needs Zerion for live data).
 - Suggest one **read-only** check (`evm_get_native_balance` on `ethereum`).
 - When user wants swaps: switch to **aurey-wallet** skill.
 
@@ -140,6 +141,7 @@ Walk [docs/1claw-onboarding-guide.md](../../docs/1claw-onboarding-guide.md) Path
 | `aurey-setup` auth failed | New `1ck_` in dashboard |
 | Balances fail | Alchemy at `api-keys/alchemy` + policy |
 | `earn_list_vaults` HTTP 401 | Optional LiFi key at `api-keys/lifi` + `lifi_api_secret_path`; see [Earn quickstart](https://docs.li.fi/earn/quickstart) |
+| Portfolio UI empty / banner | Free Zerion key — [developers.zerion.io](https://developers.zerion.io/); `aurey-setup` Zerion prompt or vault `api-keys/zerion` |
 | `hermes mcp test` fails | [install/hermes.md](../../install/hermes.md) troubleshooting table |
 
 ---

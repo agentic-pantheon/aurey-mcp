@@ -188,7 +188,8 @@ class OneClawHumanClient:
             raise OneClawProvisionError("Create agent response missing agent id.")
         if not isinstance(api_key, str) or not api_key.strip():
             raise OneClawProvisionError(
-                "Create agent response missing api_key (ocv_…). Rotate key in 1Claw if reusing an agent."
+                "Create agent response missing api_key (ocv_…). "
+                "Rotate key in 1Claw if reusing an agent."
             )
         return agent_id.strip(), api_key.strip()
 

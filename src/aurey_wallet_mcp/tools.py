@@ -10,6 +10,7 @@ from langchain_core.tools import BaseTool
 from aurey.runtime import AureyRuntime
 from aurey.tools.agent_tools import build_aurey_subgraph_tools
 from aurey_wallet_mcp.autonomy.tools import build_autonomy_tools
+from aurey_wallet_mcp.local_portfolio_tools import build_local_portfolio_tools
 
 
 def _json_schema_from_tool(tool: BaseTool) -> dict[str, Any]:
@@ -29,6 +30,11 @@ def build_mcp_tool_registry(runtime: AureyRuntime) -> dict[str, tuple[BaseTool, 
             continue
         registry[name] = (tool, _json_schema_from_tool(tool))
     for tool in build_autonomy_tools(runtime):
+        name = tool.name
+        if not name or name in registry:
+            continue
+        registry[name] = (tool, _json_schema_from_tool(tool))
+    for tool in build_local_portfolio_tools(runtime):
         name = tool.name
         if not name or name in registry:
             continue

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Openclaw — Aurey Wallet MCP</title>
+  <style>
+    :root { font-family: system-ui, sans-serif; line-height: 1.55; color: #111; max-width: 46rem; margin: 2rem auto; padding: 0 1rem; }
+    code, pre { background: #f4f4f5; padding: 0.15rem 0.35rem; border-radius: 4px; font-size: 0.9em; }
+    pre { padding: 1rem; overflow-x: auto; }
+    pre code { background: none; padding: 0; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #ddd; padding: 0.5rem; text-align: left; }
+    blockquote { background: #fff8e6; padding: 0.75rem 1rem; border-radius: 6px; margin: 1rem 0; border-left: none; }
+    nav.site { margin: 1rem 0 1.5rem; }
+    nav.site a { margin-right: 1rem; }
+</style>
+</head>
+<body>
+  <p><a href="../index.html">← Home</a></p>
+
+  <nav class="site">
+    <a href="../index.html">Home</a>
+    <a href="../install.html">Install</a>
+    <a href="cursor.html">Cursor</a>
+    <a href="hermes.html">Hermes</a>
+    <a href="claude.html">Claude</a>
+    <a href="openclaw.html">OpenClaw</a>
+    <a href="../llms.txt">llms.txt</a>
+    <a href="https://github.com/agentic-pantheon/aurey-mcp">GitHub</a>
+  </nav>
+
+  <main>
+<h1>OpenClaw — Aurey Wallet MCP</h1>
+<p>Same <strong>one-command</strong> flow: <code>aurey-setup</code> provisions 1Claw and patches OpenClaw MCP config.</p>
+<h2>Setup (terminal only)</h2>
+<pre><code class="language-bash">cd /path/to/aurey-wallet-mcp
+uv sync --group dev
+uv run aurey-setup --host openclaw
+</code></pre>
+<p><strong>Default config file:</strong> <code>~/.openclaw/openclaw.json</code> (created if missing). Override with <code>OPENCLAW_CONFIG</code> or <code>--config</code>.</p>
+<p><strong>Prompts (masked):</strong> 1Claw human <code>1ck_…</code>, optional Alchemy.</p>
+<p><strong>Writes:</strong></p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>~/.aurey/mcp.env</code></td>
+<td>Credentials (mode 600)</td>
+</tr>
+<tr>
+<td><code>~/.aurey/run-aurey-wallet-mcp.sh</code></td>
+<td>Wrapper (no secrets in OpenClaw JSON)</td>
+</tr>
+<tr>
+<td><code>openclaw.json</code></td>
+<td><code>mcp.servers.aurey-wallet</code> → wrapper</td>
+</tr>
+<tr>
+<td><code>~/.aurey/config.toml</code></td>
+<td>Alchemy vault path</td>
+</tr>
+</tbody>
+</table>
+<p>Example merged shape:</p>
+<pre><code class="language-json">{
+  &quot;mcp&quot;: {
+    &quot;servers&quot;: {
+      &quot;aurey-wallet&quot;: {
+        &quot;command&quot;: &quot;/Users/you/.aurey/run-aurey-wallet-mcp.sh&quot;,
+        &quot;enabled&quot;: true
+      }
+    }
+  }
+}
+</code></pre>
+<p><strong>Project config:</strong></p>
+<pre><code class="language-bash">export OPENCLAW_CONFIG=/path/to/openclaw.json
+uv run aurey-setup --host openclaw
+# or
+uv run aurey-setup --host openclaw --config /path/to/openclaw.json
+</code></pre>
+<p><strong>Restart the OpenClaw gateway</strong> after install.</p>
+<h2>Security</h2>
+<ul>
+<li>Use <strong>channel allowlists</strong> so only trusted users can trigger wallet tools.</li>
+<li>Skills: <code>skills/aurey-wallet-onboarding/SKILL.md</code>, <code>skills/aurey-wallet/SKILL.md</code> (<a href="https://github.com/agentic-pantheon/aurey-mcp/blob/main/SKILL.md">SKILL.md</a>).</li>
+</ul>
+<h2>Re-install MCP only</h2>
+<pre><code class="language-bash">uv run aurey-setup --host openclaw --skip-provision
+</code></pre>
+<h2>Docs</h2>
+<ul>
+<li><a href="hermes.html">install/hermes.md</a> — full <code>aurey-setup</code> reference (all <code>--host</code> values)</li>
+<li><a href="https://github.com/agentic-pantheon/aurey-mcp/blob/main/docs/1claw-onboarding-guide.md">docs/1claw-onboarding-guide.md</a></li>
+</ul>
+<hr />
+<p>Shared install: <a href="https://github.com/agentic-pantheon/aurey-mcp/blob/main/install.html">install guide</a>. Troubleshooting: <a href="https://github.com/agentic-pantheon/aurey-mcp/blob/main/docs/troubleshooting.md">docs/troubleshooting.md</a>.</p>
+  </main>
+</body>
+</html>
