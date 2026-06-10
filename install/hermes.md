@@ -36,8 +36,9 @@ Official 1Claw docs: [docs.1claw.xyz](https://docs.1claw.xyz).
 | Agent UUID | **Yes** (optional) | `~/.hermes/.env` → `AUREY_ONECLAW_AGENT_ID` |
 | Agent API key (`ocv_…`) | **No** | `~/.hermes/.env` → `AUREY_ONECLAW_VAULT_API_KEY` |
 | Alchemy API key | **No** | 1Claw vault path `api-keys/alchemy` (not MCP `env`) |
+| Zerion API key (optional) | **No** | 1Claw vault path `api-keys/zerion` (portfolio UI / Mini App) |
 
-Hermes may retain chat in memory and logs. **Never** ask the user to paste `1ck_`, `ocv_`, or Alchemy in chat. **Never** pipe chat text into `aurey-setup` or `aurey-hermes-install --prompt-secrets`.
+Hermes may retain chat in memory and logs. **Never** ask the user to paste `1ck_`, `ocv_`, Alchemy, or Zerion keys in chat. **Never** pipe chat text into `aurey-setup` or `aurey-hermes-install --prompt-secrets`.
 
 **Naming:** `AUREY_ONECLAW_VAULT_API_KEY` is the per-agent **`ocv_…`** key (agent-token + vault reads). Legacy alias: `AUREY_ONECLAW_BOOTSTRAP_API_KEY`. Not `plt_` (Platform).
 
@@ -96,6 +97,7 @@ aurey-setup --host openclaw  # ~/.openclaw/openclaw.json (or OPENCLAW_CONFIG)
 1. **1Claw human API key** (`1ck_…`)
 2. **Alchemy API key** (Enter to skip; stored in 1Claw if provided)
 3. **LiFi API key** (optional; Enter to skip) — Earn vault discovery + higher LiFi quote limits; see [Earn quickstart](https://docs.li.fi/earn/quickstart) / [portal.li.fi/signup](https://portal.li.fi/signup)
+4. **Zerion API key** (optional; Enter to skip) — local portfolio UI at `http://127.0.0.1:8765/` and Telegram Mini App live data; see [developers.zerion.io](https://developers.zerion.io/)
 
 **What `aurey-setup` does automatically:**
 
@@ -107,11 +109,12 @@ aurey-setup --host openclaw  # ~/.openclaw/openclaw.json (or OPENCLAW_CONFIG)
 | Policy | Grants agent **read** on `api-keys/**` |
 | Alchemy | `PUT` secret at `api-keys/alchemy` when you entered a key |
 | LiFi | `PUT` secret at `api-keys/lifi` when you entered a key; sets `lifi_api_secret_path` in `~/.aurey/config.toml` |
+| Zerion | `PUT` secret at `api-keys/zerion` when you entered a key; sets `zerion_api_secret_path` in `~/.aurey/config.toml` |
 | Signing key | Provisions **Ethereum** signing key on the agent |
 | Hermes | Writes `~/.hermes/.env`, patches `~/.hermes/config.yaml` |
 | All hosts | Writes `~/.aurey/mcp.env` (chmod 600) + wrapper `~/.aurey/run-aurey-wallet-mcp.sh` |
 | Cursor / Claude / OpenClaw | MCP config points at the **wrapper** (secrets stay out of JSON) |
-| `~/.aurey/config.toml` | `alchemy_secret_path`; `lifi_api_secret_path` when LiFi key provided |
+| `~/.aurey/config.toml` | `alchemy_secret_path`; `lifi_api_secret_path` / `zerion_api_secret_path` when keys provided |
 | Verify | Optional MCP bootstrap smoke test |
 
 **Useful flags:**
@@ -120,6 +123,9 @@ aurey-setup --host openclaw  # ~/.openclaw/openclaw.json (or OPENCLAW_CONFIG)
 uv run aurey-setup --vault-id '<existing-vault-uuid>'   # do not create/pick another vault
 uv run aurey-setup --skip-alchemy                     # add Alchemy in dashboard later
 uv run aurey-setup --skip-lifi                        # skip LiFi prompt (Earn vault list needs key later)
+uv run aurey-setup --skip-zerion                      # skip Zerion prompt (portfolio UI needs key later)
+uv run aurey-setup --zerion-key '<key>'               # non-interactive Zerion key
+uv run aurey-setup --zerion-vault-path api-keys/zerion  # custom 1Claw vault path
 uv run aurey-setup --from-env                         # human key in AUREY_ONECLAW_HUMAN_API_KEY
 uv run aurey-setup --provision-only                   # 1Claw + ~/.aurey/mcp.env only
 uv run aurey-setup --host cursor --skip-provision     # Re-wire MCP using saved mcp.env

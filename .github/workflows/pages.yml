@@ -5,7 +5,10 @@ on:
     branches: [main]
     paths:
       - "website/**"
-      - "install/install.sh"
+      - "install/**"
+      - "scripts/build_website_docs.py"
+      - "pyproject.toml"
+      - "uv.lock"
   workflow_dispatch:
 
 permissions:
@@ -25,6 +28,16 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Install dev deps and build install docs
+        run: |
+          uv sync --group dev
+          uv run python scripts/build_website_docs.py
 
       - name: Sync install.sh into website
         run: cp install/install.sh website/install.sh && chmod +x website/install.sh
