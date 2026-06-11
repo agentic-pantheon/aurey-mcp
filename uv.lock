@@ -166,7 +166,7 @@ wheels = [
 
 [[package]]
 name = "aurey-wallet-mcp"
-version = "0.1.4"
+version = "0.1.5"
 source = { editable = "." }
 dependencies = [
     { name = "cryptography" },
@@ -184,10 +184,6 @@ dependencies = [
 hermes = [
     { name = "pyyaml" },
 ]
-route-builder = [
-    { name = "fastapi" },
-    { name = "uvicorn", extra = ["standard"] },
-]
 
 [package.dev-dependencies]
 dev = [
@@ -201,7 +197,6 @@ dev = [
 requires-dist = [
     { name = "cryptography", specifier = ">=42" },
     { name = "fastapi", specifier = ">=0.115" },
-    { name = "fastapi", marker = "extra == 'route-builder'", specifier = ">=0.115" },
     { name = "httpx", specifier = ">=0.27" },
     { name = "langchain-core", specifier = ">=0.3" },
     { name = "langgraph", specifier = ">=0.2" },
@@ -210,10 +205,9 @@ requires-dist = [
     { name = "pyyaml", marker = "extra == 'hermes'", specifier = ">=6" },
     { name = "tomli", marker = "python_full_version < '3.11'", specifier = ">=2" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.30" },
-    { name = "uvicorn", extras = ["standard"], marker = "extra == 'route-builder'", specifier = ">=0.30" },
     { name = "web3", specifier = ">=6.11.0" },
 ]
-provides-extras = ["dashboard", "route-builder", "hermes"]
+provides-extras = ["dashboard", "hermes"]
 
 [package.metadata.requires-dev]
 dev = [

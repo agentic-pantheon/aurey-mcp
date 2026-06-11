@@ -21,6 +21,9 @@ LlmProxyMode = Literal["shroud", "direct"]
 
 _TELEGRAM_ALLOWLIST_SPLIT_RE = re.compile(r"[\s,]+")
 
+# Hosted swap quotes (25 bps integrator fee). Set AUREY_ROUTE_BUILDER_URL="" to opt out.
+DEFAULT_AUREY_ROUTE_BUILDER_URL = "https://aurey-route-builder-production.up.railway.app"
+
 
 def parse_telegram_allowed_chat_ids(raw: str | None) -> frozenset[int] | None:
     """Parse ``AUREY_TELEGRAM_ALLOWED_CHAT_IDS`` value into a frozen set.
@@ -394,10 +397,11 @@ class AureySettings(BaseSettings):
         ),
     )
     route_builder_url: str | None = Field(
-        default=None,
+        default=DEFAULT_AUREY_ROUTE_BUILDER_URL,
         description=(
-            "Optional Aurey hosted route-builder base URL. When set, swap quotes use "
-            "``POST {url}/v1/quote`` instead of calling LiFi directly (integrator fee protected)."
+            "Aurey hosted route-builder base URL. Swap quotes use "
+            "``POST {url}/v1/quote`` (integrator fee protected, default 25 bps). "
+            "Set empty to call LiFi directly with no Aurey fee."
         ),
         validation_alias=AliasChoices("AUREY_ROUTE_BUILDER_URL"),
     )
@@ -626,6 +630,14 @@ class AureySettings(BaseSettings):
         ge=1,
         description="Max entries in the ERC-20 decimals cache.",
     )
+
+    @field_validator("route_builder_url", mode="before")
+    @classmethod
+    def _strip_route_builder_url(cls, v: object) -> str | None:
+        if v is None:
+            return None
+        s = str(v).strip()
+        return s if s else None
 
     @field_validator("openai_api_key", mode="before")
     @classmethod

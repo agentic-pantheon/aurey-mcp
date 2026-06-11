@@ -120,7 +120,7 @@ Manual 1Claw steps: [docs/1claw-onboarding-guide.md](docs/1claw-onboarding-guide
 | `aurey-setup` | 1Claw provision + MCP install (all hosts) |
 | `aurey-hermes-install` | Hermes-only install when 1Claw is already done |
 | `aurey-wallet-mcp` | MCP stdio server + optional local dashboard |
-| `aurey-route-builder` | Li.Fi quote proxy with integrator fee |
+| [aurey-route-builder](https://github.com/agentic-pantheon/aurey-route-builder) | Hosted LiFi quote proxy (25 bps fee; used by default) |
 | `aurey_autonomy_api` | Stub x402 autonomy signals (replace in production) |
 
 ---

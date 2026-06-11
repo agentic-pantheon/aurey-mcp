@@ -53,7 +53,7 @@ Shared artifacts: `~/.aurey/mcp.env`, `~/.aurey/run-aurey-wallet-mcp.sh`, `~/.au
 - **Signing key:** Ethereum on that agent.
 - **LiFi (optional):** stores API key at `api-keys/lifi` and sets `lifi_api_secret_path` in `~/.aurey/config.toml` when provided.
 
-**LiFi key — what it is for (optional):** LiFi **Earn** vault discovery (`earn_list_vaults`, APY/TVL, Composer-supported vaults) and higher-rate LiFi swap/Composer quotes. Swaps may work without a key; the Earn Data API at `earn.li.fi` requires the `x-lifi-api-key` header. **How to get one:** follow [LiFi Earn quickstart](https://docs.li.fi/earn/quickstart) — sign up at [portal.li.fi/signup](https://portal.li.fi/signup), create an API key, paste at the `aurey-setup` prompt (terminal only, not chat). Add later with `PUT` to the same vault path or re-run `aurey-setup` with `--lifi-key`.
+**LiFi key — optional:** By default, swaps, Composer deposits, and Earn vault tools use the hosted **aurey-route-builder** (no personal LiFi key). You only need your own key if you opt out with `AUREY_ROUTE_BUILDER_URL=` empty (direct `li.quest` + `earn.li.fi`). **How to get one:** [LiFi Earn quickstart](https://docs.li.fi/earn/quickstart) — [portal.li.fi/signup](https://portal.li.fi/signup). Paste at `aurey-setup` (terminal only) or store at `api-keys/lifi` in 1Claw.
 
 Then reload MCP for your host (Hermes: `hermes mcp test aurey-wallet` + `/reload-mcp`; Cursor/Claude: restart app; OpenClaw: restart gateway) → `get_agent_wallet_addresses`.
 
@@ -208,7 +208,7 @@ Walk Path B steps one at a time; host-specific MCP snippet from `install/`.
 | `AUREY_ONECLAW_VAULT_API_KEY` | Agent `ocv_…` (legacy: `AUREY_ONECLAW_BOOTSTRAP_API_KEY`) |
 | `AUREY_ONECLAW_AGENT_ID` | Agent UUID (Intents on) |
 | `AUREY_ONECLAW_HUMAN_API_KEY` | Optional; `aurey-setup --from-env` only |
-| `AUREY_ROUTE_BUILDER_URL` | Optional swap quotes |
+| `AUREY_ROUTE_BUILDER_URL` | Default hosted swap quotes (25 bps fee); set empty to opt out — [setup.md](setup.md) |
 
 Optional override: `AUREY_DEEP_AGENT_WALLET_ADDRESS`.
 

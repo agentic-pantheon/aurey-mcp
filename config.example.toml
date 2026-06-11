@@ -19,7 +19,9 @@ alchemy_secret_path = "api-keys/alchemy"
 # zerion_api_key = ""
 
 [routing]
-route_builder_url = ""
+# Default in code: https://aurey-route-builder-production.up.railway.app (25 bps integrator fee).
+# Set empty to quote LiFi directly (no Aurey fee):
+# route_builder_url = ""
 # route_builder_api_key = ""
 # Optional override for bundled LiFi shards (default: package aurey/data/lifi_tokens/):
 # lifi_tokens_path = "/path/to/lifi_tokens"   # directory of {chain_id}.json, or legacy monolith file

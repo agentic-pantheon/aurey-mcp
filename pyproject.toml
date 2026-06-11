@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "aurey-wallet-mcp"
-version = "0.1.4"
+version = "0.1.5"
 description = "Self-hosted Aurey wallet tools as an MCP server (1Claw custody, EVM swaps, local dashboard)"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -41,17 +41,12 @@ Issues = "https://github.com/agentic-pantheon/aurey-mcp/issues"
 
 [project.optional-dependencies]
 dashboard = []
-route-builder = [
-    "fastapi>=0.115",
-    "uvicorn[standard]>=0.30",
-]
 hermes = [
     "pyyaml>=6",
 ]
 
 [project.scripts]
 aurey-wallet-mcp = "aurey_wallet_mcp.server:main"
-aurey-route-builder = "aurey_route_builder.app:main"
 aurey-hermes-install = "aurey_wallet_mcp.hermes_install:main"
 aurey-setup = "aurey_wallet_mcp.setup:main"
 aurey-portfolio-serve = "aurey_wallet_mcp.portfolio_serve:main"

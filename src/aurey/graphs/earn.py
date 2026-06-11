@@ -413,23 +413,48 @@ def _validate_node(state: EarnGraphState) -> EarnGraphState:
     }
 
 
+def _route_builder_earn_headers(runtime: AureyRuntime) -> dict[str, str]:
+    headers: dict[str, str] = {"User-Agent": _EARN_HTTP_USER_AGENT}
+    rb_key = (runtime.settings.route_builder_api_key or "").strip()
+    if rb_key:
+        headers["Authorization"] = f"Bearer {rb_key}"
+    return headers
+
+
+def _earn_api_url(*, proxy_base: str | None, direct_base: str, relative: str) -> str:
+    """Build Earn or route-builder proxy URL (``relative`` e.g. ``chains``, ``vaults?x=1``)."""
+
+    if proxy_base:
+        return f"{proxy_base}/{relative}"
+    return f"{direct_base}/v1/{relative}"
+
+
 def _execute_node(runtime: AureyRuntime, state: EarnGraphState) -> EarnGraphState:
     if state.get("error"):
         return {}
 
     parsed = EarnGraphInput.model_validate(state["input"])
-    api_key, err = _resolve_lifi_key(runtime)
-    if err is not None:
-        return {"error": err}
+    rb_base = (runtime.settings.route_builder_url or "").strip().rstrip("/")
+    proxy_base = f"{rb_base}/v1/earn" if rb_base else None
+    direct_base = _EARN_BASE_URL.rstrip("/")
 
-    base = _EARN_BASE_URL.rstrip("/")
-    headers = _earn_headers(runtime, api_key)
+    if proxy_base:
+        headers = _route_builder_earn_headers(runtime)
+    else:
+        api_key, err = _resolve_lifi_key(runtime)
+        if err is not None:
+            return {"error": err}
+        headers = _earn_headers(runtime, api_key)
 
     try:
         if parsed.operation == "list_chains":
             raw = runtime.http.request_json(
                 method="GET",
-                url=f"{base}/v1/chains",
+                url=_earn_api_url(
+                    proxy_base=proxy_base,
+                    direct_base=direct_base,
+                    relative="chains",
+                ),
                 headers=headers,
                 json_body=None,
             )
@@ -451,7 +476,11 @@ def _execute_node(runtime: AureyRuntime, state: EarnGraphState) -> EarnGraphStat
         if parsed.operation == "list_protocols":
             raw = runtime.http.request_json(
                 method="GET",
-                url=f"{base}/v1/protocols",
+                url=_earn_api_url(
+                    proxy_base=proxy_base,
+                    direct_base=direct_base,
+                    relative="protocols",
+                ),
                 headers=headers,
                 json_body=None,
             )
@@ -498,7 +527,12 @@ def _execute_node(runtime: AureyRuntime, state: EarnGraphState) -> EarnGraphStat
                 q["cursor"] = str(parsed.cursor).strip()
 
             query = urlencode(q)
-            url = f"{base}/v1/vaults?{query}" if query else f"{base}/v1/vaults"
+            vaults_rel = f"vaults?{query}" if query else "vaults"
+            url = _earn_api_url(
+                proxy_base=proxy_base,
+                direct_base=direct_base,
+                relative=vaults_rel,
+            )
             raw = runtime.http.request_json(method="GET", url=url, headers=headers, json_body=None)
             if not isinstance(raw, dict):
                 return {
@@ -545,7 +579,11 @@ def _execute_node(runtime: AureyRuntime, state: EarnGraphState) -> EarnGraphStat
             path_addr = quote(to_checksum_evm_address(v_addr), safe="")
             raw = runtime.http.request_json(
                 method="GET",
-                url=f"{base}/v1/vaults/{cid}/{path_addr}",
+                url=_earn_api_url(
+                    proxy_base=proxy_base,
+                    direct_base=direct_base,
+                    relative=f"vaults/{cid}/{path_addr}",
+                ),
                 headers=headers,
                 json_body=None,
             )
@@ -566,7 +604,11 @@ def _execute_node(runtime: AureyRuntime, state: EarnGraphState) -> EarnGraphStat
             path_wallet = quote(w, safe="")
             raw = runtime.http.request_json(
                 method="GET",
-                url=f"{base}/v1/portfolio/{path_wallet}/positions",
+                url=_earn_api_url(
+                    proxy_base=proxy_base,
+                    direct_base=direct_base,
+                    relative=f"portfolio/{path_wallet}/positions",
+                ),
                 headers=headers,
                 json_body=None,
             )

@@ -23,7 +23,7 @@ Using a **human** API key (`1ck_…`, terminal only):
 3. **Agent** — `Aurey Wallet MCP`, Intents enabled, returns **`ocv_…`** (written to `~/.hermes/.env` on Hermes).
 4. **Policy** — agent read on `api-keys/**`.
 5. **Alchemy** — optional store at `api-keys/alchemy`.
-6. **LiFi** — optional store at `api-keys/lifi` (Earn vault discovery; see [Earn quickstart](https://docs.li.fi/earn/quickstart)).
+6. **LiFi** — optional store at `api-keys/lifi` (only if you disable the hosted route-builder; see below).
 7. **Signing key** — Ethereum on the agent.
 8. **Host MCP config** — Hermes `~/.hermes/*`; Cursor `mcp.json`; Claude desktop config; OpenClaw `openclaw.json`.
 9. **Shared** — `~/.aurey/mcp.env`, wrapper `~/.aurey/run-aurey-wallet-mcp.sh`, `~/.aurey/config.toml`.
@@ -46,13 +46,13 @@ Required in MCP host env (or `~/.hermes/.env` on Hermes):
 
 **Alchemy (preferred):** `alchemy_secret_path = "api-keys/alchemy"` in `~/.aurey/config.toml` with key in 1Claw vault. Optional plaintext: `AUREY_ALCHEMY_API_KEY` (avoid on Hermes).
 
-**LiFi (optional):** `lifi_api_secret_path = "api-keys/lifi"` when you use Earn vault tools; get a key via [Earn quickstart](https://docs.li.fi/earn/quickstart). Optional plaintext: `AUREY_LIFI_API_KEY`.
+**LiFi (optional):** Not required when using the default hosted [aurey-route-builder](https://github.com/agentic-pantheon/aurey-route-builder) (swaps, Composer quotes, and Earn Data API). Set `AUREY_ROUTE_BUILDER_URL=` empty to call LiFi and `earn.li.fi` directly — then configure `lifi_api_secret_path = "api-keys/lifi"` or `AUREY_LIFI_API_KEY` ([Earn quickstart](https://docs.li.fi/earn/quickstart)).
 
 On MCP start, the plugin loads the agent’s Ethereum address from signing-keys. Failure → finish 1Claw ETH key provisioning.
 
 Tool: **`get_agent_wallet_addresses`** (`refresh=true` after provisioning without restart).
 
-Optional: `AUREY_DEEP_AGENT_WALLET_ADDRESS`, `AUREY_ROUTE_BUILDER_URL`.
+Optional: `AUREY_DEEP_AGENT_WALLET_ADDRESS`. Default swap routing uses `AUREY_ROUTE_BUILDER_URL` (hosted route-builder, 25 bps fee); set empty to opt out — see [Route builder](#route-builder-hosted-swaps).
 
 **LiFi token catalog:** MCP ships `aurey/data/lifi_tokens/{chain_id}.json` shards (LiFi `/v1/tokens`, Aurey EVM chains). **Per-chain lazy load:** only the chain you query is read and indexed (plus small curated `known_addresses.json` at startup). No Postgres; catalog is not sent to the model. Override path: `AUREY_LIFI_TOKENS_PATH`. Disable bundled file: `AUREY_BUNDLED_LIFI_TOKENS_ENABLED=false`.
 
@@ -76,20 +76,22 @@ Agents: `resolve_known_address` per ticker; `list_supported_tokens` requires `ch
 
 ---
 
-## Route builder (optional)
+## Route builder (hosted swaps + Earn)
+
+Swap quotes and **Earn Data API** reads use the hosted [aurey-route-builder](https://github.com/agentic-pantheon/aurey-route-builder) by default. Swaps include a **25 bps** integrator fee (disclosed in quote responses). Signing stays on your device via 1Claw.
 
 ```bash
-export AUREY_ROUTE_BUILDER_LIFI_API_KEY=...
-export AUREY_ROUTE_BUILDER_AUTH_TOKEN=...
-uv run aurey-route-builder
+# Opt out — quote LiFi and earn.li.fi directly (requires your own LiFi key for Earn)
+export AUREY_ROUTE_BUILDER_URL=
 ```
 
-Plugin:
+Optional bearer for higher rate limits:
 
 ```bash
-export AUREY_ROUTE_BUILDER_URL=http://127.0.0.1:8091
 export AUREY_ROUTE_BUILDER_API_KEY=...
 ```
+
+Self-host the route-builder: see the repo README and [docs/DEPLOY.md](https://github.com/agentic-pantheon/aurey-route-builder/blob/main/docs/DEPLOY.md).
 
 ---
 
