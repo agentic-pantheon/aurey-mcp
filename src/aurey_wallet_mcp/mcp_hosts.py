@@ -21,6 +21,7 @@ from aurey_wallet_mcp.install_common import (
     maybe_dev_sync,
     missing_required,
     resolve_mcp_command,
+    sanitize_mcp_secrets,
     save_json_object,
     smoke_test,
     write_mcp_env,
@@ -109,6 +110,7 @@ def run_host_install(
 
     from aurey_wallet_mcp.hermes_install import run_install as run_hermes_install
 
+    secrets = sanitize_mcp_secrets(secrets)
     maybe_dev_sync(repo, skip_sync=skip_sync)
     binary = resolve_mcp_command(repo)
     env_file = write_mcp_env(secrets)

@@ -7,6 +7,7 @@ import os
 import shutil
 import stat
 import subprocess
+import sys
 from pathlib import Path
 from typing import Any, Literal
 
@@ -19,6 +20,12 @@ DEFAULT_ZERION_VAULT_PATH = "api-keys/zerion"
 LIFI_EARN_QUICKSTART_URL = "https://docs.li.fi/earn/quickstart"
 ZERION_DEVELOPERS_URL = "https://developers.zerion.io/"
 HUMAN_API_KEY_ENV = "AUREY_ONECLAW_HUMAN_API_KEY"
+HUMAN_API_TOKEN_ENV = "AUREY_ONECLAW_HUMAN_API_TOKEN"
+
+SETUP_ONLY_ENV_KEYS: tuple[str, ...] = (
+    HUMAN_API_KEY_ENV,
+    HUMAN_API_TOKEN_ENV,
+)
 
 LIFI_SETUP_HINT = (
     "LiFi API key (optional — Enter to skip):\n"
@@ -121,6 +128,99 @@ def secrets_from_ids(
     }
 
 
+def _parse_dotenv_lines(env_path: Path) -> dict[str, str]:
+    out: dict[str, str] = {}
+    if not env_path.is_file():
+        return out
+    for line in env_path.read_text(encoding="utf-8").splitlines():
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#") or "=" not in stripped:
+            continue
+        key, _, val = stripped.partition("=")
+        out[key.strip()] = val.strip()
+    return out
+
+
+def sanitize_mcp_secrets(secrets: dict[str, str]) -> dict[str, str]:
+    """Keep only MCP runtime credentials (agent ``ocv_`` + ids)."""
+
+    return {
+        k: secrets[k].strip()
+        for k in REQUIRED_MCP_ENV_KEYS
+        if secrets.get(k, "").strip()
+    }
+
+
+def _forbidden_keys_in_mapping(secrets: dict[str, str]) -> list[str]:
+    found: list[str] = []
+    for key in SETUP_ONLY_ENV_KEYS:
+        if secrets.get(key, "").strip():
+            found.append(key)
+    for key in (VAULT_API_KEY_ENV, LEGACY_VAULT_API_KEY_ENV):
+        val = secrets.get(key, "").strip()
+        if val.startswith("1ck_"):
+            found.append(f"{key} (human 1ck_ key)")
+    return found
+
+
+def warn_if_forbidden_keys_present(source: Path | dict[str, str], *, label: str) -> None:
+    """Log a stderr warning when setup-only human credentials appear in MCP env."""
+
+    if isinstance(source, Path):
+        secrets = _parse_dotenv_lines(source)
+        where = str(source)
+    else:
+        secrets = source
+        where = label
+    forbidden = _forbidden_keys_in_mapping(secrets)
+    if not forbidden:
+        return
+    print(
+        f"Warning: {where} contains setup-only 1Claw human credentials "
+        f"({', '.join(forbidden)}). MCP uses the agent key (ocv_…) only; "
+        "remove these entries.",
+        file=sys.stderr,
+    )
+
+
+def remove_keys_from_dotenv(env_path: Path, keys: tuple[str, ...] | list[str]) -> bool:
+    """Delete KEY=value lines from a dotenv file. Returns True if the file changed."""
+
+    if not env_path.is_file():
+        return False
+    drop = {k.strip() for k in keys if k.strip()}
+    if not drop:
+        return False
+    lines = env_path.read_text(encoding="utf-8").splitlines()
+    new_lines: list[str] = []
+    changed = False
+    for line in lines:
+        stripped = line.strip()
+        if stripped and not stripped.startswith("#") and "=" in stripped:
+            key, _, _ = stripped.partition("=")
+            if key.strip() in drop:
+                changed = True
+                continue
+        new_lines.append(line)
+    if changed:
+        env_path.write_text("\n".join(new_lines).rstrip() + "\n", encoding="utf-8")
+    return changed
+
+
+def strip_setup_only_keys_from_dotenv(env_path: Path) -> bool:
+    """Remove human/setup-only keys from a dotenv file."""
+
+    return remove_keys_from_dotenv(env_path, SETUP_ONLY_ENV_KEYS)
+
+
+def cleanup_setup_only_env_files() -> None:
+    """Strip setup-only keys from shared MCP and Hermes dotenv files."""
+
+    strip_setup_only_keys_from_dotenv(mcp_env_path())
+    hermes_home = Path(os.environ.get("HERMES_HOME", Path.home() / ".hermes")).expanduser()
+    strip_setup_only_keys_from_dotenv(hermes_home / ".env")
+
+
 def upsert_dotenv(env_path: Path, updates: dict[str, str], *, comment: str) -> list[str]:
     """Merge KEY=value into a dotenv file; return keys written."""
 
@@ -164,11 +264,13 @@ def write_mcp_env(secrets: dict[str, str], *, path: Path | None = None) -> Path:
     """Write shared MCP credentials (chmod 600)."""
 
     env_path = path or mcp_env_path()
+    clean = sanitize_mcp_secrets(secrets)
     upsert_dotenv(
         env_path,
-        {k: secrets[k] for k in REQUIRED_MCP_ENV_KEYS if secrets.get(k, "").strip()},
+        clean,
         comment="Aurey Wallet MCP credentials (aurey-setup)",
     )
+    strip_setup_only_keys_from_dotenv(env_path)
     try:
         env_path.chmod(stat.S_IRUSR | stat.S_IWUSR)
     except OSError:
@@ -180,14 +282,9 @@ def load_mcp_env(path: Path | None = None) -> dict[str, str]:
     env_path = path or mcp_env_path()
     if not env_path.is_file():
         raise SystemExit(f"Missing {env_path}. Run aurey-setup without --skip-provision first.")
-    out: dict[str, str] = {}
-    for line in env_path.read_text(encoding="utf-8").splitlines():
-        stripped = line.strip()
-        if not stripped or stripped.startswith("#") or "=" not in stripped:
-            continue
-        key, _, val = stripped.partition("=")
-        out[key.strip()] = val.strip()
-    return out
+    raw = _parse_dotenv_lines(env_path)
+    warn_if_forbidden_keys_present(raw, label=str(env_path))
+    return sanitize_mcp_secrets(raw)
 
 
 def write_mcp_wrapper(*, binary: Path, env_path: Path | None = None) -> Path:
@@ -299,13 +396,17 @@ def ensure_aurey_toml_zerion_path(
 
 
 def smoke_test(binary: Path, env: dict[str, str]) -> None:
+    mcp_env = sanitize_mcp_secrets(env)
+    child_env = {
+        **os.environ,
+        **{k: v for k, v in mcp_env.items() if v},
+        "AUREY_DASHBOARD_ENABLED": "false",
+    }
+    for key in SETUP_ONLY_ENV_KEYS:
+        child_env.pop(key, None)
     proc = subprocess.run(
         [str(binary)],
-        env={
-            **os.environ,
-            **{k: v for k, v in env.items() if v},
-            "AUREY_DASHBOARD_ENABLED": "false",
-        },
+        env=child_env,
         capture_output=True,
         text=True,
         timeout=8,

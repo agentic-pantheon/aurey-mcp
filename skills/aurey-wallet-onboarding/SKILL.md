@@ -106,7 +106,7 @@ Hermes + Aurey setup:
 
 Uses Human API with `1ck_…` to: pick or **create vault** (`aurey-wallet` if empty account), create **Intents agent**, policy on `api-keys/**`, optional Alchemy + optional LiFi secrets, **Ethereum signing key**, write `~/.hermes/.env` + `config.yaml`, set provider paths in `~/.aurey/config.toml`.
 
-Flags user may need: `--vault-id`, `--skip-alchemy`, `--skip-lifi`, `--from-env` (`AUREY_ONECLAW_HUMAN_API_KEY`).
+Flags user may need: `--vault-id`, `--skip-alchemy`, `--skip-lifi`, `--from-env` (ephemeral `AUREY_ONECLAW_HUMAN_API_KEY` for non-interactive setup only — never add to `mcp.env` or Hermes MCP `env`).
 
 ### Your role in chat
 

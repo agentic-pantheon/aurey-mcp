@@ -126,7 +126,7 @@ uv run aurey-setup --skip-lifi                        # skip LiFi prompt (Earn v
 uv run aurey-setup --skip-zerion                      # skip Zerion prompt (portfolio UI needs key later)
 uv run aurey-setup --zerion-key '<key>'               # non-interactive Zerion key
 uv run aurey-setup --zerion-vault-path api-keys/zerion  # custom 1Claw vault path
-uv run aurey-setup --from-env                         # human key in AUREY_ONECLAW_HUMAN_API_KEY
+uv run aurey-setup --from-env                         # ephemeral human key (unset AUREY_ONECLAW_HUMAN_API_KEY after; not stored in mcp.env)
 uv run aurey-setup --provision-only                   # 1Claw + ~/.aurey/mcp.env only
 uv run aurey-setup --host cursor --skip-provision     # Re-wire MCP using saved mcp.env
 uv run aurey-setup --host cursor --cursor-project .   # Project .cursor/mcp.json

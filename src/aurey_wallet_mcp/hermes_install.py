@@ -18,7 +18,9 @@ from aurey_wallet_mcp.install_common import (
     maybe_dev_sync,
     mcp_wrapper_path,
     resolve_mcp_command,
+    sanitize_mcp_secrets,
     smoke_test,
+    strip_setup_only_keys_from_dotenv,
     upsert_dotenv,
     write_mcp_env,
     write_mcp_wrapper,
@@ -166,9 +168,11 @@ def run_install(
             file=sys.stderr,
         )
 
+    secrets = sanitize_mcp_secrets(secrets)
     written = upsert_dotenv(
         env_path, secrets, comment="Aurey Wallet MCP (aurey-hermes-install)"
     )
+    strip_setup_only_keys_from_dotenv(env_path)
     if secrets.get(VAULT_API_KEY_ENV, "").strip():
         env_file = write_mcp_env(secrets)
         wrapper = write_mcp_wrapper(binary=binary, env_path=env_file)

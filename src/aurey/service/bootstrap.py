@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import os
+
 from aurey.custody.agent_wallet import effective_evm_wallet_address, hydrate_runtime_agent_wallets
 from aurey.custody.caching_secret_store import CachingSecretStore
 from aurey.custody.secret_store import OneClawHttpClient, OneClawSecretStore
@@ -17,6 +19,24 @@ from aurey.util.ttl_lru_cache import TtlLruCache
 class AureyRuntimeBootstrapError(RuntimeError):
     """Mandatory runtime wiring failed; messages must not contain secret values."""
 
+_HUMAN_SETUP_ENV = "AUREY_ONECLAW_HUMAN_API_KEY"
+_VAULT_API_KEY_ENVS = ("AUREY_ONECLAW_VAULT_API_KEY", "AUREY_ONECLAW_BOOTSTRAP_API_KEY")
+
+
+def _reject_setup_only_credentials_in_process_env() -> None:
+    if os.environ.get(_HUMAN_SETUP_ENV, "").strip():
+        raise AureyRuntimeBootstrapError(
+            f"{_HUMAN_SETUP_ENV} must not be set when running MCP — it is for aurey-setup only. "
+            "Unset it and use AUREY_ONECLAW_VAULT_API_KEY (ocv_…) from provisioning."
+        )
+    for name in _VAULT_API_KEY_ENVS:
+        val = os.environ.get(name, "").strip()
+        if val.startswith("1ck_"):
+            raise AureyRuntimeBootstrapError(
+                f"{name} must be the agent API key (ocv_…), not a human personal key (1ck_…). "
+                "Re-run aurey-setup and keep the human key out of mcp.env."
+            )
+
 
 def bootstrap_aurey_runtime(settings: AureySettings | None = None) -> AureyRuntime:
     """Wire 1Claw secret store and EVM tooling for MCP / local dashboard (no hosted SaaS)."""
@@ -26,6 +46,7 @@ def bootstrap_aurey_runtime(settings: AureySettings | None = None) -> AureyRunti
         raise AureyRuntimeBootstrapError(
             "aurey-wallet-mcp runs in standalone mode only (set AUREY_HOSTED_PLATFORM_ENABLED=false)."
         )
+    _reject_setup_only_credentials_in_process_env()
     vault_id = (s.oneclaw_vault_id or "").strip()
     if not vault_id:
         raise AureyRuntimeBootstrapError("1Claw vault id is not configured (AUREY_ONECLAW_VAULT_ID).")

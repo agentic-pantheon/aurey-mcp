@@ -18,6 +18,7 @@ from aurey_wallet_mcp.install_common import (
     ZERION_DEVELOPERS_URL,
     ZERION_SETUP_HINT,
     McpHost,
+    cleanup_setup_only_env_files,
     ensure_aurey_toml_dashboard_enabled,
     ensure_aurey_toml_lifi_path,
     ensure_aurey_toml_zerion_path,
@@ -224,6 +225,14 @@ def main(argv: list[str] | None = None) -> None:
             )
         except OneClawProvisionError as exc:
             raise SystemExit(str(exc)) from exc
+
+        cleanup_setup_only_env_files()
+        if args.from_env:
+            print(
+                f"Note: unset {HUMAN_API_KEY_ENV} in your shell after setup — "
+                "MCP uses the agent key (ocv_…) only; the human key is not stored in mcp.env.",
+                file=sys.stderr,
+            )
 
         secrets = secrets_from_ids(
             vault_id=result.vault_id,

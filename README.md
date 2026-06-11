@@ -69,7 +69,7 @@ Hermes also updates `~/.hermes/config.yaml` and `~/.hermes/.env`. For Hermes YAM
 ```bash
 uv run aurey-setup --vault-id '<uuid>'              # use existing vault
 uv run aurey-setup --skip-alchemy                   # add Alchemy in 1Claw later
-uv run aurey-setup --from-env                       # human key in AUREY_ONECLAW_HUMAN_API_KEY
+uv run aurey-setup --from-env                       # ephemeral: read AUREY_ONECLAW_HUMAN_API_KEY once, never written to mcp.env
 uv run aurey-setup --provision-only                 # 1Claw + mcp.env only
 uv run aurey-setup --host cursor --skip-provision   # re-wire MCP from ~/.aurey/mcp.env
 uv run aurey-setup --host cursor --cursor-project . # project .cursor/mcp.json
@@ -84,7 +84,7 @@ Load agent skills ([SKILL.md](SKILL.md)). Ask your agent to call **`get_agent_wa
 
 | Value | Where |
 |-------|--------|
-| `1ck_…` (human) | `aurey-setup` prompt only |
+| `1ck_…` (human) | `aurey-setup` prompt only — never in `~/.aurey/mcp.env` or MCP host env |
 | `ocv_…` (agent) | `~/.aurey/mcp.env`, `~/.hermes/.env` (Hermes) |
 | Alchemy | 1Claw vault `api-keys/alchemy` |
 | Vault / agent UUID | OK in chat for debugging |

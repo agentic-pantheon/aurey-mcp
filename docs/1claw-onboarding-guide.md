@@ -137,7 +137,7 @@ For products that provision **one agent per user**: Platform app, templates, cla
 
 | Prefix | Role | Aurey setup |
 |--------|------|-------------|
-| `1ck_` | Human personal API key | **`aurey-setup` only** (terminal) |
+| `1ck_` | Human personal API key | **`aurey-setup` only** (terminal); not persisted in `mcp.env` |
 | `ocv_` | Agent API key | MCP runtime (`~/.hermes/.env` or host `env`) |
 | `plt_` | Platform operator | Not used in personal Hermes install |
 
@@ -207,7 +207,7 @@ Walk Path B steps one at a time; host-specific MCP snippet from `install/`.
 | `AUREY_ONECLAW_VAULT_ID` | Vault UUID |
 | `AUREY_ONECLAW_VAULT_API_KEY` | Agent `ocv_…` (legacy: `AUREY_ONECLAW_BOOTSTRAP_API_KEY`) |
 | `AUREY_ONECLAW_AGENT_ID` | Agent UUID (Intents on) |
-| `AUREY_ONECLAW_HUMAN_API_KEY` | Optional; `aurey-setup --from-env` only |
+| `AUREY_ONECLAW_HUMAN_API_KEY` | Setup only (`aurey-setup --from-env` or shell for one run); **never** in `mcp.env` / MCP env — unset after provision |
 | `AUREY_ROUTE_BUILDER_URL` | Default hosted swap quotes (25 bps fee); set empty to opt out — [setup.md](setup.md) |
 
 Optional override: `AUREY_DEEP_AGENT_WALLET_ADDRESS`.
