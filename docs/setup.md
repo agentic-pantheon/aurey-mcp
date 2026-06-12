@@ -122,7 +122,7 @@ Then `curl http://127.0.0.1:8765/health` and open http://127.0.0.1:8765/.
 
 ## Paid HTTP APIs (x402, optional)
 
-When **1Claw typed-data signing** is enabled on the agent key, MCP exposes wallet-backed **x402 V2** tools: `x402_preview`, `x402_fetch`, `x402_payment_status`, `x402_batch_channel_status`, `x402_batch_refund`.
+When **1Claw typed-data signing** is enabled on the agent key, MCP exposes wallet-backed **x402 V2** tools: `x402_preview`, `x402_fetch`, `x402_payment_status`, `x402_batch_channel_status`, `x402_batch_refund`, plus curated discovery: `list_x402_services`, `get_x402_service`, `resolve_x402_endpoint`.
 
 Configure caps in `~/.aurey/config.toml` under `[x402]` (see `config.example.toml`) or via `AUREY_X402_*` env vars:
 
@@ -131,5 +131,8 @@ Configure caps in `~/.aurey/config.toml` under `[x402]` (see `config.example.tom
 - `batch_max_deposit_usd` — cap for batch-settlement channel deposits
 - `allowed_hosts` — optional comma-separated host allowlist (empty = any)
 - `prefer_network` — default `eip155:8453` (Base)
+- `services_url` — default GitHub raw catalog on `agentic-pantheon/aurey-mcp` (updates without PyPI); set empty for bundled-only
+- `services_path` — local JSON override (wins over remote)
+- `services_ttl_seconds` — catalog refresh interval (default 3600)
 
-Flow: `x402_preview` → `x402_fetch` (or `confirm_payment=true` + `max_price_usd` when above auto-approve). Only **known USDC** on the quoted chain is auto-paid in v1.
+Flow: `list_x402_services` / `get_x402_service` → `resolve_x402_endpoint` → `x402_preview` → `x402_fetch` (or `confirm_payment=true` + `max_price_usd` when above auto-approve). Only **known USDC** on the quoted chain is auto-paid in v1.

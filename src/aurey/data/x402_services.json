@@ -1,0 +1,1055 @@
+{
+  "version": "2026-06-12-amp-v1",
+  "services": [
+    {
+      "id": "blackswan",
+      "provider_id": "cdd05d2f-7a58-41c2-b33c-b9424132e68c",
+      "name": "BlackSwan",
+      "description": "Real-time risk signals for autonomous trading and treasury agents. Flags rugs, exploits, and abnormal token behavior.",
+      "tags": [
+        "crypto",
+        "risk",
+        "defi",
+        "monitoring",
+        "agent-infra",
+        "mcp"
+      ],
+      "network": "eip155:8453",
+      "discover_url": "https://app.ampersend.ai/discover/agent/cdd05d2f-7a58-41c2-b33c-b9424132e68c",
+      "base_url": "https://x402.blackswan.wtf",
+      "agent_notes": "GET / returns a free service manifest (200). Use POST on paid paths; preview paid routes before fetch.",
+      "endpoints": [
+        {
+          "id": "risk-feed",
+          "method": "GET",
+          "url": "https://x402.blackswan.wtf",
+          "description": "Real-time risk feed (Flare/Core tiers).",
+          "price_usd_min": 0.1,
+          "price_note": null
+        },
+        {
+          "id": "flare-analysis",
+          "method": "POST",
+          "url": "https://x402.blackswan.wtf/smart-agents/flare",
+          "description": "Flare-tier risk analysis for a smart agent target.",
+          "price_usd_min": 0.01,
+          "price_note": null
+        }
+      ]
+    },
+    {
+      "id": "einstein-ai",
+      "provider_id": "96480614-83c5-45ef-bf57-be7aab7a7b31",
+      "name": "Einstein AI",
+      "description": "On-chain market intelligence: whale tracking, smart-money, DEX analytics, MEV detection, and launchpad monitoring.",
+      "tags": [
+        "crypto",
+        "whales",
+        "smart-money",
+        "dex",
+        "mev",
+        "security",
+        "launchpad"
+      ],
+      "network": "eip155:8453",
+      "discover_url": "https://app.ampersend.ai/discover/agent/96480614-83c5-45ef-bf57-be7aab7a7b31",
+      "base_url": "https://emc2ai.io",
+      "agent_notes": "Use POST with JSON body (prompt field). Ampersend UI may show GET; live API expects POST.",
+      "endpoints": [
+        {
+          "id": "einstein-report",
+          "method": "POST",
+          "url": "https://emc2ai.io/x402/einstein/report",
+          "description": "Investment-report agent with whale/smart-money/MEV signals.",
+          "price_usd_min": 0.5,
+          "price_note": null
+        }
+      ]
+    },
+    {
+      "id": "limitless-exchange",
+      "provider_id": "75c4264b-c658-45d5-b5f5-37796b267772",
+      "name": "Limitless Exchange",
+      "description": "Prediction market CLOB on Base for agentic betting.",
+      "tags": [
+        "crypto",
+        "prediction-market",
+        "clob",
+        "betting",
+        "agentic",
+        "payments"
+      ],
+      "network": "eip155:8453",
+      "discover_url": "https://app.ampersend.ai/discover/agent/75c4264b-c658-45d5-b5f5-37796b267772",
+      "base_url": "https://server-production-d471.up.railway.app",
+      "endpoints": [
+        {
+          "id": "place-bet",
+          "method": "POST",
+          "url": "https://server-production-d471.up.railway.app/place-bet",
+          "description": "Place YES/NO bet (marketSlug, side).",
+          "price_usd_min": 0.15,
+          "price_note": null
+        },
+        {
+          "id": "withdraw",
+          "method": "POST",
+          "url": "https://server-production-d471.up.railway.app/withdraw",
+          "description": "Withdraw USDC from sub-account.",
+          "price_usd_min": 0.05,
+          "price_note": null
+        }
+      ]
+    },
+    {
+      "id": "zapper",
+      "provider_id": "653d67c8-bb4c-43f4-bdcd-d2c007d0b49e",
+      "name": "Zapper",
+      "description": "Multi-chain wallet, portfolio, DeFi, and NFT reads via x402.",
+      "tags": [
+        "crypto",
+        "wallet",
+        "portfolio",
+        "tokens",
+        "nft",
+        "defi",
+        "multi-chain"
+      ],
+      "network": "eip155:8453",
+      "discover_url": "https://app.ampersend.ai/discover/agent/653d67c8-bb4c-43f4-bdcd-d2c007d0b49e",
+      "base_url": "https://public.zapper.xyz",
+      "agent_notes": "All listed routes expect POST with JSON per Zapper x402 schema.",
+      "endpoints": [
+        {
+          "id": "account-identity",
+          "method": "POST",
+          "url": "https://public.zapper.xyz/x402/account-identity",
+          "description": "ENS/Farcaster/Lens/Basenames lookup",
+          "price_usd_min": 0.0011,
+          "price_note": null
+        },
+        {
+          "id": "defi-balances",
+          "method": "POST",
+          "url": "https://public.zapper.xyz/x402/defi-balances",
+          "description": "DeFi positions",
+          "price_usd_min": 0.0011,
+          "price_note": null
+        },
+        {
+          "id": "general-swap-feed",
+          "method": "POST",
+          "url": "https://public.zapper.xyz/x402/general-swap-feed",
+          "description": "Farcaster swap feed",
+          "price_usd_min": 0.0037,
+          "price_note": null
+        },
+        {
+          "id": "historical-token-price",
+          "method": "POST",
+          "url": "https://public.zapper.xyz/x402/historical-token-price",
+          "description": "Historical token price",
+          "price_usd_min": 0.0011,
+          "price_note": null
+        },
+        {
+          "id": "nft-balances",
+          "method": "POST",
+          "url": "https://public.zapper.xyz/x402/nft-balances",
+          "description": "NFT balances",
+          "price_usd_min": 0.0011,
+          "price_note": null
+        },
+        {
+          "id": "nft-collection-metadata",
+          "method": "POST",
+          "url": "https://public.zapper.xyz/x402/nft-collection-metadata",
+          "description": "Collection metadata",
+          "price_usd_min": 0.0011,
+          "price_note": null
+        },
+        {
+          "id": "nft-ranking",
+          "method": "POST",
+          "url": "https://public.zapper.xyz/x402/nft-ranking",
+          "description": "NFT collections ranked",
+          "price_usd_min": 0.0045,
+          "price_note": null
+        },
+        {
+          "id": "nft-token-metadata",
+          "method": "POST",
+          "url": "https://public.zapper.xyz/x402/nft-token-metadata",
+          "description": "Single NFT metadata",
+          "price_usd_min": 0.0011,
+          "price_note": null
+        },
+        {
+          "id": "portfolio-totals",
+          "method": "POST",
+          "url": "https://public.zapper.xyz/x402/portfolio-totals",
+          "description": "Aggregated portfolio",
+          "price_usd_min": 0.0019,
+          "price_note": null
+        },
+        {
+          "id": "search",
+          "method": "POST",
+          "url": "https://public.zapper.xyz/x402/search",
+          "description": "Search tokens/NFTs/users/apps",
+          "price_usd_min": 0.0045,
+          "price_note": null
+        },
+        {
+          "id": "token-activity-feed",
+          "method": "POST",
+          "url": "https://public.zapper.xyz/x402/token-activity-feed",
+          "description": "Token activity feed",
+          "price_usd_min": 0.0037,
+          "price_note": null
+        },
+        {
+          "id": "token-balances",
+          "method": "POST",
+          "url": "https://public.zapper.xyz/x402/token-balances",
+          "description": "Token balances",
+          "price_usd_min": 0.0011,
+          "price_note": null
+        },
+        {
+          "id": "token-holders",
+          "method": "POST",
+          "url": "https://public.zapper.xyz/x402/token-holders",
+          "description": "Holders + identity",
+          "price_usd_min": 0.0011,
+          "price_note": null
+        },
+        {
+          "id": "token-price",
+          "method": "POST",
+          "url": "https://public.zapper.xyz/x402/token-price",
+          "description": "Real-time price",
+          "price_usd_min": 0.0011,
+          "price_note": null
+        },
+        {
+          "id": "token-ranking",
+          "method": "POST",
+          "url": "https://public.zapper.xyz/x402/token-ranking",
+          "description": "Token ranking",
+          "price_usd_min": 0.0045,
+          "price_note": null
+        },
+        {
+          "id": "transaction-details",
+          "method": "POST",
+          "url": "https://public.zapper.xyz/x402/transaction-details",
+          "description": "Tx interpretation",
+          "price_usd_min": 0.0011,
+          "price_note": null
+        },
+        {
+          "id": "transaction-history",
+          "method": "POST",
+          "url": "https://public.zapper.xyz/x402/transaction-history",
+          "description": "Tx history",
+          "price_usd_min": 0.0011,
+          "price_note": null
+        }
+      ]
+    },
+    {
+      "id": "stableenrich",
+      "provider_id": "fa4f8059-57f0-4b99-8f5c-9ba98ea9cb9a",
+      "name": "StableEnrich",
+      "description": "Multi-vendor people, places, search, and enrichment aggregator.",
+      "tags": [
+        "data",
+        "search",
+        "aggregator",
+        "social",
+        "people",
+        "places",
+        "enrichment"
+      ],
+      "network": "eip155:8453",
+      "discover_url": "https://app.ampersend.ai/discover/agent/fa4f8059-57f0-4b99-8f5c-9ba98ea9cb9a",
+      "base_url": "https://stableenrich.dev",
+      "endpoints": [
+        {
+          "id": "apollo-people-search",
+          "method": "POST",
+          "url": "https://stableenrich.dev/api/apollo/people-search",
+          "description": "Apollo people search",
+          "price_usd_min": 0.02,
+          "price_note": null
+        },
+        {
+          "id": "clado-contacts-enrich",
+          "method": "POST",
+          "url": "https://stableenrich.dev/api/clado/contacts-enrich",
+          "description": "Clado contact enrichment",
+          "price_usd_min": 0.2,
+          "price_note": null
+        },
+        {
+          "id": "exa-search",
+          "method": "POST",
+          "url": "https://stableenrich.dev/api/exa/search",
+          "description": "Exa neural search",
+          "price_usd_min": 0.01,
+          "price_note": null
+        },
+        {
+          "id": "firecrawl-scrape",
+          "method": "POST",
+          "url": "https://stableenrich.dev/api/firecrawl/scrape",
+          "description": "Firecrawl scrape",
+          "price_usd_min": 0.013,
+          "price_note": null
+        },
+        {
+          "id": "google-maps-text-search",
+          "method": "POST",
+          "url": "https://stableenrich.dev/api/google-maps/text-search/full",
+          "description": "Google Maps text search",
+          "price_usd_min": 0.08,
+          "price_note": null
+        },
+        {
+          "id": "hunter-email-verifier",
+          "method": "POST",
+          "url": "https://stableenrich.dev/api/hunter/email-verifier",
+          "description": "Hunter email verify",
+          "price_usd_min": 0.03,
+          "price_note": null
+        },
+        {
+          "id": "reddit-search",
+          "method": "POST",
+          "url": "https://stableenrich.dev/api/reddit/search",
+          "description": "Reddit search",
+          "price_usd_min": 0.02,
+          "price_note": null
+        },
+        {
+          "id": "serper-news",
+          "method": "POST",
+          "url": "https://stableenrich.dev/api/serper/news",
+          "description": "Serper news",
+          "price_usd_min": 0.04,
+          "price_note": null
+        }
+      ]
+    },
+    {
+      "id": "auor-io",
+      "provider_id": "88969f4e-280b-49c8-bc0c-b7cff0aa3c3c",
+      "name": "Auor.io",
+      "description": "Keyless gateway to maps, weather, travel, FX, and search APIs.",
+      "tags": [
+        "aggregator",
+        "google-maps",
+        "weather",
+        "translate",
+        "amadeus",
+        "tavily"
+      ],
+      "network": "eip155:8453",
+      "discover_url": "https://app.ampersend.ai/discover/agent/88969f4e-280b-49c8-bc0c-b7cff0aa3c3c",
+      "base_url": "https://api.auor.io",
+      "endpoints": [
+        {
+          "id": "historical-fx",
+          "method": "GET",
+          "url": "https://api.auor.io/all-rates-today/v1/historical",
+          "description": "Historical FX",
+          "price_usd_min": 0.001,
+          "price_note": null
+        },
+        {
+          "id": "fx-rates",
+          "method": "GET",
+          "url": "https://api.auor.io/all-rates-today/v1/rates",
+          "description": "FX rates",
+          "price_usd_min": 0.001,
+          "price_note": null
+        },
+        {
+          "id": "amadeus-search",
+          "method": "GET",
+          "url": "https://api.auor.io/amadeus/v1/search",
+          "description": "Flight search",
+          "price_usd_min": 0.03,
+          "price_note": null
+        },
+        {
+          "id": "company-enrich",
+          "method": "GET",
+          "url": "https://api.auor.io/crustdata/v1/companies/enrich",
+          "description": "Company enrich",
+          "price_usd_min": 0.12,
+          "price_note": null
+        },
+        {
+          "id": "crustdata-filters",
+          "method": "GET",
+          "url": "https://api.auor.io/crustdata/v1/filters",
+          "description": "CrustData filters",
+          "price_usd_min": 0.001,
+          "price_note": null
+        },
+        {
+          "id": "people-enrich",
+          "method": "GET",
+          "url": "https://api.auor.io/crustdata/v1/people/enrich",
+          "description": "People enrich",
+          "price_usd_min": 0.12,
+          "price_note": null
+        },
+        {
+          "id": "maps-details-basic",
+          "method": "GET",
+          "url": "https://api.auor.io/google-maps/v1/details/basic",
+          "description": "Place details basic",
+          "price_usd_min": 0.005,
+          "price_note": null
+        },
+        {
+          "id": "maps-details-full",
+          "method": "GET",
+          "url": "https://api.auor.io/google-maps/v1/details/full",
+          "description": "Place details full",
+          "price_usd_min": 0.025,
+          "price_note": null
+        },
+        {
+          "id": "maps-geocode",
+          "method": "GET",
+          "url": "https://api.auor.io/google-maps/v1/geocode",
+          "description": "Geocode",
+          "price_usd_min": 0.005,
+          "price_note": null
+        },
+        {
+          "id": "maps-search-basic",
+          "method": "GET",
+          "url": "https://api.auor.io/google-maps/v1/search/basic",
+          "description": "Places search basic",
+          "price_usd_min": 0.032,
+          "price_note": null
+        },
+        {
+          "id": "maps-search-full",
+          "method": "GET",
+          "url": "https://api.auor.io/google-maps/v1/search/full",
+          "description": "Places search full",
+          "price_usd_min": 0.04,
+          "price_note": null
+        },
+        {
+          "id": "translate-languages",
+          "method": "GET",
+          "url": "https://api.auor.io/google-translate/v1/languages",
+          "description": "Languages",
+          "price_usd_min": 0.001,
+          "price_note": null
+        },
+        {
+          "id": "translate",
+          "method": "POST",
+          "url": "https://api.auor.io/google-translate/v1/translate",
+          "description": "Translate",
+          "price_usd_min": 0.001,
+          "price_note": null
+        },
+        {
+          "id": "weather-current",
+          "method": "GET",
+          "url": "https://api.auor.io/google-weather/v1/current",
+          "description": "Current weather",
+          "price_usd_min": 0.001,
+          "price_note": null
+        },
+        {
+          "id": "weather-forecast-days",
+          "method": "GET",
+          "url": "https://api.auor.io/google-weather/v1/forecast/days",
+          "description": "Daily forecast",
+          "price_usd_min": 0.001,
+          "price_note": null
+        },
+        {
+          "id": "weather-forecast-hours",
+          "method": "GET",
+          "url": "https://api.auor.io/google-weather/v1/forecast/hours",
+          "description": "Hourly forecast",
+          "price_usd_min": 0.001,
+          "price_note": null
+        },
+        {
+          "id": "weather-history-hours",
+          "method": "GET",
+          "url": "https://api.auor.io/google-weather/v1/history/hours",
+          "description": "Weather history",
+          "price_usd_min": 0.001,
+          "price_note": null
+        },
+        {
+          "id": "ip-lookup",
+          "method": "GET",
+          "url": "https://api.auor.io/ip-stack/v1/lookup",
+          "description": "IP lookup",
+          "price_usd_min": 0.001,
+          "price_note": null
+        },
+        {
+          "id": "holidays-public",
+          "method": "GET",
+          "url": "https://api.auor.io/open-holidays/v1/public",
+          "description": "Public holidays",
+          "price_usd_min": 0.001,
+          "price_note": null
+        },
+        {
+          "id": "holidays-school",
+          "method": "GET",
+          "url": "https://api.auor.io/open-holidays/v1/school",
+          "description": "School holidays",
+          "price_usd_min": 0.001,
+          "price_note": null
+        },
+        {
+          "id": "holidays-subdivisions",
+          "method": "GET",
+          "url": "https://api.auor.io/open-holidays/v1/subdivisions",
+          "description": "Subdivisions",
+          "price_usd_min": 0.001,
+          "price_note": null
+        },
+        {
+          "id": "tavily-search",
+          "method": "POST",
+          "url": "https://api.auor.io/tavily/v1/search",
+          "description": "Tavily search",
+          "price_usd_min": null,
+          "price_note": "varies"
+        }
+      ]
+    },
+    {
+      "id": "twit-sh",
+      "provider_id": "fe787629-c9b0-4ec7-8000-f140816d9384",
+      "name": "twit.sh",
+      "description": "Real-time X (Twitter) data API.",
+      "tags": [
+        "data",
+        "search",
+        "twitter",
+        "x",
+        "social",
+        "real-time"
+      ],
+      "network": "eip155:8453",
+      "discover_url": "https://app.ampersend.ai/discover/agent/fe787629-c9b0-4ec7-8000-f140816d9384",
+      "base_url": "https://x402.twit.sh",
+      "endpoints": [
+        {
+          "id": "articles-by-id",
+          "method": "GET",
+          "url": "https://x402.twit.sh/articles/by/id",
+          "description": "X/Twitter API /articles/by/id",
+          "price_usd_min": 0.01,
+          "price_note": null
+        },
+        {
+          "id": "communities-by-id",
+          "method": "GET",
+          "url": "https://x402.twit.sh/communities/by/id",
+          "description": "X/Twitter API /communities/by/id",
+          "price_usd_min": 0.0025,
+          "price_note": null
+        },
+        {
+          "id": "communities-members",
+          "method": "GET",
+          "url": "https://x402.twit.sh/communities/members",
+          "description": "X/Twitter API /communities/members",
+          "price_usd_min": 0.01,
+          "price_note": null
+        },
+        {
+          "id": "communities-posts",
+          "method": "GET",
+          "url": "https://x402.twit.sh/communities/posts",
+          "description": "X/Twitter API /communities/posts",
+          "price_usd_min": 0.01,
+          "price_note": null
+        },
+        {
+          "id": "lists-by-id",
+          "method": "GET",
+          "url": "https://x402.twit.sh/lists/by/id",
+          "description": "X/Twitter API /lists/by/id",
+          "price_usd_min": 0.0025,
+          "price_note": null
+        },
+        {
+          "id": "lists-followers",
+          "method": "GET",
+          "url": "https://x402.twit.sh/lists/followers",
+          "description": "X/Twitter API /lists/followers",
+          "price_usd_min": 0.01,
+          "price_note": null
+        },
+        {
+          "id": "lists-members",
+          "method": "GET",
+          "url": "https://x402.twit.sh/lists/members",
+          "description": "X/Twitter API /lists/members",
+          "price_usd_min": 0.01,
+          "price_note": null
+        },
+        {
+          "id": "lists-tweets",
+          "method": "GET",
+          "url": "https://x402.twit.sh/lists/tweets",
+          "description": "X/Twitter API /lists/tweets",
+          "price_usd_min": 0.01,
+          "price_note": null
+        },
+        {
+          "id": "tweets-bulk",
+          "method": "GET",
+          "url": "https://x402.twit.sh/tweets",
+          "description": "X/Twitter API /tweets",
+          "price_usd_min": 0.01,
+          "price_note": null
+        },
+        {
+          "id": "tweets-by-id",
+          "method": "GET",
+          "url": "https://x402.twit.sh/tweets/by/id",
+          "description": "X/Twitter API /tweets/by/id",
+          "price_usd_min": 0.0025,
+          "price_note": null
+        },
+        {
+          "id": "tweets-quote",
+          "method": "GET",
+          "url": "https://x402.twit.sh/tweets/quote_tweets",
+          "description": "X/Twitter API /tweets/quote_tweets",
+          "price_usd_min": 0.01,
+          "price_note": null
+        },
+        {
+          "id": "tweets-replies",
+          "method": "GET",
+          "url": "https://x402.twit.sh/tweets/replies",
+          "description": "X/Twitter API /tweets/replies",
+          "price_usd_min": 0.01,
+          "price_note": null
+        },
+        {
+          "id": "tweets-retweeted-by",
+          "method": "GET",
+          "url": "https://x402.twit.sh/tweets/retweeted_by",
+          "description": "X/Twitter API /tweets/retweeted_by",
+          "price_usd_min": 0.01,
+          "price_note": null
+        },
+        {
+          "id": "tweets-search",
+          "method": "GET",
+          "url": "https://x402.twit.sh/tweets/search",
+          "description": "X/Twitter API /tweets/search",
+          "price_usd_min": 0.01,
+          "price_note": null
+        },
+        {
+          "id": "tweets-user",
+          "method": "GET",
+          "url": "https://x402.twit.sh/tweets/user",
+          "description": "X/Twitter API /tweets/user",
+          "price_usd_min": 0.01,
+          "price_note": null
+        },
+        {
+          "id": "users-bulk",
+          "method": "GET",
+          "url": "https://x402.twit.sh/users",
+          "description": "X/Twitter API /users",
+          "price_usd_min": 0.01,
+          "price_note": null
+        },
+        {
+          "id": "users-by-id",
+          "method": "GET",
+          "url": "https://x402.twit.sh/users/by/id",
+          "description": "X/Twitter API /users/by/id",
+          "price_usd_min": 0.005,
+          "price_note": null
+        },
+        {
+          "id": "users-by-username",
+          "method": "GET",
+          "url": "https://x402.twit.sh/users/by/username",
+          "description": "X/Twitter API /users/by/username",
+          "price_usd_min": 0.005,
+          "price_note": null
+        },
+        {
+          "id": "users-followers",
+          "method": "GET",
+          "url": "https://x402.twit.sh/users/followers",
+          "description": "X/Twitter API /users/followers",
+          "price_usd_min": 0.01,
+          "price_note": null
+        },
+        {
+          "id": "users-following",
+          "method": "GET",
+          "url": "https://x402.twit.sh/users/following",
+          "description": "X/Twitter API /users/following",
+          "price_usd_min": 0.01,
+          "price_note": null
+        },
+        {
+          "id": "users-search",
+          "method": "GET",
+          "url": "https://x402.twit.sh/users/search",
+          "description": "X/Twitter API /users/search",
+          "price_usd_min": 0.01,
+          "price_note": null
+        }
+      ]
+    },
+    {
+      "id": "laso-finance",
+      "provider_id": "107daaea-c5e8-4c5d-9874-3de2f2ec33f8",
+      "name": "Laso Finance",
+      "description": "Stablecoin to prepaid cards, gift cards, Venmo, and PayPal.",
+      "tags": [
+        "payments",
+        "prepaid-card",
+        "gift-cards",
+        "venmo",
+        "paypal",
+        "no-kyc"
+      ],
+      "network": "eip155:8453",
+      "discover_url": "https://app.ampersend.ai/discover/agent/107daaea-c5e8-4c5d-9874-3de2f2ec33f8",
+      "base_url": "https://laso.finance",
+      "agent_notes": "Push-to-card is about $10.48 USDC \u2014 above default x402_max_price_usd ($5). Raise the cap before calling that endpoint.",
+      "endpoints": [
+        {
+          "id": "auth",
+          "method": "GET",
+          "url": "https://laso.finance/auth",
+          "description": "Auth handshake",
+          "price_usd_min": null,
+          "price_note": "varies"
+        },
+        {
+          "id": "get-card",
+          "method": "GET",
+          "url": "https://laso.finance/get-card",
+          "description": "Mint prepaid card",
+          "price_usd_min": null,
+          "price_note": "varies"
+        },
+        {
+          "id": "get-push-to-card",
+          "method": "GET",
+          "url": "https://laso.finance/get-push-to-card",
+          "description": "Push-to-card (USD/EUR/GBP).",
+          "price_usd_min": 10.48,
+          "price_note": null
+        },
+        {
+          "id": "order-gift-card",
+          "method": "GET",
+          "url": "https://laso.finance/order-gift-card",
+          "description": "Order gift card",
+          "price_usd_min": null,
+          "price_note": "varies"
+        }
+      ]
+    },
+    {
+      "id": "asterpay",
+      "provider_id": "a06d5dd3-fe8c-4361-a65b-442d91075fa1",
+      "name": "AsterPay",
+      "description": "Stablecoin settlement, AI utilities, and market data.",
+      "tags": [
+        "payments",
+        "settlement",
+        "sepa",
+        "eur",
+        "mica",
+        "compliance",
+        "kya"
+      ],
+      "network": "eip155:8453",
+      "discover_url": "https://app.ampersend.ai/discover/agent/a06d5dd3-fe8c-4361-a65b-442d91075fa1",
+      "base_url": "https://x402.asterpay.io",
+      "endpoints": [
+        {
+          "id": "deep-analysis-batch",
+          "method": "POST",
+          "url": "https://x402.asterpay.io/v1/agent/deep-analysis/batch",
+          "description": "Batch deep analysis",
+          "price_usd_min": 0.05,
+          "price_note": null
+        },
+        {
+          "id": "ai-code-review",
+          "method": "POST",
+          "url": "https://x402.asterpay.io/v1/ai/code-review",
+          "description": "Code review",
+          "price_usd_min": 0.05,
+          "price_note": null
+        },
+        {
+          "id": "ai-fact-check",
+          "method": "POST",
+          "url": "https://x402.asterpay.io/v1/ai/fact-check",
+          "description": "Fact-check",
+          "price_usd_min": 0.01,
+          "price_note": null
+        },
+        {
+          "id": "ai-sentiment",
+          "method": "POST",
+          "url": "https://x402.asterpay.io/v1/ai/sentiment",
+          "description": "Sentiment",
+          "price_usd_min": 0.004,
+          "price_note": null
+        },
+        {
+          "id": "ai-summarize",
+          "method": "POST",
+          "url": "https://x402.asterpay.io/v1/ai/summarize",
+          "description": "Summarize",
+          "price_usd_min": 0.004,
+          "price_note": null
+        },
+        {
+          "id": "ai-translate",
+          "method": "POST",
+          "url": "https://x402.asterpay.io/v1/ai/translate",
+          "description": "Translate",
+          "price_usd_min": 0.02,
+          "price_note": null
+        },
+        {
+          "id": "collect-settle",
+          "method": "POST",
+          "url": "https://x402.asterpay.io/v1/collect/settle",
+          "description": "Collect settlement",
+          "price_usd_min": 0.1,
+          "price_note": null
+        },
+        {
+          "id": "crypto-whale-alerts",
+          "method": "GET",
+          "url": "https://x402.asterpay.io/v1/crypto/whale-alerts",
+          "description": "Whale alerts",
+          "price_usd_min": 0.02,
+          "price_note": null
+        },
+        {
+          "id": "market-trending",
+          "method": "GET",
+          "url": "https://x402.asterpay.io/v1/market/trending",
+          "description": "Trending tokens",
+          "price_usd_min": 0.005,
+          "price_note": null
+        },
+        {
+          "id": "util-pdf",
+          "method": "POST",
+          "url": "https://x402.asterpay.io/v1/util/pdf-generate",
+          "description": "HTML to PDF",
+          "price_usd_min": 0.03,
+          "price_note": null
+        },
+        {
+          "id": "util-qr",
+          "method": "POST",
+          "url": "https://x402.asterpay.io/v1/util/qr-code",
+          "description": "QR code",
+          "price_usd_min": null,
+          "price_note": "varies"
+        },
+        {
+          "id": "util-screenshot",
+          "method": "POST",
+          "url": "https://x402.asterpay.io/v1/util/screenshot",
+          "description": "Web screenshot",
+          "price_usd_min": 0.02,
+          "price_note": null
+        },
+        {
+          "id": "v2-fact-check",
+          "method": "POST",
+          "url": "https://x402.asterpay.io/v2/x402/ai/fact-check",
+          "description": "Fact-check v2",
+          "price_usd_min": 0.01,
+          "price_note": null
+        },
+        {
+          "id": "v2-fact-check-deep",
+          "method": "POST",
+          "url": "https://x402.asterpay.io/v2/x402/ai/fact-check/deep",
+          "description": "Deep fact-check",
+          "price_usd_min": 0.05,
+          "price_note": null
+        },
+        {
+          "id": "v2-sentiment-get",
+          "method": "GET",
+          "url": "https://x402.asterpay.io/v2/x402/ai/sentiment",
+          "description": "Sentiment GET",
+          "price_usd_min": 0.01,
+          "price_note": null
+        },
+        {
+          "id": "v2-crypto-prices",
+          "method": "GET",
+          "url": "https://x402.asterpay.io/v2/x402/crypto/prices",
+          "description": "Crypto prices",
+          "price_usd_min": 0.005,
+          "price_note": null
+        },
+        {
+          "id": "v2-offramp-estimate",
+          "method": "GET",
+          "url": "https://x402.asterpay.io/v2/x402/offramp/estimate",
+          "description": "USDC to EUR estimate",
+          "price_usd_min": 0.005,
+          "price_note": null
+        }
+      ]
+    },
+    {
+      "id": "grove-api",
+      "provider_id": "76dc2f57-bfdd-485b-8d9b-bc6ecf1dccbb",
+      "name": "Grove API",
+      "description": "Fund Grove tipping accounts for creator payments.",
+      "tags": [
+        "payments",
+        "tipping",
+        "creator",
+        "a2a",
+        "mcp",
+        "self-fund"
+      ],
+      "network": "eip155:8453",
+      "discover_url": "https://app.ampersend.ai/discover/agent/76dc2f57-bfdd-485b-8d9b-bc6ecf1dccbb",
+      "base_url": "https://api.grove.city",
+      "endpoints": [
+        {
+          "id": "fund",
+          "method": "POST",
+          "url": "https://api.grove.city/v1/fund",
+          "description": "Self-fund Grove tipping account (min $1 USDC).",
+          "price_usd_min": 1.0,
+          "price_note": null
+        }
+      ]
+    },
+    {
+      "id": "pinata-x402",
+      "provider_id": "676e8944-4b2c-4cbc-95c6-11c44f2aa069",
+      "name": "Pinata x402",
+      "description": "Account-free IPFS pin and retrieve.",
+      "tags": [
+        "storage",
+        "ipfs",
+        "pin",
+        "retrieve"
+      ],
+      "network": "eip155:8453",
+      "discover_url": "https://app.ampersend.ai/discover/agent/676e8944-4b2c-4cbc-95c6-11c44f2aa069",
+      "base_url": "https://402.pinata.cloud",
+      "endpoints": [
+        {
+          "id": "pin-private",
+          "method": "POST",
+          "url": "https://402.pinata.cloud/v1/pin/private",
+          "description": "Pin private content.",
+          "price_usd_min": 0.001,
+          "price_note": null
+        },
+        {
+          "id": "pin-public",
+          "method": "POST",
+          "url": "https://402.pinata.cloud/v1/pin/public",
+          "description": "Pin public content.",
+          "price_usd_min": 0.001,
+          "price_note": null
+        },
+        {
+          "id": "retrieve-private",
+          "method": "GET",
+          "url": "https://402.pinata.cloud/v1/retrieve/private/{cid}",
+          "description": "Retrieve private CID (replace {cid}).",
+          "price_usd_min": 0.001,
+          "price_note": null
+        }
+      ]
+    },
+    {
+      "id": "cybercentry",
+      "provider_id": "27b3529e-10c5-4d8b-9206-00e24ee1e8ec",
+      "name": "Cybercentry",
+      "description": "Security consultant and on-chain / code verification agents.",
+      "tags": [
+        "security",
+        "compliance",
+        "verify",
+        "ethereum",
+        "solana",
+        "solidity"
+      ],
+      "network": "eip155:8453",
+      "discover_url": "https://app.ampersend.ai/discover/agent/27b3529e-10c5-4d8b-9206-00e24ee1e8ec",
+      "base_url": "https://x402-cybercentry-cyber-security-consultant.up.railway.app",
+      "endpoints": [
+        {
+          "id": "consultant-query",
+          "method": "POST",
+          "url": "https://x402-cybercentry-cyber-security-consultant.up.railway.app/query",
+          "description": "Generalist security consultant.",
+          "price_usd_min": 0.02,
+          "price_note": null
+        },
+        {
+          "id": "verify-ethereum-token",
+          "method": "POST",
+          "url": "https://x402-cybercentry-ethereum-token-verification.up.railway.app/verify",
+          "description": "Verify Ethereum token.",
+          "price_usd_min": 0.02,
+          "price_note": null
+        },
+        {
+          "id": "verify-private-data",
+          "method": "POST",
+          "url": "https://x402-cybercentry-private-data-verification.up.railway.app/verify",
+          "description": "Verify private data.",
+          "price_usd_min": 0.02,
+          "price_note": null
+        },
+        {
+          "id": "verify-solidity",
+          "method": "POST",
+          "url": "https://x402-cybercentry-solidity-code-verification.up.railway.app/verify",
+          "description": "Verify Solidity code.",
+          "price_usd_min": 0.02,
+          "price_note": null
+        }
+      ]
+    }
+  ]
+}

@@ -16,9 +16,16 @@ from aurey.graphs.read import ReadGraphInput
 from aurey.known_addresses.book import lookup_known_token
 from aurey.runtime import AureyRuntime
 from aurey.x402.batch_storage import batch_storage_dir, list_batch_channel_files
+from aurey.x402.catalog import (
+    get_service,
+    list_services,
+    resolve_endpoint,
+    service_to_detail,
+    service_to_list_row,
+)
 from aurey.x402.client import AureyX402Transport, transport_for
 from aurey.x402.errors import tool_error
-from aurey.x402.policy import atomic_usdc_to_usd
+from aurey.x402.policy import atomic_usdc_to_usd, host_allowed
 
 
 class X402PreviewArgs(BaseModel):
@@ -59,6 +66,28 @@ class X402BatchChannelStatusArgs(BaseModel):
         default=None,
         description="Optional channel id (filename stem under batch storage). Omit to list all.",
     )
+
+
+class X402ListServicesArgs(BaseModel):
+    query: str | None = Field(
+        default=None,
+        description="Optional substring match on name, tags, id, or base URL.",
+    )
+    tag: str | None = Field(
+        default=None,
+        description="Optional exact tag filter (case-insensitive).",
+    )
+
+
+class X402GetServiceArgs(BaseModel):
+    service_id: str = Field(
+        description="Service id, provider UUID (or prefix), or primary host name.",
+    )
+
+
+class X402ResolveEndpointArgs(BaseModel):
+    service_id: str = Field(description="Same as get_x402_service service_id.")
+    endpoint_id: str = Field(description="Endpoint id from get_x402_service (e.g. exa-search).")
 
 
 def _read_graph_payload(state: dict[str, Any]) -> dict[str, Any]:
@@ -242,12 +271,87 @@ def build_x402_tools(runtime: AureyRuntime) -> list[BaseTool]:
         except (OneClawSigningError, SecretStoreUnavailableError, ValueError) as exc:
             return tool_error("oneclaw_signing_error", str(exc)[:800])
 
+    @tool(args_schema=X402ListServicesArgs)
+    def list_x402_services(
+        query: str | None = None,
+        tag: str | None = None,
+    ) -> dict[str, Any]:
+        """List curated x402-gated APIs (compact rows).
+
+        Use get_x402_service for full endpoint tables.
+        Flow: list or get service → resolve_x402_endpoint → x402_preview → x402_fetch."""
+        settings = runtime.settings
+        rows, doc, source = list_services(settings, query=query, tag=tag)
+        return {
+            "ok": True,
+            "result": {
+                "catalog_version": doc.version,
+                "catalog_source": source,
+                "services": [service_to_list_row(s) for s in rows],
+            },
+        }
+
+    @tool(args_schema=X402GetServiceArgs)
+    def get_x402_service(service_id: str) -> dict[str, Any]:
+        """Return one curated x402 service with all endpoints and agent_notes.
+
+        Then resolve_x402_endpoint → x402_preview → x402_fetch."""
+        settings = runtime.settings
+        svc, doc, source = get_service(settings, service_id)
+        if svc is None:
+            return tool_error("not_found", f"No x402 service matching {service_id!r}.")
+        detail = service_to_detail(svc)
+        allowed_raw = (settings.x402_allowed_hosts or "").strip()
+        if allowed_raw:
+            hosts = detail.get("endpoints") or []
+            for row in hosts:
+                url = str(row.get("url") or "")
+                row["host_allowed"] = host_allowed(settings, url)
+        return {
+            "ok": True,
+            "result": {
+                "catalog_version": doc.version,
+                "catalog_source": source,
+                "service": detail,
+            },
+        }
+
+    @tool(args_schema=X402ResolveEndpointArgs)
+    def resolve_x402_endpoint(service_id: str, endpoint_id: str) -> dict[str, Any]:
+        """Resolve a catalog endpoint to method + URL before x402_preview / x402_fetch."""
+        settings = runtime.settings
+        ep, svc, source = resolve_endpoint(settings, service_id, endpoint_id)
+        if svc is None:
+            return tool_error("not_found", f"No x402 service matching {service_id!r}.")
+        if ep is None:
+            return tool_error(
+                "not_found",
+                f"No endpoint {endpoint_id!r} on service {svc.id!r}.",
+            )
+        return {
+            "ok": True,
+            "result": {
+                "catalog_source": source,
+                "service_id": svc.id,
+                "endpoint_id": ep.id,
+                "method": ep.method,
+                "url": ep.url,
+                "description": ep.description,
+                "price_usd_min": ep.price_usd_min,
+                "price_note": ep.price_note,
+                "host_allowed": host_allowed(settings, ep.url),
+            },
+        }
+
     return [
         x402_preview,
         x402_fetch,
         x402_payment_status,
         x402_batch_channel_status,
         x402_batch_refund,
+        list_x402_services,
+        get_x402_service,
+        resolve_x402_endpoint,
     ]
 
 

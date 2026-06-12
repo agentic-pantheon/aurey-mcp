@@ -23,6 +23,10 @@ _TELEGRAM_ALLOWLIST_SPLIT_RE = re.compile(r"[\s,]+")
 
 # Hosted swap quotes (25 bps integrator fee). Set AUREY_ROUTE_BUILDER_URL="" to opt out.
 DEFAULT_AUREY_ROUTE_BUILDER_URL = "https://aurey-route-builder-production.up.railway.app"
+DEFAULT_X402_SERVICES_URL = (
+    "https://raw.githubusercontent.com/agentic-pantheon/aurey-mcp/main/"
+    "src/aurey/data/x402_services.json"
+)
 
 
 def parse_telegram_allowed_chat_ids(raw: str | None) -> frozenset[int] | None:
@@ -466,6 +470,32 @@ class AureySettings(BaseSettings):
         ),
         validation_alias=AliasChoices("AUREY_X402_BATCH_STORAGE_PATH"),
     )
+    x402_services_url: str | None = Field(
+        default=DEFAULT_X402_SERVICES_URL,
+        description=(
+            "HTTPS URL for curated x402 service catalog JSON. Set empty to use bundled file only."
+        ),
+        validation_alias=AliasChoices("AUREY_X402_SERVICES_URL"),
+    )
+    x402_services_path: str | None = Field(
+        default=None,
+        description="Local override path to x402_services.json (wins over remote URL).",
+        validation_alias=AliasChoices("AUREY_X402_SERVICES_PATH"),
+    )
+    x402_services_ttl_seconds: int = Field(
+        default=3600,
+        ge=60,
+        le=86400 * 7,
+        description="TTL for in-process and remote refresh of the x402 services catalog.",
+        validation_alias=AliasChoices("AUREY_X402_SERVICES_TTL_SECONDS"),
+    )
+    x402_services_cache_path: str | None = Field(
+        default=None,
+        description=(
+            "Disk cache for fetched x402 catalog (default ~/.aurey/cache/x402_services.json)."
+        ),
+        validation_alias=AliasChoices("AUREY_X402_SERVICES_CACHE_PATH"),
+    )
     evm_signing_mode: EvmSigningMode = Field(
         default="oneclaw_intents",
         description=(
@@ -658,6 +688,14 @@ class AureySettings(BaseSettings):
         s = str(v).strip()
         return s if s else None
 
+    @field_validator("x402_services_url", mode="before")
+    @classmethod
+    def _strip_x402_services_url(cls, v: object) -> str | None:
+        if v is None:
+            return None
+        s = str(v).strip()
+        return s if s else None
+
     @field_validator("openai_api_key", mode="before")
     @classmethod
     def _strip_openai_api_key(cls, v: object) -> str | None:
@@ -822,6 +860,11 @@ class AureySettings(BaseSettings):
         if path is None:
             return False
         return path.is_file() or path.is_dir()
+
+    def effective_x402_services_url(self) -> str | None:
+        """Remote catalog URL, or None when disabled (bundled / cache only)."""
+
+        return (self.x402_services_url or "").strip() or None
 
     def resolve_oneclaw_bootstrap_api_key(self) -> str:
         """Return the 1Claw vault API key (``ocv_…``) from env.

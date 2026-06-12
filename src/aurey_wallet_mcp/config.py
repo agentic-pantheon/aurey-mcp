@@ -55,6 +55,10 @@ def apply_toml_to_env(path: Path) -> None:
         "X402.ALLOWED_HOSTS": "AUREY_X402_ALLOWED_HOSTS",
         "X402.PREFER_NETWORK": "AUREY_X402_PREFER_NETWORK",
         "X402.BATCH_STORAGE_PATH": "AUREY_X402_BATCH_STORAGE_PATH",
+        "X402.SERVICES_URL": "AUREY_X402_SERVICES_URL",
+        "X402.SERVICES_PATH": "AUREY_X402_SERVICES_PATH",
+        "X402.SERVICES_TTL_SECONDS": "AUREY_X402_SERVICES_TTL_SECONDS",
+        "X402.SERVICES_CACHE_PATH": "AUREY_X402_SERVICES_CACHE_PATH",
     }
     for key, val in flat.items():
         env_key = aliases.get(key, key if key.startswith("AUREY_") else f"AUREY_{key}")

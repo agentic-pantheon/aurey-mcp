@@ -64,12 +64,15 @@ dev = [
 where = ["src"]
 
 [tool.setuptools.package-data]
-aurey = ["data/*.json", "data/lifi_tokens/*.json"]
+aurey = ["data/*.json", "data/lifi_tokens/*.json", "data/x402_services.json"]
 "aurey_wallet_mcp" = ["static/portfolio/**/*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
+markers = [
+    "integration: live network tests (opt-in via AUREY_RUN_LIVE_X402=1)",
+]
 
 [tool.ruff]
 line-length = 100

@@ -43,3 +43,7 @@ port = 8765
 # allowed_hosts = "api.example.com,stableenrich.com"
 # prefer_network = "eip155:8453"
 # batch_storage_path = "~/.aurey/x402/batch_channels"
+# Curated service catalog (Ampersend marketplace + others):
+# services_url = ""   # empty = bundled JSON only (no GitHub fetch)
+# services_path = "/path/to/x402_services.json"
+# services_ttl_seconds = 3600

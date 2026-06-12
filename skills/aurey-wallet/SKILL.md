@@ -24,11 +24,21 @@ MCP tools provide EVM operations with **1Claw Intents** custody. If MCP is not c
 
 ## Paid API (x402)
 
-1. `get_agent_wallet_addresses` and `x402_payment_status` if balance may be low.
-2. `x402_preview` on the endpoint URL.
-3. If exposure ≤ caps → `x402_fetch` once. Else explain quote → user assents → `x402_fetch` with `confirm_payment=true` and `max_price_usd` set to the quoted amount.
-4. Batch-heavy usage: `x402_batch_channel_status`; offer `x402_batch_refund` for unused escrow.
-5. Summarize the API response body for the user.
+1. When the user needs a third-party paid API (search, enrich, social, storage, etc.), call **`list_x402_services`** (optional `query` / `tag`) or **`get_x402_service`** — do not guess URLs.
+2. **`resolve_x402_endpoint`** → **`x402_preview`** on the resolved URL/method → **`x402_fetch`**. Catalog prices are hints only; trust the live preview quote.
+3. `get_agent_wallet_addresses` and **`x402_payment_status`** if balance may be low.
+4. If exposure ≤ caps → `x402_fetch` once. Else explain quote → user assents → `x402_fetch` with `confirm_payment=true` and `max_price_usd` bound to the quote.
+5. Batch-heavy usage: `x402_batch_channel_status`; offer `x402_batch_refund` for unused escrow.
+6. Summarize the API response body for the user. Aurey pays via 1Claw (not the Ampersend CLI).
+
+| Task hint | Service id (examples) |
+|-----------|------------------------|
+| People / company / web search | `stableenrich`, `auor-io` |
+| X / Twitter data | `twit-sh` |
+| Portfolio / NFT / DeFi reads | `zapper` |
+| IPFS pin/retrieve | `pinata-x402` |
+| Risk / trading signals | `blackswan`, `einstein-ai` |
+| Cards / off-ramp | `laso-finance`, `asterpay` |
 
 ## Typical swap
 

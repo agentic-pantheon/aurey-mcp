@@ -75,3 +75,6 @@ def test_mcp_registry_includes_x402_when_oneclaw_signer(minimal_settings: AureyS
     names = set(registry.keys())
     assert "x402_preview" in names
     assert "x402_fetch" in names
+    assert "list_x402_services" in names
+    assert "get_x402_service" in names
+    assert "resolve_x402_endpoint" in names
