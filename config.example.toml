@@ -36,6 +36,10 @@ port = 8765
 # auth_token = ""
 # Live portfolio charts need optional Zerion: api-keys/zerion + zerion_api_secret_path in [providers].
 
-[autonomy]
-# policy_path = "~/.aurey/autonomy_policy.json"
-# x402_url = "http://127.0.0.1:8092"
+[x402]
+# max_price_usd = 5.0
+# auto_approve_max_usd = 0.25
+# batch_max_deposit_usd = 25.0
+# allowed_hosts = "api.example.com,stableenrich.com"
+# prefer_network = "eip155:8453"
+# batch_storage_path = "~/.aurey/x402/batch_channels"

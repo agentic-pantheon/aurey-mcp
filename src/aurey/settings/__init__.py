@@ -430,22 +430,38 @@ class AureySettings(BaseSettings):
         description="Bearer token required for dashboard HTTP API when set.",
         validation_alias=AliasChoices("AUREY_DASHBOARD_AUTH_TOKEN"),
     )
-    autonomy_policy_path: str | None = Field(
-        default=None,
-        description="Path to JSON autonomy policy file (local plugin).",
-        validation_alias=AliasChoices("AUREY_AUTONOMY_POLICY_PATH"),
+    x402_max_price_usd: float = Field(
+        default=5.0,
+        ge=0.0,
+        description="Hard ceiling per x402 voucher/request (USDC quoted as USD).",
+        validation_alias=AliasChoices("AUREY_X402_MAX_PRICE_USD"),
     )
-    autonomy_x402_url: str | None = Field(
-        default=None,
-        description="Base URL for x402-metered autonomy recommendation API.",
-        validation_alias=AliasChoices("AUREY_AUTONOMY_X402_URL"),
+    x402_auto_approve_max_usd: float = Field(
+        default=0.25,
+        ge=0.0,
+        description="Auto-pay x402 when quoted exposure is at or under this USD amount.",
+        validation_alias=AliasChoices("AUREY_X402_AUTO_APPROVE_MAX_USD"),
     )
-    autonomy_commission_bps: int = Field(
-        default=25,
-        ge=0,
-        le=500,
-        description="Commission basis points appended to autonomous trades only.",
-        validation_alias=AliasChoices("AUREY_AUTONOMY_COMMISSION_BPS"),
+    x402_batch_max_deposit_usd: float = Field(
+        default=25.0,
+        ge=0.0,
+        description="Max USDC deposit for new batch-settlement channels.",
+        validation_alias=AliasChoices("AUREY_X402_BATCH_MAX_DEPOSIT_USD"),
+    )
+    x402_allowed_hosts: str = Field(
+        default="",
+        description="Optional comma-separated host allowlist for x402 URLs (empty = any).",
+        validation_alias=AliasChoices("AUREY_X402_ALLOWED_HOSTS"),
+    )
+    x402_prefer_network: str = Field(
+        default="eip155:8453",
+        description="Preferred CAIP-2 network when a 402 offers multiple EVM options.",
+        validation_alias=AliasChoices("AUREY_X402_PREFER_NETWORK"),
+    )
+    x402_batch_storage_path: str | None = Field(
+        default=None,
+        description="Directory for persisted batch-settlement channel JSON (default ~/.aurey/x402/batch_channels).",
+        validation_alias=AliasChoices("AUREY_X402_BATCH_STORAGE_PATH"),
     )
     evm_signing_mode: EvmSigningMode = Field(
         default="oneclaw_intents",

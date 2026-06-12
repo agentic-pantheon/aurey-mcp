@@ -20,7 +20,15 @@ MCP tools provide EVM operations with **1Claw Intents** custody. If MCP is not c
 5. Flow: read → prepare (`swap_prepare`, `tx_prepare_*`) → **show summary** → `tx_execute(prepared_id=...)` only after **explicit** user confirmation.
 6. Never ask for private keys; signing is server-side via 1Claw Intents.
 7. For swaps, prefer `prepared_id` over copying calldata.
-8. `autonomy_*` tools do not replace user confirmation unless policy is armed and user opted in.
+8. **Paid HTTP APIs (x402):** use `x402_preview` then `x402_fetch`; auto-pay only under `auto_approve_max_usd`. Above that, get explicit user assent and retry with `confirm_payment=true` and `max_price_usd` bound to the quote. Do not use x402 for swaps—use `swap_prepare`.
+
+## Paid API (x402)
+
+1. `get_agent_wallet_addresses` and `x402_payment_status` if balance may be low.
+2. `x402_preview` on the endpoint URL.
+3. If exposure ≤ caps → `x402_fetch` once. Else explain quote → user assents → `x402_fetch` with `confirm_payment=true` and `max_price_usd` set to the quoted amount.
+4. Batch-heavy usage: `x402_batch_channel_status`; offer `x402_batch_refund` for unused escrow.
+5. Summarize the API response body for the user.
 
 ## Typical swap
 

@@ -9,6 +9,9 @@ from urllib.parse import quote
 
 import httpx
 
+from aurey.graphs.evm_codec import normalize_evm_address
+from aurey.known_addresses.book import chain_slug_for_catalog_chain_id, load_known_addresses, lookup_known_token
+
 DEFAULT_ONECLAW_BASE_URL = "https://api.1claw.xyz"
 DEFAULT_VAULT_NAME = "aurey-wallet"
 DEFAULT_AGENT_NAME = "Aurey Wallet MCP"
@@ -57,6 +60,32 @@ def _collection_items(payload: Any, *keys: str) -> list[dict[str, Any]]:
         if isinstance(raw, list):
             return [x for x in raw if isinstance(x, dict)]
     return []
+
+
+def default_eip712_usdc_domain_allowlist() -> list[str]:
+    """Verifying contracts for bundled USDC tokens (x402 EIP-3009 / TransferWithAuthorization)."""
+
+    doc = load_known_addresses()
+    chains = doc.get("chains")
+    if not isinstance(chains, dict):
+        return []
+    addrs: set[str] = set()
+    for cid_str in chains:
+        try:
+            cid = int(cid_str)
+        except (TypeError, ValueError):
+            continue
+        slug = chain_slug_for_catalog_chain_id(cid, doc)
+        if slug is None:
+            continue
+        usdc = lookup_known_token(slug, "USDC")
+        if usdc is None:
+            continue
+        try:
+            addrs.add(normalize_evm_address(usdc.address))
+        except ValueError:
+            continue
+    return sorted(addrs)
 
 
 def _secret_path_url(vault_id: str, path: str) -> str:
@@ -255,6 +284,35 @@ class OneClawHumanClient:
         self._raise(resp, f"Provision {chain} signing key failed")
         return None
 
+    def configure_offchain_signing(
+        self,
+        *,
+        agent_id: str,
+        message_signing_enabled: bool = True,
+        eip712_default_policy: str = "allow",
+        eip712_domain_allowlist: list[str] | None = None,
+    ) -> None:
+        """Enable EIP-191 message signing and EIP-712 typed data (incl. x402 USDC domains)."""
+
+        ag = agent_id.strip()
+        allowlist = (
+            list(eip712_domain_allowlist)
+            if eip712_domain_allowlist is not None
+            else default_eip712_usdc_domain_allowlist()
+        )
+        body: dict[str, Any] = {
+            "message_signing_enabled": message_signing_enabled,
+            "eip712_default_policy": eip712_default_policy,
+            "eip712_domain_allowlist": allowlist,
+        }
+        resp = self._client.patch(
+            f"/v1/agents/{quote(ag, safe='')}",
+            json=body,
+        )
+        if resp.status_code in (200, 204):
+            return
+        self._raise(resp, "Configure agent off-chain signing failed")
+
 
 def resolve_vault_id(
     client: OneClawHumanClient,
@@ -301,6 +359,9 @@ def provision_for_aurey(
     lifi_secret_path: str = "api-keys/lifi",
     zerion_api_key: str | None = None,
     zerion_secret_path: str = "api-keys/zerion",
+    message_signing_enabled: bool = True,
+    eip712_default_policy: str = "allow",
+    eip712_domain_allowlist: list[str] | None = None,
 ) -> ProvisionResult:
     """Create (or reuse) vault, agent, policies, optional API secrets, Ethereum signing key."""
 
@@ -321,6 +382,12 @@ def provision_for_aurey(
             vault_id=vid,
             agent_id=agent_id,
             secret_path_pattern="api-keys/**",
+        )
+        client.configure_offchain_signing(
+            agent_id=agent_id,
+            message_signing_enabled=message_signing_enabled,
+            eip712_default_policy=eip712_default_policy,
+            eip712_domain_allowlist=eip712_domain_allowlist,
         )
         if alchemy_api_key and alchemy_api_key.strip():
             path = alchemy_secret_path.strip() or "api-keys/alchemy"
@@ -353,5 +420,6 @@ __all__ = [
     "OneClawHumanClient",
     "OneClawProvisionError",
     "ProvisionResult",
+    "default_eip712_usdc_domain_allowlist",
     "provision_for_aurey",
 ]
