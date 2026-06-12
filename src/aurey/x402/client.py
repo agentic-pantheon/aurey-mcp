@@ -36,6 +36,8 @@ from aurey.x402.policy import (
 )
 
 _HTTP_TIMEOUT_S = 60.0
+_V2_HEADER_PARSE_MSG = "Could not parse V2 PAYMENT-REQUIRED header."
+_NO_PAYMENT_REQ_MSG = "402 response had no acceptable payment requirements."
 
 
 @dataclass
@@ -161,7 +163,8 @@ class AureyX402Transport:
         json_body: dict[str, Any] | list[Any] | None = None,
     ) -> dict[str, Any]:
         if not host_allowed(self._runtime.settings, url):
-            return tool_error("host_not_allowed", f"Host not allowed for x402: {urlparse(url).hostname}")
+            host = urlparse(url).hostname
+            return tool_error("host_not_allowed", f"Host not allowed for x402: {host}")
         probe = self._probe(method=method, url=url, headers=headers, json_body=json_body)
         if probe.status_code != 402:
             return {
@@ -173,7 +176,7 @@ class AureyX402Transport:
                 },
             }
         if probe.payment_required is None:
-            return tool_error("x402_v1_not_supported", "Could not parse V2 PAYMENT-REQUIRED header.")
+            return tool_error("x402_v1_not_supported", _V2_HEADER_PARSE_MSG)
         if isinstance(probe.payment_required, PaymentRequiredV1):
             return tool_error("x402_v1_not_supported", "V1-only x402 resources are not supported.")
         req = select_requirement(
@@ -181,7 +184,7 @@ class AureyX402Transport:
             prefer_network=self._prefer_network(),
         )
         if req is None:
-            return tool_error("x402_payment_failed", "402 response had no acceptable payment requirements.")
+            return tool_error("x402_payment_failed", _NO_PAYMENT_REQ_MSG)
         quote = build_quote(req, self._runtime.settings)
         return {
             "ok": True,
@@ -204,7 +207,8 @@ class AureyX402Transport:
         bound_max_usd: float | None = None,
     ) -> dict[str, Any]:
         if not host_allowed(self._runtime.settings, url):
-            return tool_error("host_not_allowed", f"Host not allowed for x402: {urlparse(url).hostname}")
+            host = urlparse(url).hostname
+            return tool_error("host_not_allowed", f"Host not allowed for x402: {host}")
 
         probe = self._probe(method=method, url=url, headers=headers, json_body=json_body)
         if probe.status_code != 402:
@@ -218,13 +222,13 @@ class AureyX402Transport:
             }
 
         if probe.payment_required is None:
-            return tool_error("x402_v1_not_supported", "Could not parse V2 PAYMENT-REQUIRED header.")
+            return tool_error("x402_v1_not_supported", _V2_HEADER_PARSE_MSG)
         if isinstance(probe.payment_required, PaymentRequiredV1):
             return tool_error("x402_v1_not_supported", "V1-only x402 resources are not supported.")
 
         req = select_requirement(probe.payment_required, prefer_network=self._prefer_network())
         if req is None:
-            return tool_error("x402_payment_failed", "402 response had no acceptable payment requirements.")
+            return tool_error("x402_payment_failed", _NO_PAYMENT_REQ_MSG)
         quote = build_quote(req, self._runtime.settings)
         decision = evaluate_fetch(
             quote,

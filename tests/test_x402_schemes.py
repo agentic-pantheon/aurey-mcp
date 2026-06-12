@@ -20,7 +20,9 @@ def test_registers_v2_scheme_classes() -> None:
     client = x402ClientSync()
     exact = ExactEvmScheme(signer)
     upto = UptoEvmScheme(signer)
-    storage = FileClientChannelStorage(FileChannelStorageOptions(directory="/tmp/x402-test-channels"))
+    storage = FileClientChannelStorage(
+        FileChannelStorageOptions(directory="/tmp/x402-test-channels"),
+    )
     batch_opts = BatchSettlementEvmSchemeOptions(storage=storage, rpc_url="https://rpc.example.invalid")
     batch = BatchSettlementEvmScheme(signer, batch_opts)
     client.register("eip155:*", exact)

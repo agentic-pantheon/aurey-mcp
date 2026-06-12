@@ -460,7 +460,10 @@ class AureySettings(BaseSettings):
     )
     x402_batch_storage_path: str | None = Field(
         default=None,
-        description="Directory for persisted batch-settlement channel JSON (default ~/.aurey/x402/batch_channels).",
+        description=(
+            "Directory for persisted batch-settlement channel JSON "
+            "(default ~/.aurey/x402/batch_channels)."
+        ),
         validation_alias=AliasChoices("AUREY_X402_BATCH_STORAGE_PATH"),
     )
     evm_signing_mode: EvmSigningMode = Field(

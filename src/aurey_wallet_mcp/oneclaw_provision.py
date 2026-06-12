@@ -10,7 +10,11 @@ from urllib.parse import quote
 import httpx
 
 from aurey.graphs.evm_codec import normalize_evm_address
-from aurey.known_addresses.book import chain_slug_for_catalog_chain_id, load_known_addresses, lookup_known_token
+from aurey.known_addresses.book import (
+    chain_slug_for_catalog_chain_id,
+    load_known_addresses,
+    lookup_known_token,
+)
 
 DEFAULT_ONECLAW_BASE_URL = "https://api.1claw.xyz"
 DEFAULT_VAULT_NAME = "aurey-wallet"

@@ -1,4 +1,3 @@
-import os
 
 import pytest
 
@@ -19,9 +18,13 @@ def minimal_settings(monkeypatch: pytest.MonkeyPatch) -> AureySettings:
 
 
 def test_mcp_registry_includes_core_tools(minimal_settings: AureySettings) -> None:
-    from aurey.runtime import AureyRuntime
-    from aurey.service.adapters import HttpxJsonClient, make_evm_rpc_factory, make_shared_httpx_client
     from aurey.graphs.evm_tx_pipeline import Web3TxPipeline
+    from aurey.runtime import AureyRuntime
+    from aurey.service.adapters import (
+        HttpxJsonClient,
+        make_evm_rpc_factory,
+        make_shared_httpx_client,
+    )
 
     httpx_client = make_shared_httpx_client()
     store = fake_oneclaw_secret_store()
@@ -47,9 +50,13 @@ def test_mcp_registry_includes_core_tools(minimal_settings: AureySettings) -> No
 
 def test_mcp_registry_includes_x402_when_oneclaw_signer(minimal_settings: AureySettings) -> None:
     from aurey.custody import FakeOneClawClient
-    from aurey.runtime import AureyRuntime
-    from aurey.service.adapters import HttpxJsonClient, make_evm_rpc_factory, make_shared_httpx_client
     from aurey.graphs.evm_tx_pipeline import Web3TxPipeline
+    from aurey.runtime import AureyRuntime
+    from aurey.service.adapters import (
+        HttpxJsonClient,
+        make_evm_rpc_factory,
+        make_shared_httpx_client,
+    )
     from tests.fakes.secret_store import fake_oneclaw_secret_store
 
     httpx_client = make_shared_httpx_client()

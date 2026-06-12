@@ -5,7 +5,10 @@ from __future__ import annotations
 from typing import Any
 
 from eth_utils import to_checksum_address
-from x402.mechanisms.evm.signer import ClientEvmSignerWithReadContract, ClientEvmSignerWithSignTransaction
+from x402.mechanisms.evm.signer import (
+    ClientEvmSignerWithReadContract,
+    ClientEvmSignerWithSignTransaction,
+)
 from x402.mechanisms.evm.types import TypedDataDomain, TypedDataField
 
 from aurey.custody.errors import OneClawSigningError, SecretStoreUnavailableError

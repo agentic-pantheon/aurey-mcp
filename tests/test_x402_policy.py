@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from x402.schemas import PaymentRequired, PaymentRequirements
+
 from aurey.settings import AureySettings
 from aurey.x402.policy import (
     QuoteView,
@@ -8,7 +10,6 @@ from aurey.x402.policy import (
     host_allowed,
     select_requirement,
 )
-from x402.schemas import PaymentRequired, PaymentRequirements
 
 
 def test_host_allowlist() -> None:
