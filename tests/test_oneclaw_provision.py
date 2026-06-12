@@ -9,6 +9,7 @@ from aurey_wallet_mcp import oneclaw_provision as provision_mod
 from aurey_wallet_mcp.oneclaw_provision import (
     OneClawHumanClient,
     OneClawProvisionError,
+    default_eip712_usdc_domain_allowlist,
     provision_for_aurey,
     resolve_vault_id,
 )
@@ -60,12 +61,19 @@ def test_resolve_vault_id_uses_existing_single_vault() -> None:
         client.close()
 
 
+def test_default_eip712_allowlist_includes_base_usdc() -> None:
+    allow = default_eip712_usdc_domain_allowlist()
+    lowered = {a.lower() for a in allow}
+    assert "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913" in lowered
+
+
 def test_provision_for_aurey_happy_path(monkeypatch: pytest.MonkeyPatch) -> None:
     calls: list[str] = []
     agent_create_body: dict | None = None
+    agent_patch_body: dict | None = None
 
     def handler(request: httpx.Request) -> httpx.Response:
-        nonlocal agent_create_body
+        nonlocal agent_create_body, agent_patch_body
         calls.append(f"{request.method} {request.url.path}")
         if request.url.path == "/v1/auth/api-key-token":
             return httpx.Response(200, json={"access_token": "jwt-human"})
@@ -84,6 +92,11 @@ def test_provision_for_aurey_happy_path(monkeypatch: pytest.MonkeyPatch) -> None
             )
         if request.url.path.endswith("/policies"):
             return httpx.Response(201, json={"id": "pol-1"})
+        if request.url.path == "/v1/agents/a-uuid" and request.method == "PATCH":
+            import json
+
+            agent_patch_body = json.loads(request.content.decode())
+            return httpx.Response(200, json={"id": "a-uuid"})
         if "/secrets/" in request.url.path and request.method == "PUT":
             return httpx.Response(201, json={"path": "api-keys/alchemy"})
         if request.url.path.endswith("/signing-keys") and request.method == "GET":
@@ -121,6 +134,12 @@ def test_provision_for_aurey_happy_path(monkeypatch: pytest.MonkeyPatch) -> None
     assert any("POST /v1/agents" in c for c in calls)
     assert agent_create_body is not None
     assert "scopes" not in agent_create_body
+    assert any("PATCH /v1/agents/a-uuid" in c for c in calls)
+    assert agent_patch_body is not None
+    assert agent_patch_body.get("message_signing_enabled") is True
+    assert agent_patch_body.get("eip712_default_policy") == "allow"
+    patch_allow = [a.lower() for a in (agent_patch_body.get("eip712_domain_allowlist") or [])]
+    assert "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913" in patch_allow
 
 
 def test_provision_stores_lifi_secret(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -141,6 +160,8 @@ def test_provision_stores_lifi_secret(monkeypatch: pytest.MonkeyPatch) -> None:
             )
         if request.url.path.endswith("/policies"):
             return httpx.Response(201, json={"id": "pol-1"})
+        if request.url.path == "/v1/agents/a-uuid" and request.method == "PATCH":
+            return httpx.Response(200, json={"id": "a-uuid"})
         if "/secrets/" in request.url.path and request.method == "PUT":
             secret_puts.append(request.url.path)
             return httpx.Response(201, json={"path": "ok"})
@@ -190,6 +211,8 @@ def test_provision_stores_zerion_secret(monkeypatch: pytest.MonkeyPatch) -> None
             )
         if request.url.path.endswith("/policies"):
             return httpx.Response(201, json={"id": "pol-1"})
+        if request.url.path == "/v1/agents/a-uuid" and request.method == "PATCH":
+            return httpx.Response(200, json={"id": "a-uuid"})
         if "/secrets/" in request.url.path and request.method == "PUT":
             secret_puts.append(request.url.path)
             return httpx.Response(201, json={"path": "ok"})

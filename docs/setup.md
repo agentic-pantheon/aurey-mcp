@@ -120,11 +120,16 @@ Then `curl http://127.0.0.1:8765/health` and open http://127.0.0.1:8765/.
 
 ---
 
-## Autonomy (optional)
+## Paid HTTP APIs (x402, optional)
 
-```bash
-export AUREY_AUTONOMY_X402_URL=http://127.0.0.1:8092
-uv run python -m aurey_autonomy_api.app
-```
+When **1Claw typed-data signing** is enabled on the agent key, MCP exposes wallet-backed **x402 V2** tools: `x402_preview`, `x402_fetch`, `x402_payment_status`, `x402_batch_channel_status`, `x402_batch_refund`.
 
-MCP tools: `autonomy_configure_policy`, `autonomy_dry_run`, `autonomy_tick`.
+Configure caps in `~/.aurey/config.toml` under `[x402]` (see `config.example.toml`) or via `AUREY_X402_*` env vars:
+
+- `max_price_usd` — hard ceiling per request
+- `auto_approve_max_usd` — auto-pay at or under this (default `0.25`)
+- `batch_max_deposit_usd` — cap for batch-settlement channel deposits
+- `allowed_hosts` — optional comma-separated host allowlist (empty = any)
+- `prefer_network` — default `eip155:8453` (Base)
+
+Flow: `x402_preview` → `x402_fetch` (or `confirm_payment=true` + `max_price_usd` when above auto-approve). Only **known USDC** on the quoted chain is auto-paid in v1.

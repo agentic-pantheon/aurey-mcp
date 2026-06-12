@@ -40,3 +40,31 @@ def test_mcp_registry_includes_core_tools(minimal_settings: AureySettings) -> No
     assert "tx_execute" in names
     assert "get_agent_wallet_addresses" in names
     assert "resolve_hosted_recipient_by_handle" not in names
+    assert "autonomy_configure_policy" not in names
+    assert "x402_preview" not in names
+    assert "x402_fetch" not in names
+
+
+def test_mcp_registry_includes_x402_when_oneclaw_signer(minimal_settings: AureySettings) -> None:
+    from aurey.custody import FakeOneClawClient
+    from aurey.runtime import AureyRuntime
+    from aurey.service.adapters import HttpxJsonClient, make_evm_rpc_factory, make_shared_httpx_client
+    from aurey.graphs.evm_tx_pipeline import Web3TxPipeline
+    from tests.fakes.secret_store import fake_oneclaw_secret_store
+
+    httpx_client = make_shared_httpx_client()
+    store = fake_oneclaw_secret_store()
+    signer = FakeOneClawClient({})
+    runtime = AureyRuntime(
+        settings=minimal_settings,
+        secret_store=store,
+        evm_rpc_factory=make_evm_rpc_factory(httpx_client),
+        http=HttpxJsonClient(httpx_client),
+        tx_pipeline=Web3TxPipeline(settings=minimal_settings, secret_store=store),
+        oneclaw_evm_signer=signer,
+        agent_evm_wallet_address="0x00000000000000000000000000000000000000aa",
+    )
+    registry = build_mcp_tool_registry(runtime)
+    names = set(registry.keys())
+    assert "x402_preview" in names
+    assert "x402_fetch" in names

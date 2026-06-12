@@ -313,7 +313,7 @@ Optional: `AUREY_ROUTE_BUILDER_URL` in MCP `env` for hosted swap quotes — see 
 ## Related
 
 - [docs/1claw-onboarding-guide.md](../docs/1claw-onboarding-guide.md) — all hosts, manual 1Claw, Platform note
-- [docs/setup.md](../docs/setup.md) — route builder, dashboard, autonomy
+- [docs/setup.md](../docs/setup.md) — route builder, dashboard, x402 paid APIs
 - [install/openclaw.md](openclaw.md) / [install/cursor.md](cursor.md) — non-Hermes MCP hosts
 - [ONBOARDING_1CLAW.md](../ONBOARDING_1CLAW.md) — one-page agent playbook
 
