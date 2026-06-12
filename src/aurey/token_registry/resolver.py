@@ -7,16 +7,16 @@ from typing import Any
 
 from aurey.graphs.api_key_resolution import effective_alchemy_api_key, effective_coingecko_api_key
 from aurey.graphs.chains import alchemy_rpc_url_for_chain, chain_id_for, chain_info
-from aurey.graphs.evm_codec import normalize_evm_address, to_checksum_evm_address
+from aurey.graphs.evm_codec import to_checksum_evm_address
 from aurey.known_addresses.book import (
     KnownToken,
     lookup_known_token,
     lookup_known_token_by_name,
 )
 from aurey.runtime import AureyRuntime
+from aurey.token_registry.catalog import list_grouped_by_symbol, list_on_chain
 from aurey.token_registry.coingecko import CoinGeckoClient
 from aurey.token_registry.onchain import read_erc20_decimals
-from aurey.token_registry.catalog import list_grouped_by_symbol, list_on_chain
 from aurey.token_registry.repository import TokenRow
 
 

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "aurey-wallet-mcp"
-version = "0.1.7"
+version = "0.1.8"
 description = "Self-hosted Aurey wallet tools as an MCP server (1Claw custody, EVM swaps, local dashboard)"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -51,6 +51,8 @@ aurey-wallet-mcp = "aurey_wallet_mcp.server:main"
 aurey-hermes-install = "aurey_wallet_mcp.hermes_install:main"
 aurey-setup = "aurey_wallet_mcp.setup:main"
 aurey-portfolio-serve = "aurey_wallet_mcp.portfolio_serve:main"
+aurey-version = "aurey_wallet_mcp.version_cli:main"
+aurey-update = "aurey_wallet_mcp.update_cli:main"
 
 [dependency-groups]
 dev = [

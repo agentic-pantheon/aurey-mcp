@@ -32,7 +32,9 @@ uv sync --group dev --extra hermes
 uv run aurey-setup --host hermes
 ```
 
-**Masked prompts:** `1ck_…`, then optional [Alchemy](https://www.alchemy.com/) key (stored in 1Claw, not MCP `env`).
+**Masked prompts:** `1ck_…`, then optional [Alchemy](https://www.alchemy.com/) key (stored in 1Claw, not MCP `env`). Typed secrets show `*` in the terminal.
+
+**Version / upgrade:** `aurey-version` · `aurey-update --host hermes` (PyPI upgrade + re-wire from `~/.aurey/mcp.env`) — see [install/index.md](install/index.md).
 
 ### Choose your MCP host
 

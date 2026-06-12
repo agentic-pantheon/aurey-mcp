@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import argparse
-import getpass
 import os
 import subprocess
 import sys
@@ -25,6 +24,7 @@ from aurey_wallet_mcp.install_common import (
     write_mcp_env,
     write_mcp_wrapper,
 )
+from aurey_wallet_mcp.prompts import prompt_secret
 
 MCP_ENV_TEMPLATE: dict[str, str] = {
     "AUREY_ONECLAW_VAULT_ID": "${AUREY_ONECLAW_VAULT_ID}",
@@ -100,10 +100,7 @@ def collect_secrets(
             if name == VAULT_API_KEY_ENV:
                 label = f"{name} (1Claw agent API key, ocv_…)"
             if secret:
-                try:
-                    val = getpass.getpass(f"{label}: ").strip()
-                except Exception:
-                    val = input(f"{label}: ").strip()
+                val = prompt_secret(f"{label}: ")
             else:
                 val = input(f"{label}: ").strip()
             return val

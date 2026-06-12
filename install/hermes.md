@@ -283,6 +283,27 @@ Optional: `AUREY_ROUTE_BUILDER_URL` in MCP `env` for hosted swap quotes — see 
 
 ---
 
+## Upgrade MCP (Hermes / Railway shell)
+
+Check installed version:
+
+```bash
+aurey-version
+```
+
+Upgrade from PyPI and refresh Hermes MCP wiring (uses existing `~/.aurey/mcp.env` — no new `1ck_` prompt):
+
+```bash
+aurey-update --host hermes
+hermes mcp test aurey-wallet
+```
+
+In chat: `/reload-mcp`. Pin a release: `aurey-update --pin-version 0.1.7 --host hermes`. Package-only upgrade: `aurey-update --skip-rewire`.
+
+See also [install/index.md](index.md).
+
+---
+
 ## Troubleshooting
 
 | Symptom | Likely cause | Fix |

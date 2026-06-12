@@ -40,9 +40,30 @@ PyPI package name (exact): `aurey-wallet-mcp`.
 
 The curl installer and examples use `aurey-wallet-mcp[hermes]` because it adds **PyYAML** and Hermes YAML config helpers. **`aurey-setup` works for all hosts** with the base package; you do **not** need `[hermes]` for `--host cursor`, `claude`, or `openclaw`. Use `[hermes]` if you rely on `aurey-hermes-install` or Hermes-only YAML flows.
 
+### Check version
+
+```bash
+aurey-version
+# or: aurey-setup --version
+```
+
+`aurey-version -v` also prints the resolved `aurey-wallet-mcp` binary path when it is on `PATH`.
+
+### Upgrade (PyPI)
+
+On the machine where MCP runs (e.g. Railway shell, VPS, laptop):
+
+```bash
+aurey-update --host hermes
+```
+
+That upgrades `aurey-wallet-mcp[hermes]` from PyPI, refreshes host MCP config from `~/.aurey/mcp.env` (no new 1Claw keys), then reload MCP in Hermes (`/reload-mcp`). Use `--host cursor`, `claude`, or `openclaw` for other hosts.
+
+Upgrade only (no config changes): `aurey-update --skip-rewire`. Pin a release: `aurey-update --pin-version 0.1.7 --host hermes`.
+
 ## 2 — Configure 1Claw and MCP {#hosts}
 
-In a **terminal** (masked prompts), pick your host:
+In a **terminal** (masked prompts — each keystroke shows `*`), pick your host:
 
 | Host | Command | Detailed guide |
 |------|---------|----------------|

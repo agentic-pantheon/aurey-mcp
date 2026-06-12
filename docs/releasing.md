@@ -35,6 +35,7 @@
 7. Watch **Actions → Release** for PyPI upload and GitHub Release assets.
 8. Verify:
    - `pip install 'aurey-wallet-mcp[hermes]'==0.1.1`
+   - `aurey-version`
    - `aurey-setup --help`
    - Pages: https://agentic-pantheon.github.io/aurey-mcp/install.html
    - `curl -fsSL https://agentic-pantheon.github.io/aurey-mcp/install.sh | bash` (dry run on a VM)

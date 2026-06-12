@@ -10,8 +10,8 @@ from typing import Any
 
 from aurey.graphs.chains import CHAIN_INDEX, chain_id_for
 from aurey.known_addresses.book import iter_catalog_tokens
-from aurey.token_registry.lifi_import import load_lifi_tokens_file
 from aurey.token_registry.lifi_catalog import iter_lifi_catalog_entries
+from aurey.token_registry.lifi_import import load_lifi_tokens_file
 from aurey.token_registry.repository import TokenRow
 
 _log = logging.getLogger(__name__)
@@ -19,7 +19,7 @@ _log = logging.getLogger(__name__)
 _ALLOWLIST_TIERS = frozenset({"curated", "indexed"})
 
 
-def build_token_registry_repository(*, lifi_tokens_path: Path | None) -> "LifiFileTokenRegistryRepository | InMemoryFallback":
+def build_token_registry_repository(*, lifi_tokens_path: Path | None) -> LifiFileTokenRegistryRepository | InMemoryFallback:
     """Standalone MCP registry: bundled curated rows plus LiFi catalog (bundled or override path)."""
 
     if lifi_tokens_path is not None and (lifi_tokens_path.is_file() or lifi_tokens_path.is_dir()):

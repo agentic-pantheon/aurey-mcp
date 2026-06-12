@@ -4,7 +4,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from aurey.graphs.evm_codec import ERC20_DECIMALS_CALLDATA, decode_abi_uint256_word, normalize_evm_address
+from aurey.graphs.evm_codec import (
+    ERC20_DECIMALS_CALLDATA,
+    decode_abi_uint256_word,
+    normalize_evm_address,
+)
 
 if TYPE_CHECKING:
     from aurey.runtime import AureyRuntime

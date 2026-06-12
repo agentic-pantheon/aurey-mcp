@@ -1,5 +1,6 @@
 #!/usr/bin/env sh
 # Aurey Wallet MCP — install CLI from PyPI (no secrets; run aurey-setup separately).
+# Upgrades after first install: aurey-update --host hermes
 set -eu
 
 AUREY_VERSION="${AUREY_VERSION:-}"

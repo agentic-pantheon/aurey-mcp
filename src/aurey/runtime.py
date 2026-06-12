@@ -98,7 +98,7 @@ class AureyRuntime:
     lifi_base_url: str = "https://li.quest"
     prepared_txs: PreparedTransactionStore = field(default_factory=PreparedTransactionStore)
     decimals_cache: TtlLruCache[tuple[str, str], int] = field(default_factory=_default_decimals_cache)
-    token_resolver: "TokenResolver | None" = None
+    token_resolver: TokenResolver | None = None
     hosted_session_factory: Callable[..., Any] | None = None
     agent_evm_wallet_address: str | None = None
     agent_solana_wallet_address: str | None = None

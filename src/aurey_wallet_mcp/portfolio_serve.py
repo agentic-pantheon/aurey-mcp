@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import logging
-import sys
 
 from aurey.service.bootstrap import AureyRuntimeBootstrapError, bootstrap_aurey_runtime
 from aurey_wallet_mcp.config import load_settings

@@ -6,7 +6,7 @@ import json
 import stat
 from pathlib import Path
 
-from aurey_wallet_mcp.install_common import write_mcp_env, write_mcp_wrapper
+from aurey_wallet_mcp.install_common import write_mcp_env
 from aurey_wallet_mcp.mcp_hosts import _patch_cursor_config, _patch_openclaw_config
 
 

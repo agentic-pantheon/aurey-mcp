@@ -3,10 +3,9 @@
 from __future__ import annotations
 
 from collections import defaultdict
-
 from typing import Any
 
-from aurey.graphs.chains import chain_id_for, chain_info
+from aurey.graphs.chains import chain_id_for
 from aurey.known_addresses.book import iter_catalog_tokens
 from aurey.token_registry.repository import TokenRow
 

@@ -3,11 +3,10 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Iterator
 from functools import lru_cache
 from importlib.resources import files
 from typing import Any, NamedTuple, cast
-
-from collections.abc import Iterator
 
 from aurey.graphs.chains import chain_id_for, chain_name_for_id
 from aurey.graphs.evm_codec import normalize_evm_address

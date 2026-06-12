@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import argparse
-import getpass
 import os
 import sys
 from pathlib import Path
@@ -30,6 +29,8 @@ from aurey_wallet_mcp.oneclaw_provision import (
     OneClawProvisionError,
     provision_for_aurey,
 )
+from aurey_wallet_mcp.prompts import prompt_secret
+from aurey_wallet_mcp.version_cli import print_version
 
 HOST_CHOICES: tuple[McpHost, ...] = ("hermes", "cursor", "claude", "openclaw")
 
@@ -42,11 +43,7 @@ def _pick_human_api_key(cli: str | None, *, prompt: bool, from_env: bool) -> str
         if val:
             return val
     if prompt:
-        try:
-            val = getpass.getpass("1Claw human API key (1ck_…): ").strip()
-        except Exception:
-            val = input("1Claw human API key (1ck_…): ").strip()
-        return val
+        return prompt_secret("1Claw human API key (1ck_…): ")
     return ""
 
 
@@ -57,14 +54,9 @@ def _pick_alchemy(cli: str | None, *, prompt: bool, skip: bool) -> str | None:
         return cli.strip() or None
     if not prompt:
         return None
-    try:
-        val = getpass.getpass(
-            f"Alchemy API key (Enter to skip; stored in 1Claw at {DEFAULT_ALCHEMY_VAULT_PATH}): "
-        ).strip()
-    except Exception:
-        val = input(
-            f"Alchemy API key (Enter to skip; stored in 1Claw at {DEFAULT_ALCHEMY_VAULT_PATH}): "
-        ).strip()
+    val = prompt_secret(
+        f"Alchemy API key (Enter to skip; stored in 1Claw at {DEFAULT_ALCHEMY_VAULT_PATH}): "
+    )
     return val or None
 
 
@@ -76,14 +68,9 @@ def _pick_lifi(cli: str | None, *, prompt: bool, skip: bool) -> str | None:
     if not prompt:
         return None
     print(LIFI_SETUP_HINT, file=sys.stderr)
-    try:
-        val = getpass.getpass(
-            f"LiFi API key (Enter to skip; stored in 1Claw at {DEFAULT_LIFI_VAULT_PATH}): "
-        ).strip()
-    except Exception:
-        val = input(
-            f"LiFi API key (Enter to skip; stored in 1Claw at {DEFAULT_LIFI_VAULT_PATH}): "
-        ).strip()
+    val = prompt_secret(
+        f"LiFi API key (Enter to skip; stored in 1Claw at {DEFAULT_LIFI_VAULT_PATH}): "
+    )
     return val or None
 
 
@@ -95,14 +82,9 @@ def _pick_zerion(cli: str | None, *, prompt: bool, skip: bool) -> str | None:
     if not prompt:
         return None
     print(ZERION_SETUP_HINT, file=sys.stderr)
-    try:
-        val = getpass.getpass(
-            f"Zerion API key (Enter to skip; stored in 1Claw at {DEFAULT_ZERION_VAULT_PATH}): "
-        ).strip()
-    except Exception:
-        val = input(
-            f"Zerion API key (Enter to skip; stored in 1Claw at {DEFAULT_ZERION_VAULT_PATH}): "
-        ).strip()
+    val = prompt_secret(
+        f"Zerion API key (Enter to skip; stored in 1Claw at {DEFAULT_ZERION_VAULT_PATH}): "
+    )
     return val or None
 
 
@@ -167,11 +149,19 @@ def build_parser() -> argparse.ArgumentParser:
         "--oneclaw-base-url",
         default=os.environ.get("AUREY_ONECLAW_BASE_URL", "https://api.1claw.xyz"),
     )
+    p.add_argument(
+        "--version",
+        action="store_true",
+        help="Print installed package version and exit",
+    )
     return p
 
 
 def main(argv: list[str] | None = None) -> None:
     args = build_parser().parse_args(argv)
+    if args.version:
+        print_version()
+        return
     host: McpHost = args.host
 
     if args.skip_provision and args.provision_only:

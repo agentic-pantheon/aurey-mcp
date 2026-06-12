@@ -8,6 +8,13 @@ from typing import Any, Literal, Self
 from langchain_core.tools import BaseTool, tool
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from aurey.custody.agent_wallet import (
+    agent_wallet_status,
+    fetch_agent_wallet_addresses_from_oneclaw,
+)
+from aurey.custody.errors import OneClawSigningError, SecretStoreUnavailableError
+from aurey.custody.intents_models import IntentsSignTransactionRequest
+from aurey.custody.intents_principal import OneClawSigningPrincipal
 from aurey.graphs import (
     EarnGraphInput,
     LiFiStatusInput,
@@ -29,14 +36,7 @@ from aurey.graphs import (
 from aurey.graphs.chains import chain_name_for_id
 from aurey.graphs.read import ReadGraphInput
 from aurey.graphs.swap_diag import SWAP_LOG, log_swap_tool
-from aurey.custody.agent_wallet import (
-    agent_wallet_status,
-    fetch_agent_wallet_addresses_from_oneclaw,
-)
 from aurey.runtime import AureyRuntime
-from aurey.custody.errors import OneClawSigningError, SecretStoreUnavailableError
-from aurey.custody.intents_models import IntentsSignTransactionRequest
-from aurey.custody.intents_principal import OneClawSigningPrincipal
 from aurey.tools.user_input import RequestUserInputArgs, UserQuestion, note_user_input_request
 
 
