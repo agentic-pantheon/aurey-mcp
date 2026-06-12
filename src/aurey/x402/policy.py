@@ -15,7 +15,6 @@ from aurey.graphs.evm_codec import normalize_evm_address
 from aurey.known_addresses.book import lookup_known_token
 from aurey.settings import AureySettings
 
-
 USDC_DECIMALS = 6
 
 
@@ -142,7 +141,8 @@ def quote_to_result_dict(quote: QuoteView) -> dict[str, Any]:
         out["estimated_deposit_atomic"] = quote.estimated_deposit_atomic
         out["estimated_deposit_usd"] = quote.estimated_deposit_usd
         out["note"] = (
-            "Batch-settlement may lock USDC in a channel; later calls can reuse balance (vouchers only)."
+            "Batch-settlement may lock USDC in a channel; "
+            "later calls can reuse balance (vouchers only)."
         )
     return out
 
@@ -164,7 +164,10 @@ def _cap_compare_usd(
         return PolicyDecision(
             allowed=False,
             code="price_too_high",
-            message=f"Quoted exposure ${exposure_usd:.4f} exceeds per-call max ${per_call_max:.4f}.",
+            message=(
+                f"Quoted exposure ${exposure_usd:.4f} exceeds "
+                f"per-call max ${per_call_max:.4f}."
+            ),
         )
     return None
 
@@ -195,7 +198,10 @@ def evaluate_fetch(
             return PolicyDecision(
                 allowed=False,
                 code="price_too_high",
-                message=f"Estimated deposit ${deposit_usd:.4f} exceeds batch deposit cap ${batch_cap:.4f}.",
+                message=(
+                    f"Estimated deposit ${deposit_usd:.4f} exceeds "
+                    f"batch deposit cap ${batch_cap:.4f}."
+                ),
                 quote=quote,
             )
 
@@ -216,7 +222,8 @@ def evaluate_fetch(
                 allowed=False,
                 code="price_changed",
                 message=(
-                    f"Quote exposure ${exposure:.4f} exceeds bound max_price_usd ${bound_max_usd:.4f}."
+                    f"Quote exposure ${exposure:.4f} exceeds bound "
+                    f"max_price_usd ${bound_max_usd:.4f}."
                 ),
                 quote=quote,
             )
@@ -230,7 +237,8 @@ def evaluate_fetch(
         code="needs_confirmation",
         message=(
             f"Exposure ${exposure:.4f} exceeds auto-approve ${auto_cap:.4f}. "
-            "Re-call x402_fetch with confirm_payment=true and max_price_usd set to the quoted amount."
+            "Re-call x402_fetch with confirm_payment=true and max_price_usd "
+            "set to the quoted amount."
         ),
         quote=quote,
     )

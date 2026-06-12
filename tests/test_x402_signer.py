@@ -70,9 +70,11 @@ def test_oneclaw_signer_typed_data_bytes(monkeypatch: pytest.MonkeyPatch) -> Non
 
 
 def test_typed_data_json_safe_bytes_nonce(monkeypatch: pytest.MonkeyPatch) -> None:
-    from aurey.x402.oneclaw_signer import _typed_data_to_eip712_json
     import json
+
     from x402.mechanisms.evm.types import TypedDataField
+
+    from aurey.x402.oneclaw_signer import _typed_data_to_eip712_json
 
     out = _typed_data_to_eip712_json(
         {"name": "T", "version": "1", "chainId": 8453, "verifyingContract": "0x" + "1" * 40},

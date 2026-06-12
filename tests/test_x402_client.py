@@ -39,7 +39,11 @@ def x402_runtime(monkeypatch: pytest.MonkeyPatch) -> AureyRuntime:
     monkeypatch.setenv("AUREY_ALCHEMY_API_KEY", "alchemy_test")
     settings = AureySettings()
     client = FakeOneClawClient({})
-    store = OneClawSecretStore(client=client, vault_id=TEST_VAULT_ID, agent_id=settings.oneclaw_agent_id)
+    store = OneClawSecretStore(
+        client=client,
+        vault_id=TEST_VAULT_ID,
+        agent_id=settings.oneclaw_agent_id,
+    )
     return AureyRuntime(
         settings=settings,
         secret_store=store,

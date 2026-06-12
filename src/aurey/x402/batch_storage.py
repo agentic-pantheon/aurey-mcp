@@ -4,11 +4,12 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from aurey.settings import AureySettings
 from x402.mechanisms.evm.batch_settlement.client import (
     FileChannelStorageOptions,
     FileClientChannelStorage,
 )
+
+from aurey.settings import AureySettings
 
 
 def batch_storage_dir(settings: AureySettings) -> Path:

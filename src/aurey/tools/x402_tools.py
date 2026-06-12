@@ -47,7 +47,10 @@ class X402FetchArgs(X402PreviewArgs):
 
 class X402BatchRefundArgs(BaseModel):
     url: str = Field(
-        description="Resource URL for the batch-settlement channel to refund (same host as paid calls)."
+        description=(
+            "Resource URL for the batch-settlement channel to refund "
+            "(same host as paid calls)."
+        )
     )
 
 
@@ -143,7 +146,8 @@ def build_x402_tools(runtime: AureyRuntime) -> list[BaseTool]:
     ) -> dict[str, Any]:
         """Probe an HTTP API for x402 V2 payment requirements (never signs or spends).
 
-        Use before paid calls when cost is unknown. For on-chain swaps use swap_prepare, not x402."""
+        Use before paid calls when cost is unknown.
+        For on-chain swaps use swap_prepare, not x402."""
         try:
             return _transport().preview(
                 url=url.strip(),
